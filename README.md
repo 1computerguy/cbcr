@@ -57,16 +57,20 @@
 ```
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
 sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+
 sudo apt install -y docker.io python-docker python-ruamel.yaml pv \
                     git golang-cfssl python3-pip kubeadm kubelet \
                     kubectl
+
 pip3 install cfssl
 
-modprobe nfs
-modprobe nfsd
+sudo modprobe nfs
+sudo modprobe nfsd
 
-echo "nfs" | sudo tee -a /etc/modules
-echo "nfsd" | sudo tee -a /etc/modules
+sudo tee -a /etc/modules <<EOF
+nfs
+nfsd
+EOF
 
 # Change Docker manager to systemd, not cgroup
 sudo tee /etc/docker/daemon.json <<EOF
@@ -90,8 +94,9 @@ sudo usermod -aG docker greyadmin
 sudo mkdir /range
 sudo chown -R greyadmin:greyadmin /range
 ```
+
 - Clone this repository and cd into the `cyber-range-k8s-vms` folder
-- Copy the `range` script into the `/usr/local/bin` directory and ensure it is executable
+- To add the `range` command to your path, copy it into the `/usr/local/bin` directory and ensure it is executable
 ```
 cd cyber-range-k8s-vms
 sudo cp range /usr/local/bin/
