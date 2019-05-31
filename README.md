@@ -34,7 +34,7 @@
 192.168.1.10	master
 10.10.0.10	storage
 10.10.1.10	network
-10.10.2.10   external
+10.10.2.10  external
 192.168.1.11	worker01
 192.168.1.12	worker01
 ```
