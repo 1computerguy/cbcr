@@ -1,4 +1,6 @@
-# Cyber-Range-K8s
+# Cyber-Range-K8s-VMs
+This is a repository for a Container based Cyber Range that runs in 3 Virtual Machines. If you are interested in this one, you may also like my `container-range-k8s-rpi` that runs a smaller version of this container-based range on a 4 node RaspberryPi cluster.
+
 
 ## Initial VM Build Instructions
 ### Current configuration includes 3 VMs
