@@ -5,26 +5,26 @@
   - Build each VM with the following settings:
     - Master
       - CPU: 2 vCPUs
-        RAM: 4GB
-        Disk: 60GB
-        Hostname: master
-        4 NICS (minimum):
+      - RAM: 4GB
+      - Disk: 60GB
+      - Hostname: master
+      - 4 NICS (minimum):
         - IPs:
-          192.168.1.10/24 (GW/DNS on this network interface)
-          10.10.0.10/24
-          10.10.1.10/24
-          10.10.2.10/24
+        - 192.168.1.10/24 (GW/DNS on this network interface)
+        - 10.10.0.10/24
+        - 10.10.1.10/24
+        - 10.10.2.10/24
     - Worker(01 and 02)
       - CPU: 2 vCPUs
-        RAM: 4GB
-        Disk: 40GB
-        Hostname: worker01 / worker02
-        4 NICS (minimum)
-          - IPs:
-            192.168.1.11/24 (GW/DNS on this network interface)
-            10.10.0.(11-12)/24
-            10.10.1.(11-12)/24
-            10.10.2.(11-12)/24
+      - RAM: 4GB
+      - Disk: 40GB
+      - Hostname: worker01 / worker02
+      - 4 NICS (minimum)
+        - IPs:
+          - 192.168.1.11/24 (GW/DNS on this network interface)
+          - 10.10.0.(11-12)/24
+          - 10.10.1.(11-12)/24
+          - 10.10.2.(11-12)/24
   - Install Ubuntu 18.04 Server using the settings above
   
 
