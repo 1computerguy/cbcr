@@ -1,5 +1,5 @@
 # Container-Based Cyber Range running in Kubernetes
-This is a repository for a Container based Cyber Range that runs in 3 Virtual Machines. If you are interested in this one, you may also like my `container-range-k8s-rpi` that runs a smaller version of this container-based range on a 4 node RaspberryPi cluster.
+This is a repository for a Container based Cyber Range that runs in 3 Virtual Machines, or on a 4 node Raspberry Pi cluster.
 
 
 ## Initial VM Build Instructions
@@ -104,6 +104,8 @@ cd cyber-range-k8s-vms
 sudo cp range /usr/local/bin/
 sudo chmod +x /usr/local/bin/range
 ```
+
+# Initial Raspberry Pi Build Instructions
 
 #TODO:
 - Write scirpt to automate cluster configuration and deployment
