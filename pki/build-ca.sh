@@ -18,9 +18,9 @@ touch ${INTERMED_DIR}/intermed-ca.index,intermed-ca.index.attr}
 echo 00 > ${INTERMED_DIR}/intermed-ca.crlnum
 
 
-sed "s/{{DOM_NAME}}/$DOM_NAME/g" root-config.cnf | sed "s/{{ALT_DOM_NAME}}/$ALT_DOM_NAME/g" > $ROOT_DIR/root-ca.cnf
+sed "s/{{DOM_NAME}}/$DOM_NAME/g" root-config.cnf.tmpl | sed "s/{{ALT_DOM_NAME}}/$ALT_DOM_NAME/g" > $ROOT_DIR/root-ca.cnf
 
-sed "s/{{DOM_NAME}}/$DOM_NAME/g" intermed-config.cnf | sed "s/{{ALT_DOM_NAME}}/$ALT_DOM_NAME/g" > $INTERMED_DIR/intermed-ca.cnf
+sed "s/{{DOM_NAME}}/$DOM_NAME/g" intermed-config.cnf.tmpl | sed "s/{{ALT_DOM_NAME}}/$ALT_DOM_NAME/g" > $INTERMED_DIR/intermed-ca.cnf
 
 # Setup Root CA
 cd $ROOT_DIR
