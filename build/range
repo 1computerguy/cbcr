@@ -9,6 +9,8 @@ usage() {
 web_usage() {
 
 }
+
+
 # Array check for use in other sections
 is_array() {
   #detect if arg is an array, returns 0 on sucess, 1 otherwise
@@ -19,8 +21,11 @@ is_array() {
   return 1
 }
 
+
+
 # Set necessary environment variables to run range services
 config() {
+
   echo ""
 }
 
@@ -586,7 +591,7 @@ web() {
   fi
       for site in ${sites[@]}
       do
-          docker run --rm -i --init -d -e URL="$site" --cap-add=SYS_ADMIN -v $SHARE_DIR/web:/output --name get-$site puppeteer-chrome-linux:scraper node -e "`cat $CONFIG_DIR/scrape.js`"
+          docker run --rm -i --init -d -e URL="$site" --cap-add=SYS_ADMIN -v $SHARE_DIR/web/output --name get-$site puppeteer-chrome-linux:scraper node -e "`cat $CONFIG_DIR/scrape.js`"
       done
 
   # To do https for sites:
