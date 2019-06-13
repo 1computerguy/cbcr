@@ -594,7 +594,9 @@ web() {
           #docker run --rm -i --init -d -e URL="$site" --cap-add=SYS_ADMIN -v $SHARE_DIR/web/output --name get-$site puppeteer-chrome-linux:scraper node -e "`cat $CONFIG_DIR/scrape.js`"
           docker run --rm -i --init -d -e URL="$site" -u root --cap-add=SYS_ADMIN -v $RANGE_HOME/web:/web/output --name get-$site puppeteer-chrome-linux:scraper node -e "`cat $CONFIG_DIR/infrastructure/scraper/scrape.js`"
       done
-
+    cd $INTERMED_CA_DIR
+    openssl req -out csr/"$site".csr.pem -newkey rsa:2048 -nodes -keyout private/"$site".com.key.pem -config $INTERMED_CA_CNF
+    openssl ca -config $INTERMED_CA_CNF -extensions server_cert -days 3750 -notext -md sha512 -in csr/"$site".csr.pem -out certs/"$site".crt.pem
   # To do https for sites:
   # 1) cd into ~/dummy_ca directory
   # 2) openssl genrsa -out pki/intermediate/private/<fqdn>.key.pem 2048
