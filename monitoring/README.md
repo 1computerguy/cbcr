@@ -1,0 +1,2 @@
+## Range monitoring applications.
+#### This folder is for maintaining access to internal monitoring applications for the range. These can be deployed manually for internal testing, or working with Docker, or they can be deployed in the range environment using the associated range command or the generated K8s configuration files.

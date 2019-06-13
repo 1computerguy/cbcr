@@ -1,0 +1,571 @@
+---
+kind: Deployment
+spec:
+  template:
+    spec:
+      volumes:
+      - nfs:
+          path: /configs/web/google.com
+          server: storage
+        name: nfs-httpd-volume
+      containers:
+      - securityContext:
+          privileged: true
+        name: www-google-com
+        image: master:5000/nginx-web
+        args:
+        - |-
+          ip addr add 172.217.0.78/8 dev net1;
+          ip r d default;
+          ip r a default via 172.0.0.1;
+          ip link set net1 mtu 1450;
+          nginx -g 'daemon off;'
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: nfs-httpd-volume
+        - mountPath: /
+        command:
+        - /bin/sh
+        - -c
+    metadata:
+      labels:
+        app: www.google.com
+      annotations:
+        k8s.v1.cni.cncf.io/networks: na-svc
+  replicas: 1
+apiVersion: apps/v1beta1
+metadata:
+  namespace: default
+  name: www.google.com
+---
+kind: Deployment
+spec:
+  template:
+    spec:
+      volumes:
+      - nfs:
+          path: /configs/web/microsoft.com
+          server: storage
+        name: nfs-httpd-volume
+      containers:
+      - securityContext:
+          privileged: true
+        name: www-microsoft-com
+        image: master:5000/nginx-web
+        args:
+        - |-
+          ip addr add 40.76.4.15/8 dev net1;
+          ip r d default;
+          ip r a default via 40.0.0.1;
+          ip link set net1 mtu 1450;
+          nginx -g 'daemon off;'
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: nfs-httpd-volume
+        command:
+        - /bin/sh
+        - -c
+    metadata:
+      labels:
+        app: www.microsoft.com
+      annotations:
+        k8s.v1.cni.cncf.io/networks: na-svc
+  replicas: 1
+apiVersion: apps/v1beta1
+metadata:
+  namespace: default
+  name: www.microsoft.com
+---
+kind: Deployment
+spec:
+  template:
+    spec:
+      volumes:
+      - nfs:
+          path: /configs/web/wikipedia.org
+          server: storage
+        name: nfs-httpd-volume
+      containers:
+      - securityContext:
+          privileged: true
+        name: www-wikipedia-com
+        image: master:5000/nginx-web
+        args:
+        - |-
+          ip addr add 208.80.154.224/8 dev net1;
+          ip r d default;
+          ip r a default via 208.0.0.1;
+          ip link set net1 mtu 1450;
+          nginx -g 'daemon off;'
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: nfs-httpd-volume
+        command:
+        - /bin/sh
+        - -c
+    metadata:
+      labels:
+        app: www.wikipedia.org
+      annotations:
+        k8s.v1.cni.cncf.io/networks: na-svc
+  replicas: 1
+apiVersion: apps/v1beta1
+metadata:
+  namespace: default
+  name: www.wikipedia.org
+---
+kind: Deployment
+spec:
+  template:
+    spec:
+      volumes:
+      - nfs:
+          path: /configs/web/elsalvador.com
+          server: storage
+        name: nfs-httpd-volume
+      containers:
+      - securityContext:
+          privileged: true
+        name: www-elsalvador-com
+        image: master:5000/nginx-web
+        args:
+        - |-
+          ip addr add 179.249.122.52/8 dev net1;
+          ip r d default;
+          ip r a default via 179.0.0.1;
+          ip link set net1 mtu 1450;
+          nginx -g 'daemon off;'
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: nfs-httpd-volume
+        command:
+        - /bin/sh
+        - -c
+    metadata:
+      labels:
+        app: www.elsalvador.com
+      annotations:
+        k8s.v1.cni.cncf.io/networks: la-svc
+  replicas: 1
+apiVersion: apps/v1beta1
+metadata:
+  namespace: default
+  name: www.elsalvador.com
+---
+kind: Deployment
+spec:
+  template:
+    spec:
+      volumes:
+      - nfs:
+          path: /configs/web/elgenero.com
+          server: storage
+        name: nfs-httpd-volume
+      containers:
+      - securityContext:
+          privileged: true
+        name: www-elgenero-com
+        image: master:5000/nginx-web
+        args:
+        - |-
+          ip addr add 201.23.113.243/8 dev net1;
+          ip r d default;
+          ip r a default via 201.0.0.1;
+          ip link set net1 mtu 1450;
+          nginx -g 'daemon off;'
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: nfs-httpd-volume
+        command:
+        - /bin/sh
+        - -c
+    metadata:
+      labels:
+        app: www.elgenero.com
+      annotations:
+        k8s.v1.cni.cncf.io/networks: la-svc
+  replicas: 1
+apiVersion: apps/v1beta1
+metadata:
+  namespace: default
+  name: www.elgenero.com
+---
+kind: Deployment
+spec:
+  template:
+    spec:
+      volumes:
+      - nfs:
+          path: /configs/web/facebook.com
+          server: storage
+        name: nfs-httpd-volume
+      containers:
+      - securityContext:
+          privileged: true
+        name: www-facebook-com
+        image: master:5000/nginx-web
+        args:
+        - |-
+          ip addr add 31.13.65.36/8 dev net1;
+          ip r d default;
+          ip r a default via 31.0.0.1;
+          ip link set net1 mtu 1450;
+          nginx -g 'daemon off;'
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: nfs-httpd-volume
+        command:
+        - /bin/sh
+        - -c
+    metadata:
+      labels:
+        app: www.facebook.com
+      annotations:
+        k8s.v1.cni.cncf.io/networks: eu-svc
+  replicas: 1
+apiVersion: apps/v1beta1
+metadata:
+  namespace: default
+  name: www.facebook.com
+---
+kind: Deployment
+spec:
+  template:
+    spec:
+      volumes:
+      - nfs:
+          path: /configs/web/yandex.ru
+          server: storage
+        name: nfs-httpd-volume
+      containers:
+      - securityContext:
+          privileged: true
+        name: www-yandex-ru
+        image: master:5000/nginx-web
+        args:
+        - |-
+          ip addr add 77.88.55.55/8 dev net1;
+          ip r d default;
+          ip r a default via 77.0.0.1;
+          ip link set net1 mtu 1450;
+          nginx -g 'daemon off;'
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: nfs-httpd-volume
+        command:
+        - /bin/sh
+        - -c
+    metadata:
+      labels:
+        app: www.yandex.ru
+      annotations:
+        k8s.v1.cni.cncf.io/networks: eu-svc
+  replicas: 1
+apiVersion: apps/v1beta1
+metadata:
+  namespace: default
+  name: www.yandex.ru
+---
+kind: Deployment
+spec:
+  template:
+    spec:
+      volumes:
+      - nfs:
+          path: /configs/web/rtl.lu
+          server: storage
+        name: nfs-httpd-volume
+      containers:
+      - securityContext:
+          privileged: true
+        name: www-rtl-lu
+        image: master:5000/nginx-web
+        args:
+        - |-
+          ip addr add 81.92.237.71/8 dev net1;
+          ip r d default;
+          ip r a default via 81.0.0.1;
+          ip link set net1 mtu 1450;
+          nginx -g 'daemon off;'
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: nfs-httpd-volume
+        command:
+        - /bin/sh
+        - -c
+    metadata:
+      labels:
+        app: www.rtl.lu
+      annotations:
+        k8s.v1.cni.cncf.io/networks: eu-svc
+  replicas: 1
+apiVersion: apps/v1beta1
+metadata:
+  namespace: default
+  name: www.rtl.lu
+---
+kind: Deployment
+spec:
+  template:
+    spec:
+      volumes:
+      - nfs:
+          path: /configs/web/standardmedia.co.ke
+          server: storage
+        name: nfs-httpd-volume
+      containers:
+      - securityContext:
+          privileged: true
+        name: www-standardmedia-co-ke
+        image: master:5000/nginx-web
+        args:
+        - |-
+          ip addr add 105.20.205.11/8 dev net1;
+          ip r d default;
+          ip r a default via 105.0.0.1;
+          ip link set net1 mtu 1450;
+          nginx -g 'daemon off;'
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: nfs-httpd-volume
+        command:
+        - /bin/sh
+        - -c
+    metadata:
+      labels:
+        app: www.standardmedia.co.ke
+      annotations:
+        k8s.v1.cni.cncf.io/networks: af-svc
+  replicas: 1
+apiVersion: apps/v1beta1
+metadata:
+  namespace: default
+  name: www.standardmedia.co.ke
+---
+kind: Deployment
+spec:
+  template:
+    spec:
+      volumes:
+      - nfs:
+          path: /configs/web/fakaza.com
+          server: storage
+        name: nfs-httpd-volume
+      containers:
+      - securityContext:
+          privileged: true
+        name: www-fakaza-com
+        image: master:5000/nginx-web
+        args:
+        - |-
+          ip addr add 154.162.225.76/8 dev net1;
+          ip r d default;
+          ip r a default via 154.0.0.1;
+          ip link set net1 mtu 1450;
+          nginx -g 'daemon off;'
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: nfs-httpd-volume
+        command:
+        - /bin/sh
+        - -c
+    metadata:
+      labels:
+        app: www.fakaza.com
+      annotations:
+        k8s.v1.cni.cncf.io/networks: af-svc
+  replicas: 1
+apiVersion: apps/v1beta1
+metadata:
+  namespace: default
+  name: www.fakaza.com
+---
+kind: Deployment
+spec:
+  template:
+    spec:
+      volumes:
+      - nfs:
+          path: /configs/web/livedoor.com
+          server: storage
+        name: nfs-httpd-volume
+      containers:
+      - securityContext:
+          privileged: true
+        name: www-livedoor-com
+        image: master:5000/nginx-web
+        args:
+        - |-
+          ip addr add 202.104.153.16/8 dev net1;
+          ip r d default;
+          ip r a default via 202.0.0.1;
+          ip link set net1 mtu 1450;
+          nginx -g 'daemon off;'
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: nfs-httpd-volume
+        command:
+        - /bin/sh
+        - -c
+    metadata:
+      labels:
+        app: www.livedoor.com
+      annotations:
+        k8s.v1.cni.cncf.io/networks: as-svc
+  replicas: 1
+apiVersion: apps/v1beta1
+metadata:
+  namespace: default
+  name: www.livedoor.com
+---
+kind: Deployment
+spec:
+  template:
+    spec:
+      volumes:
+      - nfs:
+          path: /configs/web/sabq.org
+          server: storage
+        name: nfs-httpd-volume
+      containers:
+      - securityContext:
+          privileged: true
+        name: www-sabq-org
+        image: master:5000/nginx-web
+        args:
+        - |-
+          ip addr add 105.16.44.64/8 dev net1;
+          ip r d default;
+          ip r a default via 105.0.0.1;
+          ip link set net1 mtu 1450;
+          nginx -g 'daemon off;'
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: nfs-httpd-volume
+        command:
+        - /bin/sh
+        - -c
+    metadata:
+      labels:
+        app: www.sabq.org
+      annotations:
+        k8s.v1.cni.cncf.io/networks: as-svc
+  replicas: 1
+apiVersion: apps/v1beta1
+metadata:
+  namespace: default
+  name: www.sabq.org
+---
+kind: Deployment
+spec:
+  template:
+    spec:
+      volumes:
+      - nfs:
+          path: /configs/web/baidu.com
+          server: storage
+        name: nfs-httpd-volume
+      containers:
+      - securityContext:
+          privileged: true
+        name: www-baidu-com
+        image: master:5000/nginx-web
+        args:
+        - |-
+          ip addr add 123.125.114.144/8 dev net1;
+          ip r d default;
+          ip r a default via 123.0.0.1;
+          ip link set net1 mtu 1450;
+          nginx -g 'daemon off;'
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: nfs-httpd-volume
+        command:
+        - /bin/sh
+        - -c
+    metadata:
+      labels:
+        app: www.baidu.com
+      annotations:
+        k8s.v1.cni.cncf.io/networks: as-svc
+  replicas: 1
+apiVersion: apps/v1beta1
+metadata:
+  namespace: default
+  name: www.baidu.com
+---
+kind: Deployment
+spec:
+  template:
+    spec:
+      volumes:
+      - nfs:
+          path: /configs/web/ebay.com.au
+          server: storage
+        name: nfs-httpd-volume
+      containers:
+      - securityContext:
+          privileged: true
+        name: www-ebay-com-au
+        image: master:5000/nginx-web
+        args:
+        - |-
+          ip addr add 58.135.195.175/8 dev net1;
+          ip r d default;
+          ip r a default via 58.0.0.1;
+          ip link set net1 mtu 1450;
+          nginx -g 'daemon off;'
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: nfs-httpd-volume
+        command:
+        - /bin/sh
+        - -c
+    metadata:
+      labels:
+        app: www.ebay.com.au
+      annotations:
+        k8s.v1.cni.cncf.io/networks: au-svc
+  replicas: 1
+apiVersion: apps/v1beta1
+metadata:
+  namespace: default
+  name: www.ebay.com.au
+---
+kind: Deployment
+spec:
+  template:
+    spec:
+      volumes:
+      - nfs:
+          path: /configs/web/trademe.co.nz
+          server: storage
+        name: nfs-httpd-volume
+      containers:
+      - securityContext:
+          privileged: true
+        name: www-trademe-co-nz
+        image: master:5000/nginx-web
+        args:
+        - |-
+          ip addr add 203.162.72.2/8 dev net1;
+          ip r d default;
+          ip r a default via 203.0.0.1;
+          ip link set net1 mtu 1450;
+          nginx -g 'daemon off;'
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: nfs-httpd-volume
+        command:
+        - /bin/sh
+        - -c
+    metadata:
+      labels:
+        app: www.trademe.co.nz
+      annotations:
+        k8s.v1.cni.cncf.io/networks: au-svc
+  replicas: 1
+apiVersion: apps/v1beta1
+metadata:
+  namespace: default
+  name: www.trademe.co.nz

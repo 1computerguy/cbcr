@@ -1,0 +1,1 @@
+FROM sebp/elk:latest

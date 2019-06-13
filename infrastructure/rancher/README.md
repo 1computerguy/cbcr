@@ -1,0 +1,2 @@
+# Rancher Server
+### Rancher is a management server that can be used to easily and quickly manage certain K8s aspects. As far as this range is concerned, Rancher was used to deploy Prometheus and Grafana and monitor performance. If you don't wish to use Rancher in your deployment, you can exclude it from deployment if you wish.

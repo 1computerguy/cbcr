@@ -1,0 +1,2 @@
+## Docker Registry
+This registry is necessary for the range to operate in a "disconnected" environment. Building and installing the registry, then configuring it for access by the other K8s nodes is what allows all the containers in this envrioment to work together. There is nothing special or custom about this registry, so feel free to use it wherever you like.

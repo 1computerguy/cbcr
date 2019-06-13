@@ -1,0 +1,20 @@
+Apache ssl config:
+    Map certs and config to: /usr/local/apache2/conf/
+        server.key
+        server.crt
+        httpd.conf
+    Modify httpd.conf file - remove % # from the beginning of the following lines:
+        ...
+        #LoadModule socache_shmcb_module modules/mod_socache_shmcb.so
+        ...
+        #LoadModule ssl_module modules/mod_ssl.so
+        ...
+        #Include conf/extra/httpd-ssl.conf
+        ...
+    Port 80 should work "out of the box"
+
+Nginx ssl config:
+    Map certs and config to: /etc/nginx/conf.d
+        server.key
+        server.crt
+        nginx.conf

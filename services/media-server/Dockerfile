@@ -1,0 +1,1 @@
+FROM silverwind/droppy:latest

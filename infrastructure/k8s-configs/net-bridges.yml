@@ -1,0 +1,88 @@
+---
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+  name: bgpbr
+spec:
+  config: '{
+    "cniVersion": "0.3.0",
+    "type": "ovs",
+    "bridge": "bgp"
+  }'
+---
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+  name: na-svc
+spec:
+  config: '{
+    "cniVersion": "0.3.0",
+    "type": "ovs",
+    "bridge": "na-svc"
+  }'
+---
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+  name: eu-svc
+spec:
+  config: '{
+    "cniVersion": "0.3.0",
+    "type": "ovs",
+    "bridge": "eu-svc"
+  }'
+---
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+  name: la-svc
+spec:
+  config: '{
+    "cniVersion": "0.3.0",
+    "type": "ovs",
+    "bridge": "la-svc"
+  }'
+---
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+  name: af-svc
+spec:
+  config: '{
+    "cniVersion": "0.3.0",
+    "type": "ovs",
+    "bridge": "af-svc"
+  }'
+---
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+  name: as-svc
+spec:
+  config: '{
+    "cniVersion": "0.3.0",
+    "type": "ovs",
+    "bridge": "as-svc"
+  }'
+---
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+  name: au-svc
+spec:
+  config: '{
+    "cniVersion": "0.3.0",
+    "type": "ovs",
+    "bridge": "au-svc"
+  }'
+---
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+  name: external
+spec:
+  config: '{
+    "cniVersion": "0.3.0",
+    "type": "ovs",
+    "bridge": "external"
+  }'

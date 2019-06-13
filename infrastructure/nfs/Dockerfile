@@ -1,0 +1,1 @@
+FROM erichough/nfs-server:latest
