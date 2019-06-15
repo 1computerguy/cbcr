@@ -1,4 +1,8 @@
 ---
+apiVersion: apps/v1beta1
+metadata:
+  namespace: default
+  name: www.google.com
 kind: Deployment
 spec:
   template:
@@ -33,11 +37,11 @@ spec:
       annotations:
         k8s.v1.cni.cncf.io/networks: na-svc
   replicas: 1
+---
 apiVersion: apps/v1beta1
 metadata:
   namespace: default
-  name: www.google.com
----
+  name: www.microsoft.com
 kind: Deployment
 spec:
   template:
@@ -71,11 +75,11 @@ spec:
       annotations:
         k8s.v1.cni.cncf.io/networks: na-svc
   replicas: 1
+---
 apiVersion: apps/v1beta1
 metadata:
   namespace: default
-  name: www.microsoft.com
----
+  name: www.wikipedia.org
 kind: Deployment
 spec:
   template:
@@ -109,11 +113,11 @@ spec:
       annotations:
         k8s.v1.cni.cncf.io/networks: na-svc
   replicas: 1
+---
 apiVersion: apps/v1beta1
 metadata:
   namespace: default
-  name: www.wikipedia.org
----
+  name: www.elsalvador.com
 kind: Deployment
 spec:
   template:
@@ -147,11 +151,11 @@ spec:
       annotations:
         k8s.v1.cni.cncf.io/networks: la-svc
   replicas: 1
+---
 apiVersion: apps/v1beta1
 metadata:
   namespace: default
-  name: www.elsalvador.com
----
+  name: www.elgenero.com
 kind: Deployment
 spec:
   template:
@@ -185,11 +189,11 @@ spec:
       annotations:
         k8s.v1.cni.cncf.io/networks: la-svc
   replicas: 1
+---
 apiVersion: apps/v1beta1
 metadata:
   namespace: default
-  name: www.elgenero.com
----
+  name: www.facebook.com
 kind: Deployment
 spec:
   template:
@@ -223,11 +227,11 @@ spec:
       annotations:
         k8s.v1.cni.cncf.io/networks: eu-svc
   replicas: 1
+---
 apiVersion: apps/v1beta1
 metadata:
   namespace: default
-  name: www.facebook.com
----
+  name: www.yandex.ru
 kind: Deployment
 spec:
   template:
@@ -261,11 +265,11 @@ spec:
       annotations:
         k8s.v1.cni.cncf.io/networks: eu-svc
   replicas: 1
+---
 apiVersion: apps/v1beta1
 metadata:
   namespace: default
-  name: www.yandex.ru
----
+  name: www.rtl.lu
 kind: Deployment
 spec:
   template:
@@ -299,11 +303,11 @@ spec:
       annotations:
         k8s.v1.cni.cncf.io/networks: eu-svc
   replicas: 1
+---
 apiVersion: apps/v1beta1
 metadata:
   namespace: default
-  name: www.rtl.lu
----
+  name: www.standardmedia.co.ke
 kind: Deployment
 spec:
   template:
@@ -337,11 +341,11 @@ spec:
       annotations:
         k8s.v1.cni.cncf.io/networks: af-svc
   replicas: 1
+---
 apiVersion: apps/v1beta1
 metadata:
   namespace: default
-  name: www.standardmedia.co.ke
----
+  name: www.fakaza.com
 kind: Deployment
 spec:
   template:
@@ -375,11 +379,11 @@ spec:
       annotations:
         k8s.v1.cni.cncf.io/networks: af-svc
   replicas: 1
+---
 apiVersion: apps/v1beta1
 metadata:
   namespace: default
-  name: www.fakaza.com
----
+  name: www.livedoor.com
 kind: Deployment
 spec:
   template:
@@ -413,11 +417,11 @@ spec:
       annotations:
         k8s.v1.cni.cncf.io/networks: as-svc
   replicas: 1
+---
 apiVersion: apps/v1beta1
 metadata:
   namespace: default
-  name: www.livedoor.com
----
+  name: www.sabq.org
 kind: Deployment
 spec:
   template:
@@ -451,11 +455,11 @@ spec:
       annotations:
         k8s.v1.cni.cncf.io/networks: as-svc
   replicas: 1
+---
 apiVersion: apps/v1beta1
 metadata:
   namespace: default
-  name: www.sabq.org
----
+  name: www.baidu.com
 kind: Deployment
 spec:
   template:
@@ -489,11 +493,11 @@ spec:
       annotations:
         k8s.v1.cni.cncf.io/networks: as-svc
   replicas: 1
+---
 apiVersion: apps/v1beta1
 metadata:
   namespace: default
-  name: www.baidu.com
----
+  name: www.ebay.com.au
 kind: Deployment
 spec:
   template:
@@ -527,11 +531,11 @@ spec:
       annotations:
         k8s.v1.cni.cncf.io/networks: au-svc
   replicas: 1
+---
 apiVersion: apps/v1beta1
 metadata:
   namespace: default
-  name: www.ebay.com.au
----
+  name: www.trademe.co.nz
 kind: Deployment
 spec:
   template:
@@ -565,7 +569,3 @@ spec:
       annotations:
         k8s.v1.cni.cncf.io/networks: au-svc
   replicas: 1
-apiVersion: apps/v1beta1
-metadata:
-  namespace: default
-  name: www.trademe.co.nz
