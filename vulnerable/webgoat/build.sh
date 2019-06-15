@@ -1,5 +1,9 @@
 #!/bin/bash
 
-docker build -t master:5000/metasploit-vul-svc-emu:latest .
-docker push master:5000/metasploit-vuln-svc-emu:latest
-docker rmi vulnerables/metasploit-vulnerability-emulator
+docker build -t master:5000/webgoat:latest .
+docker push master:5000/webgoat:latest
+docker rmi webgoat/webgoat-8.0:latest
+
+docker build -t master:5000/webwolf:latest -f ./Dockerfile.webwolf
+docker push master:5000/webwolf:latest
+docker rmi webgoat/webwolf:latest

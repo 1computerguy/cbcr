@@ -5,20 +5,23 @@
 # HAVE TO RUN THIS FROM CLI - DOES NOT WORK RIGHT WHEN RUN FROM SCRIPT...
 # WILL CONTINUE TO DEBUG, BUT FOR NOW, JUST COPY AND PASTE THE BELOW SCRIPT
 # DIRECTLY INTO THE CONSOLE.
+# Change the INTERMED_CA_DIR and WEB_DIR variables to match your environment. If you
+# ran the "range config" command, then these are already configured as environment
+# variables and you do not need to set them again.
 
-  ca_dir="/range/infrastructure/pki/intermed-ca"
-  web_dir="/range/environment/web"
-  ssl_conf="$ca_dir/intermed-ca.cnf"
+  INTERMED_CA_DIR="/range/infrastructure/pki/intermed-ca"
+  WEB_DIR="/range/environment/web"
+  ssl_conf="$INTERMED_CA_DIR/intermed-ca.cnf"
   
   export OPENSSL_CONF="$ssl_conf"
   readarray -t doms < ../scrape/default-sites
 
   for domain in ${doms[@]}
   do
-    openssl req -new -newkey rsa:2048 -nodes -keyout "$web_dir/$domain/server.key" -out $ca_dir/certreqs/$domain.csr -subj "/C=US/ST=Georgia/O=Ranges-R-Us, Inc./CN=$domain"
-    openssl rand -hex 16 > $ca_dir/intermed-ca.serial
-    openssl ca -in $ca_dir/certreqs/$domain.csr -out $ca_dir/certs/$domain.cert.pem -extensions server_ext
-    cp "$ca_dir/certs/$domain.cert.pem" "$web_dir/$domain/server.crt"
+    openssl req -new -newkey rsa:2048 -nodes -keyout "$WEB_DIR/$domain/server-key.pem" -out $INTERMED_CA_DIR/certreqs/$domain.csr -subj "/C=US/ST=Georgia/O=Ranges-R-Us, Inc./CN=$domain"
+    openssl rand -hex 16 > $INTERMED_CA_DIR/intermed-ca.serial
+    openssl ca -in $INTERMED_CA_DIR/certreqs/$domain.csr -out $INTERMED_CA_DIR/certs/$domain.cert.pem -extensions server_ext
+    cp "$INTERMED_CA_DIR/certs/$domain.cert.pem" "$WEB_DIR/$domain/server.pem"
   done
 #
 ###########################################################################

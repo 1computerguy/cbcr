@@ -1,5 +1,9 @@
 #!/bin/bash
 
-docker build -t master:5000/metasploit-vul-svc-emu:latest .
-docker push master:5000/metasploit-vuln-svc-emu:latest
-docker rmi vulnerables/metasploit-vulnerability-emulator
+docker build -t master:5000/nodegoat:latest .
+docker push master:5000/nodegoat:latest
+docker rmi 1njected/nodegoat:latest
+
+docker build -t master:5000/mongodb:latest -f ./Dockerfile.mongo
+docker push master:5000/mongodb:latest
+docker rmi mongo:latest

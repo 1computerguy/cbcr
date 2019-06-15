@@ -1,5 +1,3 @@
-FROM vulnerables/metasploit-vulnerability-emulator
+FROM owasp/security-shepherd:latest
 
-RUN apt update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    iproute2
+RUN apk add --no-cache iproute2

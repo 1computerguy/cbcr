@@ -1,5 +1,16 @@
-FROM vulnerables/metasploit-vulnerability-emulator
+FROM vulhub/httpd:bad-http
 
-RUN apt update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    iproute2
+MAINTAINER phithon <root@leavesongs.com>
+
+RUN apt update && apt install iproute2 -y \
+    set -ex; \
+    mkdir -p /usr/src/wordpress; \
+    wget -qO- https://github.com/WordPress/WordPress/archive/4.6.tar.gz | \
+        tar zx -C /usr/src/wordpress --strip-components=1; \
+	chown -R www-data:www-data /usr/src/wordpress; \
+	rm -rf /usr/local/bin/docker-entrypoint.sh
+
+ADD docker-entrypoint.sh /usr/local/bin/
+
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
+	&& rm -rf /var/www/html/*

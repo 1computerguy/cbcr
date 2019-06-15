@@ -1,0 +1,494 @@
+---
+kind: Deployment
+spec:
+  template:
+    spec:
+      volumes:
+      - nfs:
+          path: /configs/dns/auth
+          server: storage
+        name: dns-mount
+      containers:
+      - securityContext:
+          privileged: true
+        name: a-root-server
+        image: master:5000/bind
+        args:
+        - |-
+          ip addr add 198.41.0.4/8 dev net1;
+          ip r d default;
+          ip r a default via 198.0.0.1;
+          ip link set mtu 1450 dev net1;
+          named -c /etc/bind/named.conf -g -u root
+        volumeMounts:
+        - mountPath: /etc/bind
+          name: dns-mount
+        command:
+        - /bin/sh
+        - -c
+    metadata:
+      labels:
+        app: a-root-server
+      annotations:
+        k8s.v1.cni.cncf.io/networks: na-svc
+  replicas: 1
+apiVersion: apps/v1beta1
+metadata:
+  namespace: default
+  name: a-root-server
+---
+kind: Deployment
+spec:
+  template:
+    spec:
+      volumes:
+      - nfs:
+          path: /configs/dns/auth
+          server: storage
+        name: dns-mount
+      containers:
+      - securityContext:
+          privileged: true
+        name: b-root-server
+        image: master:5000/bind
+        args:
+        - |-
+          ip addr add 199.9.14.201/8 dev net1;
+          ip r d default;
+          ip r a default via 199.0.0.1;
+          ip link set mtu 1450 dev net1;
+          named -c /etc/bind/named.conf -g -u root
+        volumeMounts:
+        - mountPath: /etc/bind
+          name: dns-mount
+        command:
+        - /bin/sh
+        - -c
+    metadata:
+      labels:
+        app: b-root-server
+      annotations:
+        k8s.v1.cni.cncf.io/networks: na-svc
+  replicas: 1
+apiVersion: apps/v1beta1
+metadata:
+  namespace: default
+  name: b-root-server
+---
+kind: Deployment
+spec:
+  template:
+    spec:
+      volumes:
+      - nfs:
+          path: /configs/dns/auth
+          server: storage
+        name: dns-mount
+      containers:
+      - securityContext:
+          privileged: true
+        name: c-root-server
+        image: master:5000/bind
+        args:
+        - |-
+          ip addr add 192.33.4.12/8 dev net1;
+          ip r d default;
+          ip r a default via 192.0.0.1;
+          ip link set mtu 1450 dev net1;
+          named -c /etc/bind/named.conf -g -u root
+        volumeMounts:
+        - mountPath: /etc/bind
+          name: dns-mount
+        command:
+        - /bin/sh
+        - -c
+    metadata:
+      labels:
+        app: c-root-server
+      annotations:
+        k8s.v1.cni.cncf.io/networks: na-svc
+  replicas: 1
+apiVersion: apps/v1beta1
+metadata:
+  namespace: default
+  name: c-root-server
+---
+kind: Deployment
+spec:
+  template:
+    spec:
+      volumes:
+      - nfs:
+          path: /configs/dns/auth
+          server: storage
+        name: dns-mount
+      containers:
+      - securityContext:
+          privileged: true
+        name: d-root-server
+        image: master:5000/bind
+        args:
+        - |-
+          ip addr add 199.7.91.13/8 dev net1;
+          ip r d default;
+          ip r a default via 199.0.0.1;
+          ip link set mtu 1450 dev net1;
+          named -c /etc/bind/named.conf -g -u root
+        volumeMounts:
+        - mountPath: /etc/bind
+          name: dns-mount
+        command:
+        - /bin/sh
+        - -c
+    metadata:
+      labels:
+        app: d-root-server
+      annotations:
+        k8s.v1.cni.cncf.io/networks: na-svc
+  replicas: 1
+apiVersion: apps/v1beta1
+metadata:
+  namespace: default
+  name: d-root-server
+---
+kind: Deployment
+spec:
+  template:
+    spec:
+      volumes:
+      - nfs:
+          path: /configs/dns/auth
+          server: storage
+        name: dns-mount
+      containers:
+      - securityContext:
+          privileged: true
+        name: e-root-server
+        image: master:5000/bind
+        args:
+        - |-
+          ip addr add 192.203.230.10/8 dev net1;
+          ip r d default;
+          ip r a default via 192.0.0.1;
+          ip link set mtu 1450 dev net1;
+          named -c /etc/bind/named.conf -g -u root
+        volumeMounts:
+        - mountPath: /etc/bind
+          name: dns-mount
+        command:
+        - /bin/sh
+        - -c
+    metadata:
+      labels:
+        app: e-root-server
+      annotations:
+        k8s.v1.cni.cncf.io/networks: na-svc
+  replicas: 1
+apiVersion: apps/v1beta1
+metadata:
+  namespace: default
+  name: e-root-server
+---
+kind: Deployment
+spec:
+  template:
+    spec:
+      volumes:
+      - nfs:
+          path: /configs/dns/auth
+          server: storage
+        name: dns-mount
+      containers:
+      - securityContext:
+          privileged: true
+        name: f-root-server
+        image: master:5000/bind
+        args:
+        - |-
+          ip addr add 192.5.5.241/8 dev net1;
+          ip r d default;
+          ip r a default via 192.0.0.1;
+          ip link set mtu 1450 dev net1;
+          named -c /etc/bind/named.conf -g -u root
+        volumeMounts:
+        - mountPath: /etc/bind
+          name: dns-mount
+        command:
+        - /bin/sh
+        - -c
+    metadata:
+      labels:
+        app: f-root-server
+      annotations:
+        k8s.v1.cni.cncf.io/networks: na-svc
+  replicas: 1
+apiVersion: apps/v1beta1
+metadata:
+  namespace: default
+  name: f-root-server
+---
+kind: Deployment
+spec:
+  template:
+    spec:
+      volumes:
+      - nfs:
+          path: /configs/dns/auth
+          server: storage
+        name: dns-mount
+      containers:
+      - securityContext:
+          privileged: true
+        name: g-root-server
+        image: master:5000/bind
+        args:
+        - |-
+          ip addr add 192.112.36.4/8 dev net1;
+          ip r d default;
+          ip r a default via 192.0.0.1;
+          ip link set mtu 1450 dev net1;
+          named -c /etc/bind/named.conf -g -u root
+        volumeMounts:
+        - mountPath: /etc/bind
+          name: dns-mount
+        command:
+        - /bin/sh
+        - -c
+    metadata:
+      labels:
+        app: g-root-server
+      annotations:
+        k8s.v1.cni.cncf.io/networks: na-svc
+  replicas: 1
+apiVersion: apps/v1beta1
+metadata:
+  namespace: default
+  name: g-root-server
+---
+kind: Deployment
+spec:
+  template:
+    spec:
+      volumes:
+      - nfs:
+          path: /configs/dns/auth
+          server: storage
+        name: dns-mount
+      containers:
+      - securityContext:
+          privileged: true
+        name: h-root-server
+        image: master:5000/bind
+        args:
+        - |-
+          ip addr add 198.97.190.53/8 dev net1;
+          ip r d default;
+          ip r a default via 198.0.0.1;
+          ip link set mtu 1450 dev net1;
+          named -c /etc/bind/named.conf -g -u root
+        volumeMounts:
+        - mountPath: /etc/bind
+          name: dns-mount
+        command:
+        - /bin/sh
+        - -c
+    metadata:
+      labels:
+        app: h-root-server
+      annotations:
+        k8s.v1.cni.cncf.io/networks: na-svc
+  replicas: 1
+apiVersion: apps/v1beta1
+metadata:
+  namespace: default
+  name: h-root-server
+---
+kind: Deployment
+spec:
+  template:
+    spec:
+      volumes:
+      - nfs:
+          path: /configs/dns/auth
+          server: storage
+        name: dns-mount
+      containers:
+      - securityContext:
+          privileged: true
+        name: i-root-server
+        image: master:5000/bind
+        args:
+        - |-
+          ip addr add 192.36.148.17/8 dev net1;
+          ip r d default;
+          ip r a default via 192.0.0.1;
+          ip link set mtu 1450 dev net1;
+          named -c /etc/bind/named.conf -g -u root
+        volumeMounts:
+        - mountPath: /etc/bind
+          name: dns-mount
+        command:
+        - /bin/sh
+        - -c
+    metadata:
+      labels:
+        app: i-root-server
+      annotations:
+        k8s.v1.cni.cncf.io/networks: na-svc
+  replicas: 1
+apiVersion: apps/v1beta1
+metadata:
+  namespace: default
+  name: i-root-server
+---
+kind: Deployment
+spec:
+  template:
+    spec:
+      volumes:
+      - nfs:
+          path: /configs/dns/auth
+          server: storage
+        name: dns-mount
+      containers:
+      - securityContext:
+          privileged: true
+        name: j-root-server
+        image: master:5000/bind
+        args:
+        - |-
+          ip addr add 192.58.128.30/8 dev net1;
+          ip r d default;
+          ip r a default via 192.0.0.1;
+          ip link set mtu 1450 dev net1;
+          named -c /etc/bind/named.conf -g -u root
+        volumeMounts:
+        - mountPath: /etc/bind
+          name: dns-mount
+        command:
+        - /bin/sh
+        - -c
+    metadata:
+      labels:
+        app: j-root-server
+      annotations:
+        k8s.v1.cni.cncf.io/networks: na-svc
+  replicas: 1
+apiVersion: apps/v1beta1
+metadata:
+  namespace: default
+  name: j-root-server
+---
+kind: Deployment
+spec:
+  template:
+    spec:
+      volumes:
+      - nfs:
+          path: /configs/dns/auth
+          server: storage
+        name: dns-mount
+      containers:
+      - securityContext:
+          privileged: true
+        name: k-root-server
+        image: master:5000/bind
+        args:
+        - |-
+          ip addr add 193.0.14.129/8 dev net1;
+          ip r d default;
+          ip r a default via 193.0.0.1;
+          ip link set mtu 1450 dev net1;
+          named -c /etc/bind/named.conf -g -u root
+        volumeMounts:
+        - mountPath: /etc/bind
+          name: dns-mount
+        command:
+        - /bin/sh
+        - -c
+    metadata:
+      labels:
+        app: k-root-server
+      annotations:
+        k8s.v1.cni.cncf.io/networks: eu-svc
+  replicas: 1
+apiVersion: apps/v1beta1
+metadata:
+  namespace: default
+  name: k-root-server
+---
+kind: Deployment
+spec:
+  template:
+    spec:
+      volumes:
+      - nfs:
+          path: /configs/dns/auth
+          server: storage
+        name: dns-mount
+      containers:
+      - securityContext:
+          privileged: true
+        name: l-root-server
+        image: master:5000/bind
+        args:
+        - |-
+          ip addr add 199.7.83.42/8 dev net1;
+          ip r d default;
+          ip r a default via 199.0.0.1;
+          ip link set mtu 1450 dev net1;
+          named -c /etc/bind/named.conf -g -u root
+        volumeMounts:
+        - mountPath: /etc/bind
+          name: dns-mount
+        command:
+        - /bin/sh
+        - -c
+    metadata:
+      labels:
+        app: l-root-server
+      annotations:
+        k8s.v1.cni.cncf.io/networks: na-svc
+  replicas: 1
+apiVersion: apps/v1beta1
+metadata:
+  namespace: default
+  name: l-root-server
+---
+kind: Deployment
+spec:
+  template:
+    spec:
+      volumes:
+      - nfs:
+          path: /configs/dns/auth
+          server: storage
+        name: dns-mount
+      containers:
+      - securityContext:
+          privileged: true
+        name: m-root-server
+        image: master:5000/bind
+        args:
+        - |-
+          ip addr add 202.12.27.33/8 dev net1;
+          ip r d default;
+          ip r a default via 202.0.0.1;
+          ip link set mtu 1450 dev net1;
+          named -c /etc/bind/named.conf -g -u root
+        volumeMounts:
+        - mountPath: /etc/bind
+          name: dns-mount
+        command:
+        - /bin/sh
+        - -c
+    metadata:
+      labels:
+        app: m-root-server
+      annotations:
+        k8s.v1.cni.cncf.io/networks: oc-svc
+  replicas: 1
+apiVersion: apps/v1beta1
+metadata:
+  namespace: default
+  name: m-root-server

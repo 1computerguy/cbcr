@@ -1,7 +1,7 @@
 
-== TRex Low-Cost, High-Speed Stateful Traffic Generator
+# TRex Low-Cost, High-Speed Stateful Traffic Generator
 
-TRex is a traffic generator for Stateful and Stateless use cases.
+### TRex is a traffic generator for Stateful and Stateless use cases.
 
 Traditionally, network infrastructure devices have been tested using commercial traffic generators, while the performance was measured using metrics like packets per second (PPS) and No Drop Rate (NDR). As the network infrastructure functionality has become more complex, stateful traffic generators have become necessary in order to test with more realistic application traffic pattern scenarios.
 Realistic and Stateful traffic generators are needed in order to:
@@ -9,14 +9,14 @@ Realistic and Stateful traffic generators are needed in order to:
 * Test and provide more realistic performance numbers
 * Design and architecture of SW and HW based on realistic use cases
 
-=== Current Challenges
+### Current Challenges
 
 * *Cost*: Commercial State-full traffic generators are expensive
 * *Scale*: Bandwidth does not scale up well with features complexity
 * *Standardization*: Lack of standardization of traffic patterns and methodologies
 * *Flexibility*: Commercial tools do not allow agility when flexibility and changes are needed
 
-=== Implications
+### Implications
 
 * High capital expenditure (capEx) spent by different teams
 * Testing in low scale and extrapolation became a common practice, it is not accurate and hides real life bottlenecks and quality issues
@@ -26,7 +26,7 @@ Realistic and Stateful traffic generators are needed in order to:
 
 TRex addresses these problems through an innovative and extendable software implementation and by leveraging standard and open SW and working on COTS x86/ARM server.
 
-=== TRex Stateful/Stateless in a Nutshell
+### TRex Stateful/Stateless in a Nutshell
 
 * Fueled by DPDK
 * Generates L3-7 traffic and able to provide in one tool capabilities provided by commercial tools.
@@ -41,13 +41,13 @@ TRex addresses these problems through an innovative and extendable software impl
 ** Self-contained packaging
 * Cisco Pioneer Award Winner 2015
 
-=== Current TRex DPDK interfaces supported
+### Current TRex DPDK interfaces supported
 
 * Support Physical DPDK 1/2.5/10/25/50/40/100Gbps interfaces (Intel/Mellanox/Cisco VIC/Napatech/Amazon ENA)
 * Virtualization interfaces support (virtio/VMXNET3/E1000)
 * SR-IOV support for best performance
 
-=== Current Stateful TRex Feature sets (STF)
+### Current Stateful TRex Feature sets (STF)
 
 This feature is for stateful features that inspect the traffic. 
 
@@ -60,7 +60,7 @@ This feature is for stateful features that inspect the traffic.
 * IPV6 inline replacement
 * Some cross flow support (e.g RTSP/SIP)
 
-=== TRex Stateless feature sets  (STL)
+### TRex Stateless feature sets  (STL)
 
 This feature is for Stateless features that do routing/switching e.g. Cisco VPP/OVS. It is more packet based.
 
@@ -101,7 +101,7 @@ image::https://trex-tgn.cisco.com/trex/doc/images/trex_architecture_01.png[title
 
 more info can be found here link:https://trex-tgn.cisco.com/trex/doc/index.html[Documentation]
 
-=== TRex Advance Stateful feature sets (ASTF)
+### TRex Advance Stateful feature sets (ASTF)
 
 With the new advanced scalable TCP/UDP support, TRex uses TCP/UDP layer for generating the L7 data. This opens the following new capabilities:
 
@@ -121,13 +121,13 @@ more information can be found here:
 * link:https://trex-tgn.cisco.com/trex/doc/trex_astf.html[ASTF documentation] 
 * link:https://trex-tgn.cisco.com/trex/doc/trex_astf_vs_nginx.html[ASTF Performance]
 
-=== What it is not
+### What it is not
 
 * Routing protocol support integration for BGP/ISIS (routem) is internal.
 
-=== What you can do with it
+### What you can do with it
 
-==== Stateful
+#### Stateful
 
 * Benchmark/Stress stateful features :
 ** NAT
@@ -139,11 +139,11 @@ more information can be found here:
 * Mixing Application level traffic/profile (HTTP/SIP/Video)
 * Unlimited concurrent flows, limited only by memory
 
-==== Stateless
+#### Stateless
 
 * Benchmark/Stress vSwitch RFC2544
 
-=== Presentation
+### Presentation
 
 link:http://www.slideshare.net/HanochHaim/trex-realistic-traffic-generator-stateless-support[New Stateless support]
 
@@ -154,29 +154,29 @@ link:http://www.youtube.com/watch?v=U0gRalB7DOs[Video DPDK summit 2015]
 link:https://trex-tgn.cisco.com/trex/doc/trex_preso.html[Presentation]
 
 
-=== Documentation
+### Documentation
 
 link:https://trex-tgn.cisco.com/trex/doc/index.html[Documentation]
 
-=== Wiki
+### Wiki
 
 Internal link:https://github.com/cisco-system-traffic-generator/trex-core/wiki[Wiki]
 
-=== How to build
+### How to build
 
 Internal link:https://github.com/cisco-system-traffic-generator/trex-core/wiki[Wiki]
 
-=== YouTrack
+### YouTrack
 
 Report bug/request feature link:https://trex-tgn.cisco.com/youtrack/issues[YouTrack]
 
 
-=== Blogs
+### Blogs
 
 blogs can be found  TRex link:https://communities.cisco.com/community/developer/trex/blog[blog]
 
 
-=== Stateless Client GUI
+### Stateless Client GUI
 
 * Cross-Platform - runs on Windows, Linux, Mac OS X
 * Written in JavaFX use TRex RPC API
@@ -190,18 +190,18 @@ Github is here link:https://github.com/cisco-system-traffic-generator/trex-state
 
 image::doc/images/t_g1.gif[title="",align="center",width=300, link="https://github.com/cisco-system-traffic-generator/trex-core/tree/master/doc/images/t_g1.gif"]
 
-=== Sandbox for evaluation
+### Sandbox for evaluation
 
 Try the new Devnet Sandbox link:https://devnetsandbox.cisco.com/RM/Topology[TRex Sandbox]
 
-=== Contact Us
+### Contact Us
 
 Follow us on https://groups.google.com/forum/#!forum/trex-tgn[TRex traffic generator google group],
 
 Or contact via: mailto:trex-tgn@googlegroups.com[Group mailing list (trex-tgn@googlegroups.com)]
 
 
-=== Who is using TRex?
+### Who is using TRex?
 
 * VPP performance/functional tests, link:https://fd.io/[fd.io] 
 * VNF tests link:https://wiki.opnfv.org/display/fds/NFVBENCH+performance+testing+demo+for+FDS[OPNFV-NFVBENCH]
@@ -210,7 +210,7 @@ Or contact via: mailto:trex-tgn@googlegroups.com[Group mailing list (trex-tgn@go
 * Napatech delivers 100Gb/sec link:https://www.prnewswire.com/news-releases/napatech-delivers-stunning-100-gige-performance-for-trex-300601690.html[Napatech]
 * https://community.mellanox.com/docs/DOC-2958[Mellanox]
 
-=== Roadmap
+### Roadmap
 
 * Improve advanced Stateful capability
 ** Simulate latency/jitter/drop in high rate

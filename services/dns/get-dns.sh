@@ -22,10 +22,10 @@ make_dns() {
   if [ "$2" == "mail" ]
   then
 
-  else
-  
+  elif [ "$2" != "" ]
+    ip="$2"
   fi
-  mkdir -p {$record_dir, $ip_dir}
+  mkdir -p {$record_dir,$ip_dir}
   domain="$1"
   a_record=`dig $domain A | grep -v "TXT" | sed -n '/;; ANSWER/,/;; Query/{ /;;/d; p }' | awk 'FNR <= 1 {print $1"\t"$3"\t"$4"\t"$5" "$6}'`
   ip_addr=`awk -F$'\t' '{print $4}' <<< $a_record`
@@ -50,7 +50,7 @@ zone "$domain" {
 };
 EOF
 
-  echo -e "$domain,$ip_addr" >> $ip_dir/addresses.csv
+  #echo -e "$domain,$ip_addr" >> $ip_dir/addresses.csv
 }
 
 if [ $# -gt 0 ]
@@ -67,6 +67,9 @@ then
       shift
       make_dns "$1"
       ;;
+    -s )
+      shift
+      make_dns "$1" "$2"
   esac
 
 

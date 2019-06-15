@@ -1,5 +1,5 @@
-FROM vulnerables/metasploit-vulnerability-emulator
+FROM 1njected/nodegoat:latest
 
 RUN apt update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    DEBIAN_FRONTEND=noninteractive apt install -y \
     iproute2

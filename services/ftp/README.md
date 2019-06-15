@@ -44,7 +44,6 @@ CMD /run.sh -c 30 -C 10 -l puredb:/etc/pure-ftpd/pureftpd.pdb -E -j -R -P $PUBLI
 *Then you can build your own image, `docker build --rm -t my-pure-ftp .`, where my-pure-ftp is the name you want to build as*
 
 ----------------------------------------
-
 Starting it 
 ------------------------------
 
@@ -58,7 +57,6 @@ e.g. ` -e "ADDED_FLAGS=--tls=2" `
 
 Operating it
 ------------------------------
-
 `docker exec -it ftpd_server /bin/bash`
 
 Setting runtime FTP user
