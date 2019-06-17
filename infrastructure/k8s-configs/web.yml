@@ -27,7 +27,6 @@ spec:
         volumeMounts:
         - mountPath: /usr/share/nginx/html
           name: nfs-httpd-volume
-        - mountPath: /
         command:
         - /bin/sh
         - -c
