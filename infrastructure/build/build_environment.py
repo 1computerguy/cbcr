@@ -27,7 +27,7 @@ def domain_to_ip_and_location(domain_name, location_db, fidelity="LOW"):
     # Used for higher fidelity network links (in the event that a more complex network is built) that requires more bridges
     country = str(reader.city(site_ip).country.name)
 
-    # DO something with variables generated, and write conditional to write based on desired network fidelity
+    # Write output to CSV
 
 def build_dns():
     """Do dns building stuff"""

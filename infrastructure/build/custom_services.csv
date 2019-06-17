@@ -1,0 +1,3 @@
+svc_category,domain_name,ip_addr,svc_bridge,svc_type,svc_sub_type,base_domain,k8s_name
+attack,,27.102.128.157,as-svc,metasploit,,,custom-apt10-1
+attack,,27.102.127.80,as-svc,metasploit,,,custom-apt10-2

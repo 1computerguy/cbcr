@@ -34,7 +34,7 @@ fi
 
 count=1
 # Run this for Master
-for br in bgp na-svc la-svc eu-svc af-svc as-svc au-svc external
+for br in ${bridges[@]}
 do
     ovs-vsctl add-br $br
     ifconfig $br up

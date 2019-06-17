@@ -29,10 +29,11 @@ make_dns() {
   domain="$1"
   a_record=`dig $domain A | grep -v "TXT" | sed -n '/;; ANSWER/,/;; Query/{ /;;/d; p }' | awk 'FNR <= 1 {print $1"\t"$3"\t"$4"\t"$5" "$6}'`
   ip_addr=`awk -F$'\t' '{print $4}' <<< $a_record`
+  soa=`echo -n $(dig $domain SOA | grep -v "TXT" | sed -n '/;; ANSWER/,/;; Query/{ /;;/d; p }' | awk '{print $3"\t"$4"\t"$5" "$6}')`
 
   cat > $record_dir/db.$domain <<EOF
 $TTL  86400
-@     `echo -n $(dig $domain SOA | grep -v "TXT" | sed -n '/;; ANSWER/,/;; Query/{ /;;/d; p }' | awk '{print $3"\t"$4"\t"$5" "$6}')` (
+@     $soa (
                               1         ; Serial
                          604800         ; Refresh
                           86400         ; Retry
@@ -60,16 +61,20 @@ then
       usage
       ;; 
     -m | -mail )
+      # Use to generate MX records
       shift
       make_dns "$1" "mail" 
       ;;
-    -d )
+    -d | --default )
+      # Use to build default config DNS
       shift
       make_dns "$1"
       ;;
-    -s )
+    -c | --custom )
+      # Use to create custom dns entry
       shift
       make_dns "$1" "$2"
+      ;;
   esac
 
 

@@ -36,7 +36,6 @@ This is a repository for a Container based Cyber Range that runs in 3 Virtual Ma
 192.168.1.10	master
 10.10.0.10	storage
 10.10.1.10	network
-10.10.2.10	external
 192.168.1.11	worker01
 192.168.1.12	worker01
 ```
@@ -123,7 +122,6 @@ sudo systemctl daemon-reload
 sudo systemctl enable docker
 sudo systemctl restart docker
 
-sudo usermod -aG docker greyadmin
 
 sudo mkdir -p /range/{infrastructure,environment,stats}
 sudo mkdir -p /range/infrastructure/{geoip,rancher,registry,ca}
