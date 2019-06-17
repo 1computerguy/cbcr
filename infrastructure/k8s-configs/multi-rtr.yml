@@ -2,7 +2,7 @@
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: k8s-northamerica
+  name: rtr-na
   namespace: default
 spec:
   replicas: 1
@@ -11,27 +11,16 @@ spec:
       annotations:
         k8s.v1.cni.cncf.io/networks: bgpbr, bgpbr, bgpbr, na-svc, external
       labels:
-        app: k8s-northamerica
+        app: rtr-na
     spec:
       containers:
       - image: master:5000/frr
-        name: northamerica
+        name: rtr-na
         securityContext:
           privileged: true
         volumeMounts:
         - mountPath: /etc/frr
           name: nfs-volume
-        command:
-        - /bin/sh
-        - -c
-        args:
-        - |-
-          ifconfig net1 mtu 1450;
-          ifconfig net2 mtu 1450;
-          ifconfig net3 mtu 1450;
-          ifconfig net4 mtu 1450;
-          ifconfig net5 mtu 1450;
-          /sbin/tini -- /usr/lib/frr/docker-start
       volumes:
       - name: nfs-volume
         nfs:
@@ -41,7 +30,7 @@ spec:
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: k8s-europe
+  name: rtr-eu
   namespace: default
 spec:
   replicas: 1
@@ -50,26 +39,16 @@ spec:
       annotations:
         k8s.v1.cni.cncf.io/networks: bgpbr, bgpbr, bgpbr, eu-svc
       labels:
-        app: k8s-europe
+        app: rtr-eu
     spec:
       containers:
       - image: master:5000/frr
-        name: europe
+        name: rtr-eu
         securityContext:
           privileged: true
         volumeMounts:
         - mountPath: /etc/frr
           name: nfs-volume
-        command:
-        - /bin/sh
-        - -c
-        args:
-        - |-
-          ifconfig net1 mtu 1450;
-          ifconfig net2 mtu 1450;
-          ifconfig net3 mtu 1450;
-          ifconfig net4 mtu 1450;
-          /sbin/tini -- /usr/lib/frr/docker-start
       volumes:
       - name: nfs-volume
         nfs:
@@ -79,7 +58,7 @@ spec:
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: k8s-latinamerica
+  name: rtr-la
   namespace: default
 spec:
   replicas: 1
@@ -88,24 +67,16 @@ spec:
       annotations:
         k8s.v1.cni.cncf.io/networks: bgpbr, la-svc
       labels:
-        app: k8s-latinamerica
+        app: rtr-la
     spec:
       containers:
       - image: master:5000/frr
-        name: latinamerica
+        name: rtr-la
         securityContext:
           privileged: true
         volumeMounts:
         - mountPath: /etc/frr
           name: nfs-volume
-        command:
-        - /bin/sh
-        - -c
-        args:
-        - |-
-          ifconfig net1 mtu 1450;
-          ifconfig net2 mtu 1450;
-          /sbin/tini -- /usr/lib/frr/docker-start
       volumes:
       - name: nfs-volume
         nfs:
@@ -115,7 +86,7 @@ spec:
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: k8s-africa
+  name: rtr-af
   namespace: default
 spec:
   replicas: 1
@@ -124,24 +95,16 @@ spec:
       annotations:
         k8s.v1.cni.cncf.io/networks: bgpbr, af-svc
       labels:
-        app: k8s-africa
+        app: rtr-af
     spec:
       containers:
       - image: master:5000/frr
-        name: africa
+        name: rtr-af
         securityContext:
           privileged: true
         volumeMounts:
         - mountPath: /etc/frr
           name: nfs-volume
-        command:
-        - /bin/sh
-        - -c
-        args:
-        - |-
-          ifconfig net1 mtu 1450;
-          ifconfig net2 mtu 1450;
-          /sbin/tini -- /usr/lib/frr/docker-start
       volumes:
       - name: nfs-volume
         nfs:
@@ -151,7 +114,7 @@ spec:
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: k8s-asia
+  name: rtr-as
   namespace: default
 spec:
   replicas: 1
@@ -160,25 +123,16 @@ spec:
       annotations:
         k8s.v1.cni.cncf.io/networks: bgpbr, bgpbr, as-svc
       labels:
-        app: k8s-asia
+        app: rtr-as
     spec:
       containers:
       - image: master:5000/frr
-        name: asia
+        name: rtr-as
         securityContext:
           privileged: true
         volumeMounts:
         - mountPath: /etc/frr
           name: nfs-volume
-        command:
-        - /bin/sh
-        - -c
-        args:
-        - |-
-          ifconfig net1 mtu 1450;
-          ifconfig net2 mtu 1450;
-          ifconfig net3 mtu 1450;
-          /sbin/tini -- /usr/lib/frr/docker-start
       volumes:
       - name: nfs-volume
         nfs:
@@ -188,7 +142,7 @@ spec:
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: k8s-australia
+  name: rtr-au
   namespace: default
 spec:
   replicas: 1
@@ -197,25 +151,16 @@ spec:
       annotations:
         k8s.v1.cni.cncf.io/networks: bgpbr, bgpbr, au-svc
       labels:
-        app: k8s-australia
+        app: rtr-au
     spec:
       containers:
       - image: master:5000/frr
-        name: australia
+        name: rtr-au
         securityContext:
           privileged: true
         volumeMounts:
         - mountPath: /etc/frr
           name: nfs-volume
-        command:
-        - /bin/sh
-        - -c
-        args:
-        - |-
-          ifconfig net1 mtu 1450;
-          ifconfig net2 mtu 1450;
-          ifconfig net3 mtu 1450;
-          /sbin/tini -- /usr/lib/frr/docker-start
       volumes:
       - name: nfs-volume
         nfs:
