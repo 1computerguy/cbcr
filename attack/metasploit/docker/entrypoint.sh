@@ -35,6 +35,5 @@ ip link set mtu 1450 dev net1
 ip r d default
 ip r a default via $GATEWAY
 
-#ruby msfrpcd -U admin -P password123 -f
 ruby msfd -f -a 0.0.0.0
 
