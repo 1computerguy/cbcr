@@ -1,10 +1,5 @@
 #!/bin/bash
 
-ip addr add $IP_ADDR/$LEN dev net1
-ip link set mtu 1450 dev net1
-ip r d default
-ip r a default via $GATEWAY
-
 MSF_USER=msf
 MSF_GROUP=msf
 TMP=${MSF_UID:=1000}
@@ -34,3 +29,12 @@ else
     "$@"
   fi
 fi
+
+ip addr add $IP_ADDR/$LEN dev net1
+ip link set mtu 1450 dev net1
+ip r d default
+ip r a default via $GATEWAY
+
+#ruby msfrpcd -U admin -P password123 -f
+ruby msfd -f -a 0.0.0.0
+
