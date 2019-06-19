@@ -9,6 +9,11 @@ usage () {
     exit 0;
 }
 
+ip addr add $IP_ADDR/$LEN dev net1
+ip link set mtu 1450 dev net1
+ip r d default
+ip r a default via $GATEWAY
+
 numServers=0
 setServers() {
     sed -i '/server .*/d' /etc/chrony.conf
@@ -56,11 +61,6 @@ if [ $# -eq 0 ]; then
 #      the driftfile directiv
     exec /usr/local/sbin/chronyd -d -F 1 -s
 fi
-
-ip addr add $IP_ADDR/$LEN dev net1
-ip link set mtu 1450 dev net1
-ip r d default
-ip r a default via $GATEWAY
 
 [ "$1" = '--' ] && shift
 exec /usr/local/sbin/chronyd "$@"

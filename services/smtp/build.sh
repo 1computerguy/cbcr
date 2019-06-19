@@ -2,4 +2,4 @@
 
 docker build -t master:5000/smtp:latest .
 docker push master:5000/smtp:latest
-docker rmi :eeacms/postfixlatest
+docker rmi eeacms/postfix:latest

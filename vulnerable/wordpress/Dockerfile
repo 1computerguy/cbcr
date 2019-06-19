@@ -10,7 +10,7 @@ RUN apt update && apt install iproute2 -y \
 	chown -R www-data:www-data /usr/src/wordpress; \
 	rm -rf /usr/local/bin/docker-entrypoint.sh
 
-ADD docker-entrypoint.sh /usr/local/bin/
+COPY docker-entrypoint.sh /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
 	&& rm -rf /var/www/html/*

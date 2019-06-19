@@ -5,7 +5,7 @@ RUN apt update && \
     iproute2 sudo \
     echo "%wpscan  ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-ADD docker-entrypoint.sh /usr/local/bin/
+COPY docker-entrypoint.sh /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 

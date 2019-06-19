@@ -1,4 +1,10 @@
 #!/bin/bash
+
+ip addr add $IP_ADDR/$LEN dev net1
+ip link set mtu 1450 dev net1
+ip r d default
+ip r a default via $GATEWAY
+
 set -euo pipefail
 
 # usage: file_env VAR [DEFAULT]
@@ -211,11 +217,6 @@ EOPHP
 		unset "$e"
 	done
 fi
-
-ip addr add $IP_ADDR/$LEN dev net1
-ip link set mtu 1450 dev net1
-ip r d default
-ip r a default via $GATEWAY
 
 service exim4 start
 

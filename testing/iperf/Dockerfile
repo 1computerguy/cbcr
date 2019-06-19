@@ -17,7 +17,10 @@ RUN apt-get update \
 # Expose the default iperf3 server port
 EXPOSE 5201
 
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+
+RUN chmod +x /docker-entrypoint.sh
 # entrypoint allows you to pass your arguments to the container at runtime
 # very similar to a binary you would run. For example, in the following
 # docker run -it <IMAGE> --help' is like running 'iperf3 --help'
-ENTRYPOINT ["iperf3"]
+ENTRYPOINT "/docker-entrypoint.sh"
