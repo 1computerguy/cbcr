@@ -1,0 +1,181 @@
+--
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch
+spec:
+  ports:
+  - name: "9200"
+    port: 9200
+    targetPort: 9200
+  - name: "9300"
+    port: 9300
+    targetPort: 9300
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana
+spec:
+  ports:
+  - name: "5601"
+    port: 5601
+    targetPort: 5601
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: logstash
+spec:
+  ports:
+  - name: "5000"
+    port: 5000
+    targetPort: 5000
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: bro-ids
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: bro-ids
+      annotations:
+        k8s.v1.cni.cncf.io/networks: bgpbr
+    spec:
+      containers:
+      - args:
+        - -i
+        - net1
+        image: blacktop/bro
+        name: bro-ids
+        securityContext:
+          capabilities:
+            add:
+            - NET_RAW
+        volumeMounts:
+        - mountPath: /pcap
+          name: bro-ids-pcap
+        - mountPath: /usr/local/share/bro/site
+          name: bro-ids-config
+      restartPolicy: Always
+      volumes:
+      - name: bro-ids-data
+        nfs:
+          server: storage
+          path: /configs/monitoring/bro/data
+      - name: bro-ids-config
+        nfs:
+          server: storage
+          path: /configs/monitoring/bro/config
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: elasticsearch
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      containers:
+      - env:
+        - name: ES_JAVA_OPTS
+          value: -Xmx256m -Xms256m
+        image: elasticsearch
+        name: elasticsearch
+        ports:
+        - containerPort: 9200
+        - containerPort: 9300
+        volumeMounts:
+        - mountPath: /usr/share/elasticsearch/config
+          name: elasticsearch-config
+          readOnly: true
+      restartPolicy: Always
+      volumes:
+      - name: elasticsearch-config
+        nfs:
+          server: storage
+          path: /configs/monitoring/elasticsearch
+---
+  apiVersion: apps/v1beta1
+  kind: Deployment
+  metadata:
+    name: kibana
+  spec:
+    replicas: 1
+    strategy:
+      type: Recreate
+    template:
+        labels:
+          app: kibana
+      spec:
+        containers:
+        - image: kibana
+          name: kibana
+          ports:
+          - containerPort: 5601
+          volumeMounts:
+          - mountPath: /usr/share/kibana/config
+            name: kibana-config
+            readOnly: true
+        restartPolicy: Always
+        volumes:
+        - name: kibana-config
+          nfs:
+            server: storage
+            path: /configs/monitoring/kibana
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: logstash
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: logstash
+    spec:
+      containers:
+      - env:
+        - name: LS_JAVA_OPTS
+          value: -Xmx256m -Xms256m
+        image: logstash
+        name: logstash
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - mountPath: /usr/share/logstash/config/logstash.yml
+          name: logstash-configs
+          readOnly: true
+        - mountPath: /usr/share/logstash/pipeline
+          name: logstash-pipeline
+          readOnly: true
+        - mountPath: /usr/share/logstash/bro
+          name: logstash-bro
+          readOnly: true
+      restartPolicy: Always
+      volumes:
+      - name: logstash-configs
+        nfs:
+          server: storage
+          path: /configs/monitoring/logstash/config
+      - name: logstash-pipeline
+        nfs:
+          server: storage
+          path: /configs/monitoring/logstash/pipeline
+      - name: logstash-bro
+        nfs:
+          server: storage
+          path: /configs/monitoring/bro/data

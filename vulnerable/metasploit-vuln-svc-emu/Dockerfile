@@ -1,5 +1,24 @@
 FROM vulnerables/metasploit-vulnerability-emulator:latest
 
-RUN apt update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    iproute2
+WORKDIR /emulator
+COPY vulEmu.pl /emulator/
+RUN sed -i 's/127.0.0.1/0.0.0.0/' /emulator/vulEmu.pl
+
+EXPOSE 20
+EXPOSE 21
+EXPOSE 80
+EXPOSE 443
+EXPOSE 4848
+EXPOSE 6000
+EXPOSE 6060
+EXPOSE 7000
+EXPOSE 7181
+EXPOSE 7547
+EXPOSE 8000
+EXPOSE 8008
+EXPOSE 8020
+EXPOSE 8080
+EXPOSE 8400
+
+ENTRYPOINT ["perl"]
+CMD ["vulEmu.pl"]

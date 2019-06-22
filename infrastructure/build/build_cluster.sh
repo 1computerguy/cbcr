@@ -68,6 +68,10 @@ sudo apt install -y docker.io python-docker python-ruamel.yaml pv \
                     git python-pip kubeadm kubelet kubectl geoipupdate \
                     docker-compose openvswitch-switch nfs-common
 
+# Disable rpcbind (service added from nfs-common install) so we can share nfs from our nfs container
+sudo systemctl stop rpcbind
+sudo systemctl disable rpcbind
+
 pip install dnspython
 pip install geoip2
 

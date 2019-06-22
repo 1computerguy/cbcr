@@ -1,28 +1,31 @@
-#!/bin/sh
-
 #!/bin/bash
 set -e
+
+ip addr add $IP_ADDR/$LEN dev $INT
+ip link set mtu 1450 dev $INT
+ip r d default
+ip r a default via $GATEWAY
 
 # usage: file_env VAR [DEFAULT]
 #    ie: file_env 'XYZ_DB_PASSWORD' 'example'
 # (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of
 #  "$XYZ_DB_PASSWORD" from a file, especially for Docker's secrets feature)
 file_env() {
-	local var="$1"
-	local fileVar="${var}_FILE"
-	local def="${2:-}"
-	if [ "${!var:-}" ] && [ "${!fileVar:-}" ]; then
-		echo >&2 "error: both $var and $fileVar are set (but are exclusive)"
-		exit 1
-	fi
-	local val="$def"
-	if [ "${!var:-}" ]; then
-		val="${!var}"
-	elif [ "${!fileVar:-}" ]; then
-		val="$(< "${!fileVar}")"
-	fi
-	export "$var"="$val"
-	unset "$fileVar"
+        local var="$1"
+        local fileVar="${var}_FILE"
+        local def="${2:-}"
+        if [ "${!var:-}" ] && [ "${!fileVar:-}" ]; then
+                echo >&2 "error: both $var and $fileVar are set (but are exclusive)"
+                exit 1
+        fi
+        local val="$def"
+        if [ "${!var:-}" ]; then
+                val="${!var}"
+        elif [ "${!fileVar:-}" ]; then
+                val="$(< "${!fileVar}")"
+        fi
+        export "$var"="$val"
+        unset "$fileVar"
 }
 
 file_env 'ROOT_PASSWORD'
@@ -107,8 +110,3 @@ if [[ -z ${1} ]]; then
 else
   exec "$@"
 fi
-
-ip addr add $IP_ADDR/$LEN dev net1
-ip link set mtu 1450 dev net1
-ip r d default
-ip r a default via $GATEWAY

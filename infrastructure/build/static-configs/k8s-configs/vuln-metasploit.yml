@@ -1,0 +1,25 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: vuln-meta-emu
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: vuln-meta-emu
+      annotations:
+        k8s.v1.cni.cncf.io/networks: na-svc
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: "8.1.2.3"
+        - name: LEN
+          value: "8"
+        - name: GATEWAY
+          value: "8.0.0.1"
+        image: master:5000/metasploit-vul-svc-emu:1.2
+        name: vuln-meta-emu
+        securityContext:
+          privileged: true

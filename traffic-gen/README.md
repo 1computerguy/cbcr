@@ -1,3 +1,6 @@
 # Traffic Generation services
 
-These services are used to generate user traffic for this range environment. Each has a different purpose and funciton, so check out the README's for each, and their associated websites also to figure out which is best where. There are some "default" configurations used in this range that may help you better understand how to implement each in your own environment.
+TODO: Add services for automated traffic generation in the network. Research various tools available and determine the best to integrate. Current, known options, listed below for research.
+- Ostinato (stateless only)
+- TRex (stateful and stateless, currently a Docker container, complicated configuration)
+- Warp17 (stateful and stateless, Docker container out-of-date with mainline code, needs more research)

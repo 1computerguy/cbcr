@@ -5,4 +5,4 @@ ip link set mtu 1450 dev $INT
 ip r d default
 ip r a default via $GATEWAY
 
-exec /bin/sh -c "iperf3 $IPERF"
+exec /bin/sh -c "$OPEN_VPN_CMD"

@@ -1,0 +1,75 @@
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: vpn-privatevpn.com
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: vpn-privatevpn.com
+      annotations:
+        k8s.v1.cni.cncf.io/networks: na-svc
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: "1.2.3.4"
+        - name: LEN
+          value: "8"
+        - name: GATEWAY
+          value: "1.0.0.1"
+        - name: INT
+          value: "net1"
+        - name: OPEN_VPN_CMD
+          value: "ovpn_run"
+        image: master:5000/openvpn
+        name: vpn-privatevpn-com
+        volumeMounts:
+        - mountPath: /etc/openvpn
+          name: privatevpn-openvpn
+      initContainers:
+      - name: vpn-privatevpn-genconfig
+        image: master:5000/openvpn
+        command:
+        - ovpn_genconfig
+        - -u
+        - udp://vpn.privatevpn.com
+        volumeMounts:
+        - mountPath: /etc/openvpn
+          name: privatevpn-openvpn
+      - name: vpn-privatevpn-initpki
+        image: master:5000/openvpn
+        command:
+        - ovpn_initpki
+        - nopass
+        volumeMounts:
+        - mountPath: /etc/openvpn
+          name: privatevpn-openvpn
+      - name: vpn-privatevpn-build-client
+        image: master:5000/openvpn
+        command:
+        - easyrsa
+        - build-client-full
+        - testuser
+        - nopass
+        volumeMounts:
+        - mountPath: /etc/openvpn
+          name: privatevpn-openvpn
+      - name: vpn-privatevpn-get-client
+        image: master:5000/openvpn
+        command:
+        - /bin/sh
+        - -c
+        args:
+        - |-
+          ovpn_getclient testuser > /etc/openvpn/user/testuser.ovpn
+        volumeMounts:
+        - mountPath: /etc/openvpn
+          name: privatevpn-openvpn
+      volumes:
+      - name: privatevpn-openvpn
+        nfs:
+          server: storage
+          path: /configs/obfuscation/openvpn/privatevpn.com

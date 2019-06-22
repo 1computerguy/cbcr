@@ -1,0 +1,35 @@
+---
+apiVersion: apps/v1beta1
+metadata:
+  namespace: default
+  name: webmail-test
+kind: Deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: webmail-test
+      annotations:
+        k8s.v1.cni.cncf.io/networks: na-svc
+    spec:
+      volumes:
+      - nfs:
+          path: /configs/webmail
+          server: storage
+        name: nfs-webmail-data
+      containers:
+      - name: webmail-test
+        image: master:5000/webmail
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /data
+          name: nfs-webmail-data
+        env:
+        - name: IP_ADDR
+          value: "8.1.2.3"
+        - name: LEN
+          value: "8"
+        - name: GATEWAY
+          value: "8.0.0.1"

@@ -1,0 +1,18 @@
+#!/bin/sh
+
+set -e
+
+for int in `ifconfig -a | awk '{print $1}' | grep -e ^net`
+do 
+    sysctl -w net.ipv6.conf.$int.disable_ipv6=0
+    ip link set mtu 1450 dev $int
+done
+
+##
+# For volume mounts...
+##
+chown -R frr:frr /etc/frr
+/usr/lib/frr/frrinit.sh start
+
+# Sleep forever
+exec tail -f /dev/null
