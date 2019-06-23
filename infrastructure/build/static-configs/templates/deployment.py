@@ -34,22 +34,27 @@ from kubernetes import client
 def template(context):
     labels = {"app": context["name"]}
 
-    # Create volume mounts
-    pod_spec_volume_mounts = [
-        client.V1VolumeMount(name=context["volumeName"],
-                        mount_path=context["mountPath"])
-    ]
+    # Create volume mount lists and populate them if they are declared in the command
+    pod_spec_volume_mounts = []
+    pod_spec_volumes = []
+    
+    if "volumeName" in context:
+        # Create volume mounts
+        pod_spec_volume_mounts = [
+            client.V1VolumeMount(name=context["volumeName"],
+                            mount_path=context["mountPath"])
+        ]
 
-    # Create volumes
-    pod_spec_volumes = [
-        client.V1Volume(
-            name=context["volumeName"],
-            nfs=client.V1NFSVolumeSource(path=context["nfsPath"],
-                                     server=context["nfsServer"])
-        )
-    ]
+        # Create volumes
+        pod_spec_volumes = [
+            client.V1Volume(
+                name=context["volumeName"],
+                nfs=client.V1NFSVolumeSource(path=context["nfsPath"],
+                                         server=context["nfsServer"])
+            )
+        ]
 
-    # Create Environment variable list
+    # Create Environment variable list and populate if it is declared in the command
     env_list = []
     if "env" in context:
         envs = dict(zip(context["env"].split(), context["vals"].split()))
