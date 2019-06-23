@@ -66,7 +66,7 @@ sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
 
 sudo apt install -y docker.io python-docker python-ruamel.yaml pv \
                     git python-pip kubeadm kubelet kubectl geoipupdate \
-                    docker-compose openvswitch-switch nfs-common
+                    docker-compose openvswitch-switch nfs-common python3-pip
 
 # Disable rpcbind (service added from nfs-common install) so we can share nfs from our nfs container
 sudo systemctl stop rpcbind
@@ -74,6 +74,7 @@ sudo systemctl disable rpcbind
 
 pip install dnspython
 pip install geoip2
+pip3 install kuku
 
 sudo swapoff -a
 sudo sed -i '$s|/swap|\#/swap|' /etc/fstab

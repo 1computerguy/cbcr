@@ -5,37 +5,34 @@ metadata:
   name: www.google.com
 kind: Deployment
 spec:
+  replicas: 1
   template:
-    spec:
-      volumes:
-      - nfs:
-          path: /configs/web/google.com
-          server: storage
-        name: nfs-httpd-volume
-      containers:
-      - securityContext:
-          privileged: true
-        name: www-google-com
-        image: master:5000/nginx-web
-        args:
-        - |-
-          ip addr add 172.217.0.78/8 dev net1;
-          ip r d default;
-          ip r a default via 172.0.0.1;
-          ip link set net1 mtu 1450;
-          nginx -g 'daemon off;'
-        volumeMounts:
-        - mountPath: /usr/share/nginx/html
-          name: nfs-httpd-volume
-        command:
-        - /bin/sh
-        - -c
     metadata:
       labels:
         app: www.google.com
       annotations:
         k8s.v1.cni.cncf.io/networks: na-svc
-  replicas: 1
+    spec:
+      containers:
+      - securityContext:
+          privileged: true
+        name: www-google-com
+        image: master:5000/nginx-web
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: nfs-httpd-volume
+        env:
+        - name: IP_ADDR
+          value: "172.217.0.78"
+        - name: LEN
+          value: "8"
+        - name: GATEWAY
+          value: "172.0.0.1"
+      volumes:
+      - nfs:
+          path: /configs/web/google.com
+          server: storage
+        name: nfs-httpd-volume
 ---
 apiVersion: apps/v1beta1
 metadata:
@@ -43,37 +40,34 @@ metadata:
   name: www.microsoft.com
 kind: Deployment
 spec:
+  replicas: 1
   template:
-    spec:
-      volumes:
-      - nfs:
-          path: /configs/web/microsoft.com
-          server: storage
-        name: nfs-httpd-volume
-      containers:
-      - securityContext:
-          privileged: true
-        name: www-microsoft-com
-        image: master:5000/nginx-web
-        args:
-        - |-
-          ip addr add 40.76.4.15/8 dev net1;
-          ip r d default;
-          ip r a default via 40.0.0.1;
-          ip link set net1 mtu 1450;
-          nginx -g 'daemon off;'
-        volumeMounts:
-        - mountPath: /usr/share/nginx/html
-          name: nfs-httpd-volume
-        command:
-        - /bin/sh
-        - -c
     metadata:
       labels:
         app: www.microsoft.com
       annotations:
         k8s.v1.cni.cncf.io/networks: na-svc
-  replicas: 1
+    spec:
+      containers:
+      - securityContext:
+          privileged: true
+        name: www-microsoft-com
+        image: master:5000/nginx-web
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: nfs-httpd-volume
+        env:
+        - name: IP_ADDR
+          value: "40.76.4.15"
+        - name: LEN
+          value: "8"
+        - name: GATEWAY
+          value: "40.0.0.1"
+      volumes:
+      - nfs:
+          path: /configs/web/microsoft.com
+          server: storage
+        name: nfs-httpd-volume
 ---
 apiVersion: apps/v1beta1
 metadata:
