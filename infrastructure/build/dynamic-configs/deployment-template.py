@@ -54,6 +54,16 @@ def template(context):
             )
         ]
 
+    pod_init_containers = []
+    if "vpn_init" in context:
+        for key, val in dict(zip(context["vpn_init"].split(), context["vpn_cmds"].split(';'))).items():
+            pod_init_containers.append(client.V1Container(name=context["name"] + "-" + key,
+                    image=context["image"],
+                    command=val,
+                    volume_mounts=pod_spec_volume_mounts
+                )
+            )
+
     # Create Environment variable list and populate if it is declared in the command
     env_list = []
     if "env" in context:
@@ -71,6 +81,7 @@ def template(context):
             security_context=client.V1SecurityContext(privileged=True),
             volume_mounts=pod_spec_volume_mounts)
         ],
+        init_containers=pod_init_containers,
         volumes=pod_spec_volumes
     )
 

@@ -33,36 +33,30 @@ spec:
       - name: vpn-privatevpn-genconfig
         image: master:5000/openvpn
         command:
-        - ovpn_genconfig
-        - -u
-        - udp://vpn.privatevpn.com
+        - |-
+          ovpn_genconfig -u udp://vpn.privatevpn.com
         volumeMounts:
         - mountPath: /etc/openvpn
           name: privatevpn-openvpn
       - name: vpn-privatevpn-initpki
         image: master:5000/openvpn
         command:
-        - ovpn_initpki
-        - nopass
+        - |-
+          ovpn_initpki nopass
         volumeMounts:
         - mountPath: /etc/openvpn
           name: privatevpn-openvpn
       - name: vpn-privatevpn-build-client
         image: master:5000/openvpn
         command:
-        - easyrsa
-        - build-client-full
-        - testuser
-        - nopass
+        - |-
+          easyrsa build-client-full testuser nopass
         volumeMounts:
         - mountPath: /etc/openvpn
           name: privatevpn-openvpn
       - name: vpn-privatevpn-get-client
         image: master:5000/openvpn
         command:
-        - /bin/sh
-        - -c
-        args:
         - |-
           ovpn_getclient testuser > /etc/openvpn/user/testuser.ovpn
         volumeMounts:
