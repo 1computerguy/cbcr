@@ -1,0 +1,6 @@
+$TTL	172800
+@	IN	SOA	@	ns.30.	42 3H 15M 1W 1D
+@	IN	NS		ns.30.
+173.42.192	IN	PTR		ac1.nstld.com.
+174.42.192	IN	PTR		ac2.nstld.com.
+128.58.192	IN	PTR		j.root-servers.net.

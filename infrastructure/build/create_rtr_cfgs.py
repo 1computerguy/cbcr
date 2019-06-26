@@ -12,7 +12,6 @@ import os
 from shutil import copyfile
 
 bgp_reader = csv.reader(open('bgp_links.csv'))
-services_reader = csv.reader(open('default_environment.csv'))
 
 bgp_links = {}
 
@@ -24,7 +23,12 @@ bgp_links = {}
 for row in bgp_reader:
     services_reader = csv.reader(open('default_environment.csv'))
     if row[0] != 'k8s_pod_name':
-        bgp_links[row[2]] = {'k8s_pod_name':row[0], 'ovs_bridge_name':row[1], 'local_asn_network':row[3], 'remote_asns':str(row[4]).split(','),  'external_net':row[6], 'svc_ips':[str(ipaddress.ip_network(svc[2] + "/24",strict=False)[1]) for svc in services_reader if svc[3] == row[5]]}
+        bgp_links[row[2]] = {'k8s_pod_name':row[0],
+                            'ovs_bridge_name':row[1],
+                            'local_asn_network':row[3],
+                            'remote_asns':str(row[4]).split(','), 
+                            'external_net':row[6],
+                            'svc_ips':[str(ipaddress.ip_network(svc[2] + "/24",strict=False)[1]) for svc in services_reader if svc[3] == row[5]]}
 
 rtr_name = ''
 local_net = ''
@@ -89,4 +93,3 @@ for asn in bgp_links:
     zebra.close()
     bgpd.close()
     copyfile("build/routers/daemons", cfg_path + "daemons")
-    copyfile("build/routers/daemons.conf", cfg_path + "daemons.conf")

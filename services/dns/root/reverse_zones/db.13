@@ -1,0 +1,4 @@
+$TTL	172800
+@	IN	SOA	@	ns.13.	42 3H 15M 1W 1D
+@	IN	NS		ns.13.
+91.7.199	IN	PTR		d.root-server.net.

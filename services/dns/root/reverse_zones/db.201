@@ -1,0 +1,4 @@
+$TTL	172800
+@	IN	SOA	@	ns.201.	42 3H 15M 1W 1D
+@	IN	NS		ns.201.
+14.9.199	IN	PTR		b.root-servers.net.

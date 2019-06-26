@@ -1,0 +1,4 @@
+$TTL	172800
+@	IN	SOA	@	ns.241.	42 3H 15M 1W 1D
+@	IN	NS		ns.241.
+5.5.192	IN	PTR		f.root-servers.net.

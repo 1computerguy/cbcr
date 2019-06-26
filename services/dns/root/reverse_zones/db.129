@@ -1,0 +1,4 @@
+$TTL	172800
+@	IN	SOA	@	ns.129.	42 3H 15M 1W 1D
+@	IN	NS		ns.129.
+14.0.193	IN	PTR		k.root-servers.net.

@@ -1,0 +1,4 @@
+$TTL	172800
+@	IN	SOA	@	ns.12.	42 3H 15M 1W 1D
+@	IN	NS		ns.12.
+4.33.192	IN	PTR		c.root-servers.net.

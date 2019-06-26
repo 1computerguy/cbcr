@@ -1,0 +1,4 @@
+$TTL	172800
+@	IN	SOA	@	ns.53.	42 3H 15M 1W 1D
+@	IN	NS		ns.53.
+190.97.198	IN	PTR		h.root-servers.net.
