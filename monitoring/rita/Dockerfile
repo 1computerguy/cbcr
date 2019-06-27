@@ -1,1 +1,0 @@
-FROM quay.io/activecm/rita:latest

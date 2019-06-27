@@ -1,1 +1,0 @@
-FROM store/elastic/filebeat:7.1.1

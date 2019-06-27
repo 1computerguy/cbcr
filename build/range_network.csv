@@ -1,0 +1,7 @@
+k8s_pod_name,ovs_bridge,local_asn,local_asn_network,remote_asns,ovs_svc_bridge,external_net,ovs_ext_bridge
+rtr-01,bgp,6339,206.126.36.0/30,"3257,4826,52871",rtr1-svc,167.2.126.0/24,external
+rtr-02,bgp,3257,193.0.0.0/30,"24441,6339,37474",rtr2-svc,2.16.90.0/24,external
+rtr-03,bgp,24441,202.93.8.0/30,"4826,3257",rtr3-svc,163.181.183.0/24,external
+rtr-04,bgp,4826,114.31.199.0/30,"6339,24441",rtr4-svc,103.242.228.0/24,external
+rtr-05,bgp,52871,4.69.184.0/30,"6339",rtr5-svc,189.128.0.0/24,external
+rtr-06,bgp,37474,195.66.224.0/30,"3257",rtr6-svc,41.78.120.0/24,external

@@ -1,0 +1,197 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch
+spec:
+  ports:
+  - name: "9200"
+    port: 9200
+    targetPort: 9200
+  - name: "9300"
+    port: 9300
+    targetPort: 9300
+  selector:
+    app: elasticsearch
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana
+spec:
+  ports:
+  - name: "5601"
+    port: 5601
+    targetPort: 5601
+    nodePort: 30001
+  type: NodePort
+  selector:
+    app: kibana
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: logstash
+spec:
+  ports:
+  - name: "5000"
+    port: 5000
+    targetPort: 5000
+  selector:
+    app: logstash
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: bro-ids
+spec:
+  selector:
+    matchLabels:
+      name: bro-ids
+  template:
+    metadata:
+      labels:
+        name: bro-ids
+    spec:
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      hostNetwork: true
+      containers:
+      - args:
+         - -i
+         - bro0
+        image: blacktop/bro
+        name: bro-ids
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /pcap
+          name: bro-ids
+          subPath: data
+        - mountPath: /usr/local/share/bro/site
+          name: bro-ids
+          subPath: config
+      restartPolicy: Always
+      volumes:
+      - name: bro-ids
+        nfs:
+          server: storage
+          path: /configs/monitoring/bro
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: elasticsearch
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      containers:
+      - env:
+        - name: ES_JAVA_OPTS
+          value: -Xmx256m -Xms256m
+        image: master:5000/elasticsearch
+        name: elasticsearch
+        ports:
+        - containerPort: 9200
+        - containerPort: 9300
+        volumeMounts:
+        - mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
+          name: elasticsearch
+          subPath: elasticsearch.yml
+          readOnly: true
+        - mountPath: /usr/share/elasticsearch/data
+          name: elasticsearch
+          subPath: data
+      restartPolicy: Always
+      volumes:
+      - name: elasticsearch
+        nfs:
+          server: storage
+          path: /configs/monitoring/elasticsearch
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: kibana
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: kibana
+    spec:
+      containers:
+      - image: master:5000/kibana
+        name: kibana
+        ports:
+        - containerPort: 5601
+        volumeMounts:
+        - mountPath: /usr/share/kibana/config
+          name: kibana-config
+          readOnly: true
+      restartPolicy: Always
+      volumes:
+      - name: kibana-config
+        nfs:
+          server: storage
+          path: /configs/monitoring/kibana
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: logstash
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: logstash
+    spec:
+      containers:
+      - env:
+        - name: LS_JAVA_OPTS
+          value: -Xmx256m -Xms256m
+        image: master:5000/logstash
+        name: logstash
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - mountPath: /usr/share/logstash/config/logstash.yml
+          name: logstash
+          subPath: config/logstash.yml
+          readOnly: true
+        - mountPath: /usr/share/logstash/config/geo-ip.json
+          name: logstash
+          subPath: config/geo-ip.json
+          readOnly: true
+        - mountPath: /usr/share/logstash/pipeline
+          name: logstash
+          subPath: pipeline
+          readOnly: true
+        - mountPath: /usr/share/logstash/bro
+          name: logstash-bro
+          readOnly: true
+        - mountPath: /etc/logstash/custom_patterns
+          name: logstash
+          subPath: patterns
+      restartPolicy: Always
+      volumes:
+      - name: logstash
+        nfs:
+          server: storage
+          path: /configs/monitoring/logstash
+      - name: logstash-bro
+        nfs:
+          server: storage
+          path: /configs/monitoring/bro/data
