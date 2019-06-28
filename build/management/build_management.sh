@@ -90,7 +90,6 @@ echo "-----------------------------------------------"
 echo "Building and deploying Management Containers..."
 echo "-----------------------------------------------"
 echo ""
-docker-compose build
 docker-compose up
 
 exit 0
