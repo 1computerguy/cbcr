@@ -6,14 +6,14 @@ services:
       - REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt
       - REGISTRY_HTTP_TLS_KEY=/certs/domain.key
     volumes:
-      - /range/infrastructure/registry:/certs
+      - ${MGMT_HOME}/registry:/certs
     network_mode: "host"
 
   rancher:
     image: rancher/rancher
     restart: unless-stopped
     volumes:
-      - /range/infrastructure/rancher:/var/lib/rancher
+      - ${MGMT_HOME}/rancher:/var/lib/rancher
     ports:
       - "80:80"
 
@@ -27,4 +27,4 @@ services:
       - NFS_EXPORT_1=/certs                  *(rw,no_root_squash,no_subtree_check)
     volumes:
       - /etc/docker/certs.d:/certs
-      - /range/environment:/configs
+      - ${CONFIG_HOME}:/configs

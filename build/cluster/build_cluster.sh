@@ -1,31 +1,26 @@
 #!/bin/bash
 
-###############################
-#
-#  Placeholder for automated build script
-#
-###############################
-
 usage() {
     echo ""
     echo "Please make sure all the systems you are configuring have a common username and password."
-    echo "Add the password, and the csv configuration file to build the cluster."
+    echo "Add the username, password, and the csv configuration file to build the cluster."
     echo ""
     echo " ----"
-    echo -e "    Example: $0 -p <password> -f <configfile.csv>"
+    echo -e "    Example: $0 -u <username> -p <password> -f <configfile.csv>"
     echo " ----"
     echo ""
     echo "CSV file contains the following columns:"
     echo -e "   - hostname"
     echo -e "   - management IP"
+    echo -e "   - default gateway IP"
     echo -e "   - storage IP"
     echo -e "   - OVS Overlay IP"
     echo ""
     echo "----"
     echo "Example of configfile.csv file:"
-    echo -e "    master,192.168.1.10,10.10.1.10,10.10.2.10,10.10.3.10,192.168.1.1"
-    echo -e "    worker01,192.168.1.11,10.10.1.11,10.10.2.11,10.10.3.11,192.168.1.1"
-    echo -e "    worker02,192.168.1.12,10.10.1.12,10.10.2.12,10.10.3.12,192.168.1.1"
+    echo -e "    master,192.168.1.10,192.168.1.1,10.10.1.10,10.10.2.10"
+    echo -e "    worker01,192.168.1.11,192.168.1.1,10.10.1.11,10.10.2.11"
+    echo -e "    worker02,192.168.1.12,192.168.1.1,10.10.1.12,10.10.2.12"
     echo "----"
     echo ""
 }
@@ -45,6 +40,10 @@ then
                 shift
                 filename="$1"
                 ;;
+            - u | --username )
+                shift
+                user="$1"
+                ;;
             -h | --help )
                 usage
                 exit
@@ -61,42 +60,87 @@ else
     exit 1
 fi
 
-curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
-sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+# Parse input CSV and create master, worker01, and worker02 arrays
+OLDIFS="$IFS"
+IFS=','
+while read hostname mgmtip gateway storageip overlayip
+do
+  eval "$hostname=($mgmtip $gateway $storageip $overlayip)"
+done
+IFS="$OLDIFS"
 
-sudo apt install -y docker.io python-docker python-ruamel.yaml pv \
-                    git python-pip kubeadm kubelet kubectl geoipupdate \
-                    docker-compose openvswitch-switch nfs-common python3-pip
+# Create static netplan configuration file for static IP addresses
+cat > /etc/netplan/50-cloud-init.yaml <<NET
+# This file is generated from information provided by
+# the datasource.  Changes to it will not persist across an instance.
+# To disable cloud-init's network configuration capabilities, write a file
+# /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg with the following:
+# network: {config: disabled}
+network:
+  ethernets:
+    eth0:
+      addresses: [ ${master[1]} ]
+      gateway4: ${master[2]}
+      nameservers:
+        addresses:
+        - 1.1.1.1
+        - 8.8.8.8
+      dhcpv4: false
+    eth1:
+      addresses: [ ${master[3]} ]
+      dhcp4: false
+    eth2:
+      addresses: [ ${master[4]} ]
+      dhcp4: false
+    eth3:
+      dhcp4: false
+NET
+
+netplan apply
+
+# Enable IP forwarding for some later functionality
+echo "net.ipv4.ip_forward=1" | tee -a /etc/sysctl.conf
+echo "net.ipv6.conf.all.forwarding=1" | tee -a /etc/sysctl.conf
+sysctl -p
+
+# Add K8s key and repo
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
+apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+
+# Install necessary packages
+apt install -y docker.io python-docker pv python-pip kubeadm kubelet kubectl \
+                    geoipupdate docker-compose openvswitch-switch nfs-common \
+                    python3-pip
 
 # Disable rpcbind (service added from nfs-common install) so we can share nfs from our nfs container
-sudo systemctl stop rpcbind
-sudo systemctl disable rpcbind
+systemctl stop rpcbind
+systemctl disable rpcbind
 
-pip install dnspython
-pip install geoip2
-pip3 install kuku
+sudo -u $user pip install dnspython
+sudo -u $user pip install geoip2
+sudo -u $user pip3 install kuku
 
-sudo swapoff -a
-sudo sed -i '$s|/swap|\#/swap|' /etc/fstab
+swapoff -a
+sed -i '$s|/swap|\#/swap|' /etc/fstab
 
-sudo modprobe nfs
-sudo modprobe nfsd
+modprobe nfs
+modprobe nfsd
 
-sudo tee -a /etc/modules <<EOF
+tee -a /etc/modules <<MOD
 nfs
 nfsd
-EOF
+MOD
 
 cat >> /etc/hosts <<EOF
 ${master[1]}      ${master[0]}
-${master[2]}      storage
-${master[3]}      network
+${master[3]}      storage
+${master[4]}      network
 ${worker01[1]}      ${worker01[0]}
 ${worker02[1]}      ${worker02[0]}
 EOF
 
 # Change Docker manager to systemd, not cgroup
-sudo tee /etc/docker/daemon.json <<EOF
+tee /etc/docker/daemon.json <<DOC
 {
   "exec-opts": ["native.cgroupdriver=systemd"],
   "log-driver": "json-file",
@@ -105,29 +149,27 @@ sudo tee /etc/docker/daemon.json <<EOF
   },
   "storage-driver": "overlay2"
 }
-EOF
+DOC
 
-sudo mkdir -p /etc/systemd/system/docker.service.d
-sudo systemctl daemon-reload
-sudo systemctl enable docker
-sudo systemctl restart docker
+mkdir -p /etc/systemd/system/docker.service.d
+systemctl daemon-reload
+systemctl enable docker
+systemctl restart docker
 
-sudo usermod -aG docker greyadmin
-
-openssl req  -newkey rsa:4096 -nodes -sha256 -keyout /range/infrastructure/registry/domain.key  -x509 -days 365 -out /range/infrastructure/registry/domain.crt -subj "/CN=master"
-sudo mkdir -p /etc/docker/certs.d/master:5000
-sudo cp /range/infrastructure/registry/domain.crt /etc/docker/certs.d/master:5000/ca.crt
+usermod -aG docker $user
 
 echo -e "--------"
 echo -e "Initializing Kubernetes..."
 echo -e "--------"
 echo ""
-sudo kubeadm init --pod-network-cidr=10.244.0.0/16 > cluster-init
-mkdir -p $HOME/.kube
-sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-chown greyadmin:greyadmin $HOME/.kube/config
 
-kubectl apply -f cni/flannel.yml
+home_dir="/home/$user/"
+kubeadm init --pod-network-cidr=10.244.0.0/16 > cluster-init
+sudo -u $user mkdir -p $home_dir/.kube
+cp -i /etc/kubernetes/admin.conf $home_dir/.kube/config
+chown $user:$user $home_dir/.kube/config
+
+sudo -u $user kubectl apply -f cni/flannel.yml
 
 while [ "$(kubectl get nodes | awk '{if (NR!=1) {print $2}}')" != "Ready" ]
 do
@@ -136,7 +178,7 @@ do
 done
 
 echo "Installing Multus-CNI..."
-kubectl apply -f cni/multus.yml
+sudo -u $user kubectl apply -f cni/multus.yml
 
 while [ "$(kubectl get pods --all-namespaces | grep multus | awk '{print $4}')" != "Running" ]
 do
@@ -145,7 +187,7 @@ do
 done
 
 echo "Now installing OVS CNI"
-kubectl apply -f cni/ovs.yml
+sudo -u $user kubectl apply -f cni/ovs.yml
 
 while [ "$(kubectl get pods --all-namespaces | grep ovs | awk '{print $4}')" != "Running" ]
 do
@@ -159,42 +201,10 @@ echo -e "*  Writing Worker01 configuration to worker01.sh..."
 echo "*"
 echo "*--------------------------------"
 
-cat > worker01.sh <<EOL
+sudo -u $user cat > worker01.sh <<WK1
 #!/bin/bash
 
-usage() {
-    echo "----------------------------------------------------------"
-    echo "* This script requres a -p <password> option to work properly"
-    echo "* This option is used to run the sudo command without continuous"
-    echo "* interaction from the administrator"
-    echo "* If you prefer not to run the script this way, then remove the"
-    echo "* lines of this script marked in the comments."
-    exit
-}
-
-#############################################################################
-#  Begin commenting/removing here - if you don't want want use the automated
-#  password entry
-#############################################################################
-fi [ $# -gt 1 ]
-then
-    case $1 in
-        -p | --password )
-            shift
-            export SSHPASS="$1"
-            ;;
-        * )
-            usage
-            ;;
-else
-    usage
-fi
-
-#############################################################################
-#  END REMOVAL
-#############################################################################
-
-sudo cat > /etc/netplan/50-cloud-init.yaml <<NET
+cat > /etc/netplan/50-cloud-init.yaml <<NET
 # This file is generated from information provided by
 # the datasource.  Changes to it will not persist across an instance.
 # To disable cloud-init's network configuration capabilities, write a file
@@ -202,52 +212,55 @@ sudo cat > /etc/netplan/50-cloud-init.yaml <<NET
 # network: {config: disabled}
 network:
   ethernets:
-    ens160:
+    eth0:
       addresses: [ ${worker01[1]} ]
-      gateway4: ${worker01[5]}
+      gateway4: ${worker01[2]}
       nameservers:
         addresses:
         - 1.1.1.1
         - 8.8.8.8
       dhcpv4: false
-    ens192:
-      addresses: [ ${worker01[2]} ]
-      dhcp4: false
-    ens224:
+    eth1:
       addresses: [ ${worker01[3]} ]
+      dhcp4: false
+    eth2:
+      addresses: [ ${worker01[4]} ]
+      dhcp4: false
+    eth3:
       dhcp4: false
 NET
 
-sudo netplan apply
+netplan apply
 
 # Reload
 sysctl -p /etc/sysctl.conf
 
 # Add kubernetes repo
-curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
-sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add
+apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
 
 # Install Updates
-sudo apt update
-sudo apt upgrade -y
+apt update
+apt upgrade -y
 
 # Install packages
-sudo apt install sshpass docker.io kubeadm kubelet kubectl openvswitch-switch curl nfs-common -y
+apt install sshpass docker.io kubeadm kubelet kubectl openvswitch-switch curl nfs-common -y
 
-sudo cat > /etc/hosts <<EOF
+cat > /etc/hosts <<EOF
 $hosts
 EOF
 
-# Disable swap (incompatible with K8s 1.7+)
-sudo swapoff -a
-sudo sed -i '$s|/swap|\#/swap|' /etc/fstab
+# Disable swap (incompatible with K8s 1.7+) and add NFS share mount for internal Docker registry
+swapoff -a
+sed -i '$s|/swap|\#/swap|' /etc/fstab
+echo "storage:/certs       /etc/docker/certs.d      nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0" >> /etc/fstab
 
 # Enable IP forwarding for some later functionality
-echo "net.ipv4.ip_forward=1" | sudo tee -a /etc/sysctl.conf
-echo "net.ipv6.conf.all.forwarding=1" | sudo tee -a /etc/sysctl.conf
+echo "net.ipv4.ip_forward=1" | tee -a /etc/sysctl.conf
+echo "net.ipv6.conf.all.forwarding=1" | tee -a /etc/sysctl.conf
 
 # Change Docker manager to systemd, not cgroup
-sudo cat > /etc/docker/daemon.json <<EOF
+cat > /etc/docker/daemon.json <<EOF
 {
   "exec-opts": ["native.cgroupdriver=systemd"],
   "log-driver": "json-file",
@@ -258,18 +271,23 @@ sudo cat > /etc/docker/daemon.json <<EOF
 }
 EOF
 
-sudo mkdir -p /etc/systemd/system/docker.service.d
-sudo systemctl daemon-reload
+mkdir -p /etc/systemd/system/docker.service.d
+systemctl daemon-reload
 
 # Start and Enable Docker
-sudo systemctl start docker
-sudo systemctl enable docker
+systemctl start docker
+systemctl enable docker
 
-sudo usermod -aG docker greyadmin
+# Sleep to ensure docker process is started fully and that cgroup driver is loaded properly
+echo -e "Please wait while we do some things (or at least wait for them to be done for us...)"
+sleep 15
 
-sudo `grep -A 2 "kubeadm join" init-file`
+usermod -aG docker greyadmin
 
-EOL
+`grep -A 2 "kubeadm join" init-file`
+
+WK1
+
 
 echo "*--------------------------------"
 echo "*"
@@ -277,42 +295,10 @@ echo -e "*  Writing Worker02 configuration to worker02.sh..."
 echo "*"
 echo "*--------------------------------"
 
-cat > worker02.sh <<EOL
+sudo -u $user cat > worker02.sh <<WK2
 #!/bin/bash
 
-usage() {
-    echo "----------------------------------------------------------"
-    echo "* This script requres a -p <password> option to work properly"
-    echo "* This option is used to run the sudo command without continuous"
-    echo "* interaction from the administrator"
-    echo "* If you prefer not to run the script this way, then remove the"
-    echo "* lines of this script marked in the comments."
-    exit
-}
-
-#############################################################################
-#  Begin commenting/removing here - if you don't want want use the automated
-#  password entry
-#############################################################################
-fi [ $# -gt 1 ]
-then
-    case $1 in
-        -p | --password )
-            shift
-            export SSHPASS="$1"
-            ;;
-        * )
-            usage
-            ;;
-else
-    usage
-fi
-
-#############################################################################
-#  END REMOVAL
-#############################################################################
-
-sudo cat > /etc/netplan/50-cloud-init.yaml <<NET
+cat > /etc/netplan/50-cloud-init.yaml <<NET
 # This file is generated from information provided by
 # the datasource.  Changes to it will not persist across an instance.
 # To disable cloud-init's network configuration capabilities, write a file
@@ -320,52 +306,54 @@ sudo cat > /etc/netplan/50-cloud-init.yaml <<NET
 # network: {config: disabled}
 network:
   ethernets:
-    ens160:
+    eth0:
       addresses: [ ${worker02[1]} ]
-      gateway4: ${worker02[5]}
+      gateway4: ${worker02[2]}
       nameservers:
         addresses:
         - 1.1.1.1
         - 8.8.8.8
       dhcpv4: false
-    ens192:
-      addresses: [ ${worker02[2]} ]
-      dhcp4: false
-    ens224:
+    eth1:
       addresses: [ ${worker02[3]} ]
+      dhcp4: false
+    eth2:
+      addresses: [ ${worker02[4]} ]
+      dhcp4: false
+    eth3:
       dhcp4: false
 NET
 
-sudo netplan apply
+netplan apply
 
 # Reload
 sysctl -p /etc/sysctl.conf
 
 # Add kubernetes repo
-curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
-sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add
+apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
 
 # Install Updates
-sudo apt update
-sudo apt upgrade -y
+apt update && apt upgrade -y
 
 # Install packages
-sudo apt install sshpass docker.io kubeadm kubelet kubectl openvswitch-switch curl nfs-common -y
+apt install sshpass docker.io kubeadm kubelet kubectl openvswitch-switch curl nfs-common -y
 
-sudo cat > /etc/hosts <<EOF
+cat > /etc/hosts <<EOF
 $hosts
 EOF
 
-# Disable swap (incompatible with K8s 1.7+)
-sudo swapoff -a
-sudo sed -i '$s|/swap|\#/swap|' /etc/fstab
+# Disable swap (incompatible with K8s 1.7+) and add NFS share mount for internal Docker registry
+swapoff -a
+sed -i '$s|/swap|\#/swap|' /etc/fstab
+echo "storage:/certs       /etc/docker/certs.d      nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0" >> /etc/fstab
 
 # Enable IP forwarding for some later functionality
-echo "net.ipv4.ip_forward=1" | sudo tee -a /etc/sysctl.conf
-echo "net.ipv6.conf.all.forwarding=1" | sudo tee -a /etc/sysctl.conf
+echo "net.ipv4.ip_forward=1" | tee -a /etc/sysctl.conf
+echo "net.ipv6.conf.all.forwarding=1" | tee -a /etc/sysctl.conf
 
 # Change Docker manager to systemd, not cgroup
-sudo cat > /etc/docker/daemon.json <<EOF
+cat > /etc/docker/daemon.json <<EOF
 {
   "exec-opts": ["native.cgroupdriver=systemd"],
   "log-driver": "json-file",
@@ -376,28 +364,32 @@ sudo cat > /etc/docker/daemon.json <<EOF
 }
 EOF
 
-sudo mkdir -p /etc/systemd/system/docker.service.d
-sudo systemctl daemon-reload
+mkdir -p /etc/systemd/system/docker.service.d
+systemctl daemon-reload
 
 # Start and Enable Docker
-sudo systemctl start docker
-sudo systemctl enable docker
+systemctl start docker
+systemctl enable docker
 
-sudo usermod -aG docker greyadmin
+# Sleep to ensure docker process is started fully and that cgroup driver is loaded properly
+echo -e "Please wait while we do some things (or at least wait for them to be done for us...)"
+sleep 15
 
-sudo `grep -A 2 "kubeadm join" init-file`
+usermod -aG docker greyadmin
 
-EOL
+`grep -A 2 "kubeadm join" init-file`
+
+WK2
 
 
 chmod +x worker01.sh
 chmod +x worker02.sh
 
-sshpass -e scp -o StrictHostKeyChecking=no worker01.sh greyadmin@worker01:~/worker01.sh
-sshpass -e ssh -o StrictHostKeyChecking=no greyadmin@worker01 sudo ./worker01.sh -p "P@55w0rd!"
+sshpass -e scp -o StrictHostKeyChecking=no worker01.sh worker01:~/worker01.sh
+echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no worker01 cat \| sudo --prompt="" -S -- ./worker01.sh
 
-sshpass -e scp -o StrictHostKeyChecking=no worker02.sh greyadmin@worker02:~/worker02.sh
-sshpass -e ssh -o StrictHostKeyChecking=no greyadmin@worker02 sudo ./worker02.sh -p "P@55w0rd!"
+sshpass -e scp -o StrictHostKeyChecking=no worker02.sh worker02:~/worker02.sh
+echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no worker02 cat \| sudo --prompt="" -S -- ./worker02.sh
 
 testcount=0
 while [ "$(kubectl get nodes | awk -v cnt="2" '{if (NR>cnt) {print $2}}')" != "Ready" ]
@@ -423,12 +415,12 @@ do
 	    echo "| To check the status of the nodes use the commands below"
 	    echo "|	- kubectl get nodes"
 	    echo "|	- kubectl describe nodes <node name>"
-        echo "|"
-        echo "| If you have any questions, comments, or concerns, about this range, please"
-        echo "| feel free to raise an Issue on my github repo for this environment:"
-        echo "|"
-        echo "|     https://github.com/1computerguy/container-range-k8s.git"
-        echo "|"
+      echo "|"
+      echo "| If you have any questions, comments, or concerns, about this range, please"
+      echo "| feel free to raise an Issue on my github:"
+      echo "|"
+      echo "|     https://github.com/1computerguy/cbcr"
+      echo "|"
 	    echo "|---------------------------------------------------------------------------------"
 
 	    exit 1
@@ -447,8 +439,10 @@ echo "| a means of automating the build of a K8s cluster - that's totally your"
 echo "| perogative. However, to use this as the Cyber-Range environment it was"
 echo "| intended for, check out the 'range' command and play around"
 echo "| If you have any questions, comments, or concerns, please feel free"
-echo "| to raise an Issue on my github repo for this environment:"
+echo "| to raise an Issue on my github:"
 echo "|"
-echo "|     https://github.com/1computerguy/container-range-k8s.git"
+echo "|     https://github.com/1computerguy/cbcr"
 echo "|"
 echo "|--------------------------------------------------------------------------"
+
+exit 0
