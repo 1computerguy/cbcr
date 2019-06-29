@@ -98,10 +98,10 @@ network:
         - 8.8.8.8
       dhcp4: false
     eth1:
-      addresses: [ ${master[2]} ]
+      addresses: [ ${master[2]}/24 ]
       dhcp4: false
     eth2:
-      addresses: [ ${master[3]} ]
+      addresses: [ ${master[3]}/24 ]
       dhcp4: false
     eth3:
       dhcp4: false
@@ -268,10 +268,10 @@ network:
         - 8.8.8.8
       dhcp4: false
     eth1:
-      addresses: [ ${worker01[2]} ]
+      addresses: [ ${worker01[2]}/24 ]
       dhcp4: false
     eth2:
-      addresses: [ ${worker01[3]} ]
+      addresses: [ ${worker01[3]}/24 ]
       dhcp4: false
     eth3:
       dhcp4: false
@@ -378,10 +378,10 @@ network:
         - 8.8.8.8
       dhcp4: false
     eth1:
-      addresses: [ ${worker02[2]} ]
+      addresses: [ ${worker02[2]}/24 ]
       dhcp4: false
     eth2:
-      addresses: [ ${worker02[3]} ]
+      addresses: [ ${worker02[3]}/24 ]
       dhcp4: false
     eth3:
       dhcp4: false
