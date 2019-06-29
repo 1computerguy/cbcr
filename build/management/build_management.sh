@@ -67,7 +67,7 @@ echo "-----------------------------------------------"
 echo ""
 # Create default range directories
 # TODO: Make this user configurable
-sudo mkdir -p /range/{mgmt/{rancher,registry,pki/{root-ca,intermed-ca}},configs/{attack/{kali,metasploit},monitor/{bro,elastic,kibana,logstash},dns,web,ftp,media-svr,network,webmail,vuln/{metasploit-vuln,mutillidae,wordpress}}}
+sudo mkdir -p /range/{mgmt/{rancher,registry,pki/{root-ca,intermed-ca}},configs/{attack/{kali,metasploit},monitor/{bro,elastic,kibana,logstash},dns/auth,web,ftp,media-svr,network,webmail,vuln/{metasploit-vuln,mutillidae,wordpress}}}
 sudo chown -R $user:$user /range
 
 echo "-----------------------------------------------"

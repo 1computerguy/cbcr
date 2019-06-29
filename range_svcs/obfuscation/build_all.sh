@@ -4,7 +4,7 @@ count=1
 for dir in */
 do
     build_dir=$dir
-    if [ $count == 1 ]
+    if [ $count -ne 1 ]
     then
         build_dir="../"$dir
     fi

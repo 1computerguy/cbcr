@@ -63,6 +63,14 @@ echo "-----------------------------------------------------------"
 echo ""
 python3 build_web.py
 
+echo "---------------------------------------------------------"
+echo "|  Building all containers required for environment     |"
+echo "|                                                       |"
+echo "---------------------------------------------------------"
+echo ""
+cd $REPO_HOME/range_svcs
+./build_all.sh
+
 # Call build_range_helper.py script to ingest range_services.csv file and build and
 # deploy the remaining configurations
 echo "---------------------------------------------------------"

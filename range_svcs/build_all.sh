@@ -10,6 +10,6 @@ do
     fi
 
     cd $build_dir
-    ./build.sh
+    ./build_all.sh
     let count=$count+1
 done
