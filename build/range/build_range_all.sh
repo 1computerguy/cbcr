@@ -153,6 +153,16 @@ sudo ip netns exec ext-con-ns ip addr add 167.2.127.1/24 dev eth3
 sudo ip netns exec ext-con-ns ip link set eth3 up
 sudo ip netns exec ext-con-ns ip route add default via 167.2.126.1
 
+# Build external access network namespace and configure for network
+echo "-----------------------------------------------------------"
+echo "|  Signing websites PKI certs. Had to wait this long      |"
+echo "|  because if the web directories are created ouside of   |"
+echo "|  the scraper, it will fail silently...                  |"
+echo "|  That was NOT fun to troubleshoot...                    |"
+echo "-----------------------------------------------------------"
+echo ""
+python3 build_web_pki.py
+
 
 echo ""
 echo "------------------------------------------------------------"
