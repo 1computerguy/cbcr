@@ -34,7 +34,8 @@ then
         case $1 in
             -p | --password )
                 shift
-                export SSHPASS="$1"
+                SSHPASS="$1"
+                export $SSHPASS
                 ;;
             -f | --filename )
                 shift
@@ -343,7 +344,7 @@ echo "| Initializing Kubernetes Cluster!                     |"
 echo "|  I can take a couple of minutes, please be patient...|"
 echo "--------------------------------------------------------"
 echo ""
-`grep -A 2 "kubeadm join" init-file`
+`grep -A 2 "kubeadm join" cluster-init`
 
 WK1
 
@@ -412,7 +413,7 @@ EOF
 
 # Disable swap (incompatible with K8s 1.7+) and add NFS share mount for internal Docker registry
 swapoff -a
-sed -i '$s|/swap|\#/swap|' /etc/fstab
+sed -i '\$s|/swap|\#/swap|' /etc/fstab
 echo "storage:/certs       /etc/docker/certs.d      nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0" >> /etc/fstab
 
 # Enable IP forwarding for some later functionality
@@ -453,7 +454,7 @@ echo "| Initializing Kubernetes Cluster!                     |"
 echo "|  I can take a couple of minutes, please be patient...|"
 echo "--------------------------------------------------------"
 echo ""
-`grep -A 2 "kubeadm join" init-file`
+`grep -A 2 "kubeadm join" cluster-init`
 
 WK2
 
@@ -461,23 +462,23 @@ WK2
 chmod +x worker01.sh
 chmod +x worker02.sh
 
-sshpass -e scp -o StrictHostKeyChecking=no worker01.sh worker01:~/worker01.sh
-echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no worker01 cat \| sudo --prompt="" -S -- ./worker01.sh
+sshpass -e scp -o StrictHostKeyChecking=no worker01.sh $user@worker01:~/worker01.sh
+#echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no $user@worker01 cat \| sudo --prompt="" -S -- ./worker01.sh
 
-sshpass -e scp -o StrictHostKeyChecking=no worker02.sh worker02:~/worker02.sh
-echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no worker02 cat \| sudo --prompt="" -S -- ./worker02.sh
+sshpass -e scp -o StrictHostKeyChecking=no worker02.sh $user@worker02:~/worker02.sh
+#echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no $user@worker02 cat \| sudo --prompt="" -S -- ./worker02.sh
 
 testcount=0
 while [ "$(kubectl get nodes | awk -v cnt="2" '{if (NR>cnt) {print $2}}')" != "Ready" ]
 do
     echo "...Waiting for all Worker nodes to report a ready status..."
-    sleep 2
+    sleep 10
     let testcount=$testcount+1
-    if [ $testcount -eq 30 ]
+    if [ $testcount -eq 60 ]
     then
 	    echo "|--------------------------------------------------------------------------------"
 	    echo "|"
-	    echo "| It has been 60 seconds since the last worker was added to the cluster..."
+	    echo "| It has been 600 seconds since the last worker was added to the cluster..."
 	    echo "|"
 	    echo "| There may be a problem with your cluster. Please log into the worker nodes"
 	    echo "| manually to check the status of the kubelet and/or docker processes and the"
