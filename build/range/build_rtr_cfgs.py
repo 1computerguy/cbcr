@@ -97,7 +97,7 @@ for asn in bgp_links:
     ext_net = bgp_links[asn]['external_net1']
     static.write("!\n!\n")
     static.write("ip route " + bgp_links[asn]['external_net2'] + ' ' + str(ipaddress.ip_network(ext_net)[2])
-    staic.write("\n!\nline vty\n!")
+    static.write("\n!\nline vty\n!")
     
     zebra.write("!\n")
     zebra.write("interface net"  + str(int_count) + "\n")
@@ -109,5 +109,5 @@ for asn in bgp_links:
     zebra.write("!\n")
     zebra.close()
     bgpd.close()
-    staticd.close()
+    static.close()
     copyfile(os.environ["REPO_HOME"] + "/range_svcs/network/daemons", cfg_path + "/daemons")

@@ -132,7 +132,7 @@ echo "-----------------------------------------------------------"
 echo ""
 if [ $HOSTNAME == 'master' ]
 then
-    sudo ./build_mirror.sh external m0 bro0
+    sudo ./build_mirror.sh external bro0
 else
     sshpass -e scp -o StrictHostKeyChecking=no build_mirror.sh $user@worker01:~/build_mirror.sh
     #echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no worker01 cat \| sudo --prompt="" -S -- ./build_mirror.sh bgp m0 bro0

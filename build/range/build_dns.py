@@ -157,11 +157,7 @@ options {
 
 # Grab save directory from command line
 build_file = sys.argv[1]
-
-if not sys.argv[2]:
-    write_directory = os.environ["CONFIG_HOME"] + "/dns"
-else:
-    write_directory = sys.argv[2]
+write_directory = os.environ["CONFIG_HOME"] + "/dns"
 
 reverse_directory = write_directory + "/reverse-zones"
 dns_build_dir = os.environ["REPO_HOME"] + "/range_svcs/services/dns"

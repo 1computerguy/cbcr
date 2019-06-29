@@ -1,19 +1,24 @@
 #!/bin/bash
 
-if [ $# -ne 3 ]; then
+if [ $# -ne 2 ]; then
     echo "Add a mirror to OVS bridge"
-    echo ""
-    echo "Usage: $0 <bridge> <mirror> <output port>"
-    echo "Example: $0 bgp m0 bro0"
+    echo "NOTE: a tap interface is added first, then that tap is configured as"
+    echo "the mirror interface below. It is then used for network monitoring"
+    echo "using the Bro IDS"
+    echo "Usage: $0 <bridge> <output port>"
+    echo "Example: $0 bgp bro0"
     exit 1
 fi
 
 BR=$1
-MIRROR=$2
-OUTPUT_PORT=$3
+OUTPUT_PORT=$2
 
-ovs-vsctl \
-  -- --id=@m create mirror name=$MIRROR \
+sudo ip tuntap add mode tap $OUTPUT_PORT
+
+sudo ip link set up dev $OUTPUT_PORT
+
+ovs-vsctl add-port $BR $OUTPUT_PORT \
+  -- --id=@m create mirror name=m0 \
   -- add bridge $BR mirrors @m \
   -- --id=@port get port $OUTPUT_PORT \
-  -- set mirror $MIRROR output-port=@port
+  -- set mirror m0 output-port=@port
