@@ -40,7 +40,7 @@ then
                 shift
                 filename="$1"
                 ;;
-            - u | --username )
+            -u | --username )
                 shift
                 user="$1"
                 ;;
@@ -60,15 +60,26 @@ else
     exit 1
 fi
 
+echo "-----------------------------------------------------------"
+echo "|  Importing CSV data into local variables                |"
+echo "-----------------------------------------------------------"
+echo ""
 # Parse input CSV and create master, worker01, and worker02 arrays
 OLDIFS="$IFS"
 IFS=','
 while read hostname mgmtip gateway storageip overlayip
 do
-  eval "$hostname=($mgmtip $gateway $storageip $overlayip)"
-done
+  if [ "$hostname" ]
+  then
+    eval "$hostname=($mgmtip $gateway $storageip $overlayip)"
+  fi
+done < "$filename"
 IFS="$OLDIFS"
 
+echo "----------------------------------------------------------"
+echo "|  Writing and applying network configuration            |"
+echo "----------------------------------------------------------"
+echo ""
 # Create static netplan configuration file for static IP addresses
 cat > /etc/netplan/50-cloud-init.yaml <<NET
 # This file is generated from information provided by
@@ -98,28 +109,49 @@ NET
 
 netplan apply
 
+echo "--------------------------------------------------------"
+echo "| Enabling IP forwarding for the router containers     |"
+echo "--------------------------------------------------------"
+echo ""
 # Enable IP forwarding for some later functionality
 echo "net.ipv4.ip_forward=1" | tee -a /etc/sysctl.conf
 echo "net.ipv6.conf.all.forwarding=1" | tee -a /etc/sysctl.conf
 sysctl -p
 
+echo "--------------------------------------------------------"
+echo "| Pulling the latest K8s repo data for installation    |"
+echo "--------------------------------------------------------"
+echo ""
 # Add K8s key and repo
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
 apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
 
+echo "--------------------------------------------------------"
+echo "| Installing packages...                               |"
+echo "--------------------------------------------------------"
+echo ""
 # Install necessary packages
+apt update && apt upgrade -y
 apt install -y docker.io python-docker pv python-pip kubeadm kubelet kubectl \
                     geoipupdate docker-compose openvswitch-switch nfs-common \
-                    python3-pip
+                    python3-pip sshpass
 
 # Disable rpcbind (service added from nfs-common install) so we can share nfs from our nfs container
 systemctl stop rpcbind
 systemctl disable rpcbind
 
+echo "--------------------------------------------------------"
+echo "| Installing some Python pip packages for use later    |"
+echo "--------------------------------------------------------"
+echo ""
 sudo -u $user pip install dnspython
 sudo -u $user pip install geoip2
 sudo -u $user pip3 install kuku
 
+echo "--------------------------------------------------------"
+echo "| Disable swap and enable NFS                          |"
+echo "--------------------------------------------------------"
+echo ""
 swapoff -a
 sed -i '$s|/swap|\#/swap|' /etc/fstab
 
@@ -131,6 +163,10 @@ nfs
 nfsd
 MOD
 
+echo "---------------------------------------------------------"
+echo "| Writing /etc/hosts file for named access to resoruces |"
+echo "---------------------------------------------------------"
+echo ""
 cat >> /etc/hosts <<EOF
 ${master[1]}      ${master[0]}
 ${master[3]}      storage
@@ -139,6 +175,10 @@ ${worker01[1]}      ${worker01[0]}
 ${worker02[1]}      ${worker02[0]}
 EOF
 
+echo "--------------------------------------------------------"
+echo "| Configuring systemd cgroupdriver for Docker          |"
+echo "--------------------------------------------------------"
+echo ""
 # Change Docker manager to systemd, not cgroup
 tee /etc/docker/daemon.json <<DOC
 {
@@ -158,9 +198,10 @@ systemctl restart docker
 
 usermod -aG docker $user
 
-echo -e "--------"
-echo -e "Initializing Kubernetes..."
-echo -e "--------"
+echo "--------------------------------------------------------"
+echo "| Initializing Kubernetes Cluster!                     |"
+echo "|  I can take a couple of minutes, please be patient...|"
+echo "--------------------------------------------------------"
 echo ""
 
 home_dir="/home/$user/"
@@ -240,8 +281,7 @@ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add
 apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
 
 # Install Updates
-apt update
-apt upgrade -y
+apt update && apt upgrade -y
 
 # Install packages
 apt install sshpass docker.io kubeadm kubelet kubectl openvswitch-switch curl nfs-common -y
