@@ -90,18 +90,18 @@ cat > /etc/netplan/50-cloud-init.yaml <<NET
 network:
   ethernets:
     eth0:
-      addresses: [ ${master[1]} ]
-      gateway4: ${master[2]}
+      addresses: [ ${master[0]} ]
+      gateway4: ${master[1]}
       nameservers:
         addresses:
         - 1.1.1.1
         - 8.8.8.8
       dhcpv4: false
     eth1:
-      addresses: [ ${master[3]} ]
+      addresses: [ ${master[2]} ]
       dhcp4: false
     eth2:
-      addresses: [ ${master[4]} ]
+      addresses: [ ${master[3]} ]
       dhcp4: false
     eth3:
       dhcp4: false
@@ -168,11 +168,11 @@ echo "| Writing /etc/hosts file for named access to resoruces |"
 echo "---------------------------------------------------------"
 echo ""
 cat >> /etc/hosts <<EOF
-${master[1]}      ${master[0]}
+${master[1]}      master
 ${master[3]}      storage
 ${master[4]}      network
-${worker01[1]}      ${worker01[0]}
-${worker02[1]}      ${worker02[0]}
+${worker01[1]}      worker01
+${worker02[1]}      worker02
 EOF
 
 echo "--------------------------------------------------------"
@@ -245,6 +245,10 @@ echo "*--------------------------------"
 sudo -u $user cat > worker01.sh <<WK1
 #!/bin/bash
 
+echo "----------------------------------------------------------"
+echo "|  Writing and applying network configuration            |"
+echo "----------------------------------------------------------"
+echo ""
 cat > /etc/netplan/50-cloud-init.yaml <<NET
 # This file is generated from information provided by
 # the datasource.  Changes to it will not persist across an instance.
@@ -254,18 +258,18 @@ cat > /etc/netplan/50-cloud-init.yaml <<NET
 network:
   ethernets:
     eth0:
-      addresses: [ ${worker01[1]} ]
-      gateway4: ${worker01[2]}
+      addresses: [ ${worker01[0]} ]
+      gateway4: ${worker01[1]}
       nameservers:
         addresses:
         - 1.1.1.1
         - 8.8.8.8
       dhcpv4: false
     eth1:
-      addresses: [ ${worker01[3]} ]
+      addresses: [ ${worker01[2]} ]
       dhcp4: false
     eth2:
-      addresses: [ ${worker01[4]} ]
+      addresses: [ ${worker01[3]} ]
       dhcp4: false
     eth3:
       dhcp4: false
@@ -276,6 +280,10 @@ netplan apply
 # Reload
 sysctl -p /etc/sysctl.conf
 
+echo "--------------------------------------------------------"
+echo "| Installing packages...                               |"
+echo "--------------------------------------------------------"
+echo ""
 # Add kubernetes repo
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add
 apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
@@ -299,6 +307,10 @@ echo "storage:/certs       /etc/docker/certs.d      nfs auto,nofail,noatime,nolo
 echo "net.ipv4.ip_forward=1" | tee -a /etc/sysctl.conf
 echo "net.ipv6.conf.all.forwarding=1" | tee -a /etc/sysctl.conf
 
+echo "--------------------------------------------------------"
+echo "| Configuring systemd cgroupdriver for Docker          |"
+echo "--------------------------------------------------------"
+echo ""
 # Change Docker manager to systemd, not cgroup
 cat > /etc/docker/daemon.json <<EOF
 {
@@ -324,6 +336,11 @@ sleep 15
 
 usermod -aG docker greyadmin
 
+echo "--------------------------------------------------------"
+echo "| Initializing Kubernetes Cluster!                     |"
+echo "|  I can take a couple of minutes, please be patient...|"
+echo "--------------------------------------------------------"
+echo ""
 `grep -A 2 "kubeadm join" init-file`
 
 WK1
@@ -338,6 +355,10 @@ echo "*--------------------------------"
 sudo -u $user cat > worker02.sh <<WK2
 #!/bin/bash
 
+echo "----------------------------------------------------------"
+echo "|  Writing and applying network configuration            |"
+echo "----------------------------------------------------------"
+echo ""
 cat > /etc/netplan/50-cloud-init.yaml <<NET
 # This file is generated from information provided by
 # the datasource.  Changes to it will not persist across an instance.
@@ -347,18 +368,18 @@ cat > /etc/netplan/50-cloud-init.yaml <<NET
 network:
   ethernets:
     eth0:
-      addresses: [ ${worker02[1]} ]
-      gateway4: ${worker02[2]}
+      addresses: [ ${worker02[0]} ]
+      gateway4: ${worker02[1]}
       nameservers:
         addresses:
         - 1.1.1.1
         - 8.8.8.8
       dhcpv4: false
     eth1:
-      addresses: [ ${worker02[3]} ]
+      addresses: [ ${worker02[2]} ]
       dhcp4: false
     eth2:
-      addresses: [ ${worker02[4]} ]
+      addresses: [ ${worker02[3]} ]
       dhcp4: false
     eth3:
       dhcp4: false
@@ -369,6 +390,10 @@ netplan apply
 # Reload
 sysctl -p /etc/sysctl.conf
 
+echo "--------------------------------------------------------"
+echo "| Installing packages...                               |"
+echo "--------------------------------------------------------"
+echo ""
 # Add kubernetes repo
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add
 apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
@@ -392,6 +417,10 @@ echo "storage:/certs       /etc/docker/certs.d      nfs auto,nofail,noatime,nolo
 echo "net.ipv4.ip_forward=1" | tee -a /etc/sysctl.conf
 echo "net.ipv6.conf.all.forwarding=1" | tee -a /etc/sysctl.conf
 
+echo "--------------------------------------------------------"
+echo "| Configuring systemd cgroupdriver for Docker          |"
+echo "--------------------------------------------------------"
+echo ""
 # Change Docker manager to systemd, not cgroup
 cat > /etc/docker/daemon.json <<EOF
 {
@@ -417,6 +446,11 @@ sleep 15
 
 usermod -aG docker greyadmin
 
+echo "--------------------------------------------------------"
+echo "| Initializing Kubernetes Cluster!                     |"
+echo "|  I can take a couple of minutes, please be patient...|"
+echo "--------------------------------------------------------"
+echo ""
 `grep -A 2 "kubeadm join" init-file`
 
 WK2
