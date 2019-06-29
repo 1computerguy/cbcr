@@ -96,7 +96,7 @@ network:
         addresses:
         - 1.1.1.1
         - 8.8.8.8
-      dhcpv4: false
+      dhcp4: false
     eth1:
       addresses: [ ${master[2]} ]
       dhcp4: false
@@ -266,7 +266,7 @@ network:
         addresses:
         - 1.1.1.1
         - 8.8.8.8
-      dhcpv4: false
+      dhcp4: false
     eth1:
       addresses: [ ${worker01[2]} ]
       dhcp4: false
@@ -376,7 +376,7 @@ network:
         addresses:
         - 1.1.1.1
         - 8.8.8.8
-      dhcpv4: false
+      dhcp4: false
     eth1:
       addresses: [ ${worker02[2]} ]
       dhcp4: false
