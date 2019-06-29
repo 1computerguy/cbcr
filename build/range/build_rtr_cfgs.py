@@ -21,7 +21,7 @@ if sys.argv[2]:
 else:
     svc_cfg_file = "range_services.csv"
 
-bgp_reader = csv.reader(open(rtr_cfg_file)))
+bgp_reader = csv.reader(open(rtr_cfg_file))
 
 bgp_links = {}
 

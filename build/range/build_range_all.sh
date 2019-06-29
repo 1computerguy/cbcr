@@ -6,7 +6,7 @@ usage() {
     echo "Add the password to the command to automate the deployment of OVS to the worker nodes."
     echo ""
     echo " ----"
-    echo -e "    Example: $0 -p <password>"
+    echo -e "    Example: $0 -p <password> -u <username>"
     echo " ----"
     echo ""
     echo ""
@@ -18,6 +18,10 @@ then
     while [ "$1" != "" ]
     do
         case $1 in
+            -u | --username )
+                shift
+                user="$1"
+                ;;
             -p | --password )
                 shift
                 export SSHPASS="$1"
@@ -71,6 +75,7 @@ echo ""
 cd $REPO_HOME/range_svcs
 ./build_all.sh
 
+cd $REPO_HOME/build/range
 # Call build_range_helper.py script to ingest range_services.csv file and build and
 # deploy the remaining configurations
 echo "---------------------------------------------------------"
@@ -96,7 +101,7 @@ echo "|  range_services.csv entries. These will serve as the    |"
 echo "|  in-range DNS entries.                                  |"
 echo "-----------------------------------------------------------"
 echo ""
-python3 build_dns.py
+python3 build_dns.py "range_services.csv"
 
 # Build OVS Bridges for overlay network
 echo "------------------------------------------------------------"
@@ -110,11 +115,11 @@ echo ""
 
 sudo ./build_ovs_links.sh -l bgp rtr1-svc rtr2-svc rtr3-svc rtr4-svc rtr5-svc rtr6-svc external
 
-sshpass -e scp -o StrictHostKeyChecking=no build_ovs_links.sh worker01:~/build_ovs_links.sh
-echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no worker01 cat \| sudo --prompt="" -S -- ./build_ovs_links.sh -l bgp rtr1-svc rtr2-svc rtr3-svc rtr4-svc rtr5-svc rtr6-svc external
+sshpass -e scp -o StrictHostKeyChecking=no build_ovs_links.sh $user@worker01:~/build_ovs_links.sh
+#echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no worker01 cat \| sudo --prompt="" -S -- ./build_ovs_links.sh -l bgp rtr1-svc rtr2-svc rtr3-svc rtr4-svc rtr5-svc rtr6-svc external
 
-sshpass -e scp -o StrictHostKeyChecking=no build_ovs_links.sh worker02:~/build_ovs_links.sh
-echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no worker02 cat \| sudo --prompt="" -S -- ./build_ovs_links.sh -l bgp rtr1-svc rtr2-svc rtr3-svc rtr4-svc rtr5-svc rtr6-svc external
+sshpass -e scp -o StrictHostKeyChecking=no build_ovs_links.sh $user@worker02:~/build_ovs_links.sh
+#echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no worker02 cat \| sudo --prompt="" -S -- ./build_ovs_links.sh -l bgp rtr1-svc rtr2-svc rtr3-svc rtr4-svc rtr5-svc rtr6-svc external
 
 
 # Build external access network namespace and configure for network
@@ -129,11 +134,11 @@ if [ $HOSTNAME == 'master' ]
 then
     sudo ./build_mirror.sh external m0 bro0
 else
-    sshpass -e scp -o StrictHostKeyChecking=no build_mirror.sh worker01:~/build_mirror.sh
-    echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no worker01 cat \| sudo --prompt="" -S -- ./build_mirror.sh bgp m0 bro0
+    sshpass -e scp -o StrictHostKeyChecking=no build_mirror.sh $user@worker01:~/build_mirror.sh
+    #echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no worker01 cat \| sudo --prompt="" -S -- ./build_mirror.sh bgp m0 bro0
 
-    sshpass -e scp -o StrictHostKeyChecking=no build_mirror.sh worker02:~/build_mirror.sh
-    echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no worker02 cat \| sudo --prompt="" -S -- ./build_mirror.sh bgp m0 bro0
+    sshpass -e scp -o StrictHostKeyChecking=no build_mirror.sh $user@worker02:~/build_mirror.sh
+    #echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no worker02 cat \| sudo --prompt="" -S -- ./build_mirror.sh bgp m0 bro0
 fi
 
 
@@ -161,6 +166,7 @@ echo "|  the scraper, it will fail silently...                  |"
 echo "|  That was NOT fun to troubleshoot...                    |"
 echo "-----------------------------------------------------------"
 echo ""
+sudo chown -R $user:$user $CONFIG_HOME/web
 python3 build_web_pki.py
 
 

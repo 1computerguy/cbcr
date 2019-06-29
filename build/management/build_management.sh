@@ -14,7 +14,7 @@ usage() {
     echo " ephemeral range, then you don't have to worry about Rancher and it's logging."
     echo ""
     echo " ----"
-    echo -e "    Example: $0"
+    echo -e "    Example: $0 -u <username>"
     echo " ----"
     echo ""
     echo ""
@@ -27,6 +27,10 @@ then
     while [ "$1" != "" ]
     do
         case $1 in
+            -u | --username )
+                shift
+                user="$1"
+                ;;
             -h | --help )
                 usage
                 exit
@@ -43,23 +47,6 @@ else
     exit 1
 fi
 
-echo "------------------------------------------------"
-echo "Setting environment variables and making sure they persist..."
-echo "------------------------------------------------"
-echo ""
-# Set Environment Variables for use with other scripts and environment validation
-set -a
-source .env
-set +a
-
-# Copy .env file to home directory for use with .bashrc to load variables on login
-cp .env ~/.env
-
-cat >> .bashrc <<ENV
-set -a
-    [ -f ~/.env ] && . ~/.env
-set +a
-ENV
 
 echo "-----------------------------------------------"
 echo "Building directory structure..."
@@ -67,7 +54,12 @@ echo "-----------------------------------------------"
 echo ""
 # Create default range directories
 # TODO: Make this user configurable
-sudo mkdir -p /range/{mgmt/{rancher,registry,pki/{root-ca,intermed-ca}},configs/{attack/{kali,metasploit},monitor/{bro,elastic,kibana,logstash},dns/auth,web,ftp,media-svr,network,webmail,vuln/{metasploit-vuln,mutillidae,wordpress}}}
+sudo mkdir -p /range/{mgmt/{rancher,registry,pki/{root-ca,intermed-ca}},configs}
+sudo mkdir -p /range/configs/attack/{kali,metasploit}
+sudo mkdir -p /range/configs/monitor/{bro,elastic,kibana,logstash}
+sudo mkdir -p /range/configs/dns/{auth,root,recursive}
+sudo mkdir -p /range/configs/{web,ftp,media-svr,network,webmail}
+sudo mkdir -p /range/configs/vuln/{metasploit-vuln,mutillidae,wordpress}
 sudo chown -R $user:$user /range
 
 echo "-----------------------------------------------"
@@ -77,19 +69,21 @@ echo ""
 registry_dir="$MGMT_HOME/registry"
 
 openssl req  -newkey rsa:4096 -nodes -sha256 -keyout $registry_dir/domain.key  -x509 -days 365 -out $registry_dir/domain.crt -subj "/CN=master"
-mkdir -p /etc/docker/certs.d/master:5000
-cp $registry_dir/domain.crt /etc/docker/certs.d/master:5000/ca.crt
+sudo mkdir -p /etc/docker/certs.d/master:5000
+sudo cp $registry_dir/domain.crt /etc/docker/certs.d/master:5000/ca.crt
 
 echo "-----------------------------------------------"
 echo "Building PKI infrastructure..."
 echo "-----------------------------------------------"
 echo ""
-pki/build_pki.sh
+cd pki
+./build_pki.sh
 
+cd ../
 echo "-----------------------------------------------"
 echo "Building and deploying Management Containers..."
 echo "-----------------------------------------------"
 echo ""
-docker-compose up
+docker-compose up -d    
 
 exit 0

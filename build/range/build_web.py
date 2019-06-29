@@ -15,8 +15,9 @@ for row in web_reader:
                 cont_name = row[1].replace('.', '-')
                 command = "docker run --rm -i --init -d -e "
                 command += "URL={dom} -u root ".format(dom=row[1])
-                command += "--cap-add=SYS_ADMIN -v {mnt}:/web/output ".format(mnt=os.environ["CONFIG_DIR"] + "/web")
-                command += "--name get-{dom} puppeteer-chrome-linux:scraper ".format(dom=cont_name)
-                command += "node -e '`cat scraper/scrape.js`"
+                command += "--cap-add=SYS_ADMIN -v {mnt}:/web/output ".format(mnt=os.environ["CONFIG_HOME"] + "/web")
+                command += "-v {scrape_dir}:/data --name get-{dom} master:5000/site-downloader ".format(scrape_dir=os.environ["REPO_HOME"] + "/build/range/scraper",dom=cont_name)
+                command += "node /data/scrape.js"
                 
                 os.system(command)
+                #print(command)

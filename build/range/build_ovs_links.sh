@@ -3,6 +3,8 @@
 # This script must be run as root or with sudo!
 #######
 
+role=""
+
 usage() {
     echo "---------------------------------------------------------"
     echo "* This script creates OVS bridges for network"
@@ -51,17 +53,18 @@ then
             -r | --role )
                 shift
                 role="$1"
+                shift
                 ;;
             -l | --list )
                 shift
                 count=1
-                if [ $role == "" ]
+                if [ "$role" == "" ]
                 then
                     role=`cat /etc/hostname`
                 fi
                 while [ "$1" != "" ]
                 do
-                    build_bridges "$1" "$count" "$role"
+                    create_bridges "$1" "$count" "$role"
                     shift
                     let count+=1
                 done

@@ -21,7 +21,7 @@ sign-cert() {
   local ca_dir="$PKI_HOME/intermed-ca"
   local web_dir="$CONFIG_HOME/web"
   local domain="$1"
-  local dom_ssl_dir="$web_dir/$domain/ssl"
+  local dom_ssl_dir="$web_dir/$domain"
 
   mkdir -p $dom_ssl_dir
 

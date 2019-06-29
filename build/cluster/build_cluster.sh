@@ -135,7 +135,7 @@ echo ""
 apt update && apt upgrade -y
 apt install -y docker.io python-docker pv python-pip kubeadm kubelet kubectl \
                     geoipupdate docker-compose openvswitch-switch nfs-common \
-                    python3-pip sshpass
+                    python3-pip sshpass expect
 
 # Disable rpcbind (service added from nfs-common install) so we can share nfs from our nfs container
 systemctl stop rpcbind
