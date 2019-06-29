@@ -11,6 +11,7 @@ from kubernetes import client
 # Volume information
 #   volumeName - name of volume mount
 #   mountPath - container map location
+#   subPath - sub-folder to mount ot instead of root nfsPath
 #   nfsPath - nfs share path
 #   nfsServer - nfs server hostname or ip
 #
@@ -40,10 +41,17 @@ def template(context):
     
     if "volumeName" in context:
         # Create volume mounts
-        pod_spec_volume_mounts = [
-            client.V1VolumeMount(name=context["volumeName"],
-                            mount_path=context["mountPath"])
-        ]
+        if "subPath" in context:
+            pod_spec_volume_mounts = [
+                client.V1VolumeMount(name=context["volumeName"],
+                                mount_path=context["mountPath"],
+                                sub_path=context["subPath"])
+            ]
+        else:
+            pod_spec_volume_mounts = [
+                client.V1VolumeMount(name=context["volumeName"],
+                                mount_path=context["mountPath"])
+            ]
 
         # Create volumes
         pod_spec_volumes = [
@@ -63,7 +71,7 @@ def template(context):
                     volume_mounts=pod_spec_volume_mounts
                 )
             )
-
+    
     # Create Environment variable list and populate if it is declared in the command
     env_list = []
     if "env" in context:

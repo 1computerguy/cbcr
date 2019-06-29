@@ -164,7 +164,7 @@ else:
     write_directory = sys.argv[2]
 
 reverse_directory = write_directory + "/reverse-zones"
-dns_build_dir = os.environ["REPO_HOME"] + "/services/dns"
+dns_build_dir = os.environ["REPO_HOME"] + "/range_svcs/services/dns"
 
 # Make required directories for DNS servers if they don't already exist
 if not os.path.exists(write_directory):
@@ -173,7 +173,7 @@ if not os.path.exists(write_directory):
 if not os.path.exists(reverse_directory):
     os.makedirs(reverse_directory)
 
-# import default_environment.csv file - maybe accept this as an argument - consider...
+# import range_services.csv file - maybe accept this as an argument - consider...
 services_reader = csv.reader(open(build_file))
 
 # Generate timestamp for DNS serial - useful if changes are made so Bind will
@@ -185,7 +185,7 @@ reverse_ips = {}
 nameservers = []
 
 # Iterate over the imported csv file and get the necessary data
-#    - Needed for dns from the default_environment.csv file:
+#    - Needed for dns from the range_services.csv file:
 #       - full domain name
 #       - base domain name (this will be the Bind db file created)
 #       - IP address
