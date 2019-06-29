@@ -128,7 +128,6 @@ else
     echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no worker02 cat \| sudo --prompt="" -S -- ./build_mirror.sh bgp m0 bro0
 fi
 
-cp $REPO_HOME/range_svcs/monitoring/bro-elk.yml $K8S_CONFIGS
 
 # Build external access network namespace and configure for network
 echo "-----------------------------------------------------------"
