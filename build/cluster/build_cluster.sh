@@ -90,7 +90,7 @@ cat > /etc/netplan/50-cloud-init.yaml <<NET
 network:
   ethernets:
     eth0:
-      addresses: [ ${master[0]} ]
+      addresses: [ ${master[0]}/24 ]
       gateway4: ${master[1]}
       nameservers:
         addresses:
@@ -168,11 +168,11 @@ echo "| Writing /etc/hosts file for named access to resoruces |"
 echo "---------------------------------------------------------"
 echo ""
 cat >> /etc/hosts <<EOF
-${master[1]}      master
-${master[3]}      storage
-${master[4]}      network
-${worker01[1]}      worker01
-${worker02[1]}      worker02
+${master[0]}      master
+${master[2]}      storage
+${master[3]}      network
+${worker01[0]}      worker01
+${worker02[0]}      worker02
 EOF
 
 echo "--------------------------------------------------------"
@@ -242,6 +242,8 @@ echo -e "*  Writing Worker01 configuration to worker01.sh..."
 echo "*"
 echo "*--------------------------------"
 
+hosts=`cat /etc/hosts`
+
 sudo -u $user cat > worker01.sh <<WK1
 #!/bin/bash
 
@@ -258,7 +260,7 @@ cat > /etc/netplan/50-cloud-init.yaml <<NET
 network:
   ethernets:
     eth0:
-      addresses: [ ${worker01[0]} ]
+      addresses: [ ${worker01[0]}/24 ]
       gateway4: ${worker01[1]}
       nameservers:
         addresses:
@@ -368,7 +370,7 @@ cat > /etc/netplan/50-cloud-init.yaml <<NET
 network:
   ethernets:
     eth0:
-      addresses: [ ${worker02[0]} ]
+      addresses: [ ${worker02[0]}/24 ]
       gateway4: ${worker02[1]}
       nameservers:
         addresses:
