@@ -280,9 +280,6 @@ NET
 
 netplan apply
 
-# Reload
-sysctl -p /etc/sysctl.conf
-
 echo "--------------------------------------------------------"
 echo "| Installing packages...                               |"
 echo "--------------------------------------------------------"
@@ -309,6 +306,9 @@ echo "storage:/certs       /etc/docker/certs.d      nfs auto,nofail,noatime,nolo
 # Enable IP forwarding for some later functionality
 echo "net.ipv4.ip_forward=1" | tee -a /etc/sysctl.conf
 echo "net.ipv6.conf.all.forwarding=1" | tee -a /etc/sysctl.conf
+
+# Reload
+sysctl -p /etc/sysctl.conf
 
 echo "--------------------------------------------------------"
 echo "| Configuring systemd cgroupdriver for Docker          |"
@@ -390,9 +390,6 @@ NET
 
 netplan apply
 
-# Reload
-sysctl -p /etc/sysctl.conf
-
 echo "--------------------------------------------------------"
 echo "| Installing packages...                               |"
 echo "--------------------------------------------------------"
@@ -419,6 +416,9 @@ echo "storage:/certs       /etc/docker/certs.d      nfs auto,nofail,noatime,nolo
 # Enable IP forwarding for some later functionality
 echo "net.ipv4.ip_forward=1" | tee -a /etc/sysctl.conf
 echo "net.ipv6.conf.all.forwarding=1" | tee -a /etc/sysctl.conf
+
+# Reload
+sysctl -p /etc/sysctl.conf
 
 echo "--------------------------------------------------------"
 echo "| Configuring systemd cgroupdriver for Docker          |"
