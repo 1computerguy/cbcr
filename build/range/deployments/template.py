@@ -71,9 +71,6 @@ def template(context):
                     volume_mounts=pod_spec_volume_mounts
                 )
             )
-    vpn_run = []
-    if "vpn_run" in context:
-        vpn_run.append(context['vpn_run'])
     
     # Create Environment variable list and populate if it is declared in the command
     env_list = []

@@ -10,15 +10,14 @@ if [ $# -ne 2 ]; then
     exit 1
 fi
 
-BR=$1
-OUTPUT_PORT=$2
+br=$1
+output_port=$2
 
-sudo ip tuntap add mode tap $OUTPUT_PORT
-
-sudo ip link set up dev $OUTPUT_PORT
-
-ovs-vsctl add-port $BR $OUTPUT_PORT \
+ovs-vsctl add-port $br output_port \
+  -- set interface $br type=internal \
+  -- --id=@p get port $output_port \
   -- --id=@m create mirror name=m0 \
-  -- add bridge $BR mirrors @m \
-  -- --id=@port get port $OUTPUT_PORT \
-  -- set mirror m0 output-port=@port
+  select-all=true output-port=@p \
+  -- set bridge $br mirrors=@m
+
+sudo ip link set up dev $output_port

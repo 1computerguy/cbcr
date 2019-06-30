@@ -134,17 +134,18 @@ def build_vpn(vpn_svcs):
 
     command = 'kuku render -s name={name},'.format(name=vpn_svcs["k8s_name"])
     command += 'image=master:5000/{cont},replicas=1,'.format(cont=vpn_svcs["container_name"])
-    command += 'env="IP_ADDR LEN GATEWAY INT",'
-    command += 'vals="{addr} {len} {gw} {nic}",'.format(addr=vpn_svcs["ip_address"],
+    command += 'env="IP_ADDR LEN GATEWAY INT OPEN_VPN_CMD",'
+    command += 'vals="{addr} {len} {gw} {nic} {vpn}",'.format(addr=vpn_svcs["ip_address"],
                                                         len=vpn_svcs["cidr_len"],
                                                         gw=vpn_svcs["gateway"],
-                                                        nic=vpn_svcs["nic"])
+                                                        nic=vpn_svcs["nic"],
+                                                        vpn="ovpn_run")
     command += 'netkey=k8s.v1.cni.cncf.io/networks,'
     command += 'netval={bridge},'.format(bridge=vpn_svcs["svc_bridge"])
     command += 'volumeName={volume},'.format(volume=volume_name)
     command += 'mountPath={mount},'.format(mount=mount_path)
     command += 'nfsPath={nfs},'.format(nfs=nfs_path)
-    command += 'nfsServer=storage,vpn_run=ovpn_run,'
+    command += 'nfsServer=storage,'
     command += 'vpn_init="{usr}-genconfig {usr}-initpki {usr}-build-client {usr}-get-client",'.format(usr=vpn_user)
     command += 'vpn_cmds=" ovpn_genconfig -u udp://{domain}; ovpn_initpki nopass;'.format(domain=vpn_svcs["domain_name"])
     command += ' easyrsa build-client-full {usr} nopass; ovpn_getclient'.format(usr=vpn_user)
