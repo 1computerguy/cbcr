@@ -231,7 +231,7 @@ def build_network(network_svcs):
     return command
 
 services_reader = csv.reader(open(svc_cfg_file))
-cidr = "24"
+cidr = "8"
 default_nic = "net1"
 
 svc_data = {}
