@@ -71,6 +71,9 @@ def template(context):
                     volume_mounts=pod_spec_volume_mounts
                 )
             )
+    vpn_run = []
+    if "vpn_run" in context:
+        vpn_run.append(context['vpn_run'])
     
     # Create Environment variable list and populate if it is declared in the command
     env_list = []
@@ -86,6 +89,7 @@ def template(context):
         containers=[client.V1Container(name=context["name"],
             image=context["image"],
             env=env_list,
+            args=vpn_run,
             security_context=client.V1SecurityContext(privileged=True),
             volume_mounts=pod_spec_volume_mounts)
         ],

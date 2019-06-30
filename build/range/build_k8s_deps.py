@@ -144,7 +144,7 @@ def build_vpn(vpn_svcs):
     command += 'volumeName={volume},'.format(volume=volume_name)
     command += 'mountPath={mount},'.format(mount=mount_path)
     command += 'nfsPath={nfs},'.format(nfs=nfs_path)
-    command += 'nfsServer=storage,'
+    command += 'nfsServer=storage,vpn_run=ovpn_run,'
     command += 'vpn_init="{usr}-genconfig {usr}-initpki {usr}-build-client {usr}-get-client",'.format(usr=vpn_user)
     command += 'vpn_cmds=" ovpn_genconfig -u udp://{domain}; ovpn_initpki nopass;'.format(domain=vpn_svcs["domain_name"])
     command += ' easyrsa build-client-full {usr} nopass; ovpn_getclient'.format(usr=vpn_user)
