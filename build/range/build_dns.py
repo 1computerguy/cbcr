@@ -85,7 +85,7 @@ def reverse_dns(dns_ips, auth_named, timestamp):
 
 def named_dns(dns_files_dir):
     named = """// BIND Configuration
-include "/data/bind/etc/rndc.key";
+include "/etc/bind/rndc.key";
 controls {
     inet 127.0.0.1 port 953 allow { 127.0.0.1; };
 };
@@ -94,32 +94,32 @@ logging {
 };
 zone "." {
     type hint;
-    file "/data/bind/etc/db.root";
+    file "/etc/bind/db.root";
 };
 zone "localhost" {
     type master;
-    file "/data/bind/etc/db.local";
+    file "/etc/bind/db.local";
     allow-update { none; };
 };
 zone "0.0.127.in-addr.arpa" {
     type master;
-    file "/data/bind/etc/db.127";
+    file "/etc/bind/db.127";
     allow-update { none; };
 };
 zone "255.in-addr.arpa" {
     type master;
-    file "/data/bind/etc/db.255";
+    file "/etc/bind/db.255";
     allow-update { none; };
 };
 zone "0.in-addr.arpa" {
     type master;
-    file "/data/bind/etc/db.0";
+    file "/etc/bind/db.0";
     allow-update { none; };
 };
 options {
-    directory "/data/bind/etc";
-    dump-file "/data/bind/etc/data/cache_dump.db";
-    statistics-file "/data/bind/etc/data/named_stats.txt";
+    directory "/etc/bind";
+    dump-file "/etc/bind/data/cache_dump.db";
+    statistics-file "/etc/bind/data/named_stats.txt";
     recursion no;
     allow-recursion { none; };
     allow-query { any; };
@@ -135,7 +135,7 @@ options {
         forward_domain = '.'.join(forward_file.split('.')[1:])
         named += """zone "{domain_name}" {{
     type master;
-    file "/data/bind/etc/{domain_file}";
+    file "/etc/bind/{domain_file}";
     allow-update {{ none; }};
 }};
 """.format(domain_name=forward_domain, domain_file=forward_file)
@@ -147,7 +147,7 @@ options {
         reverse_domain = '.'.join(reverse_file.split('.')[1:])
         named += """zone "{zone_number}.in-addr.arpa" {{
     type master;
-    file "/data/bind/etc/reverse_zones/{domain_file}";
+    file "/etc/bind/reverse_zones/{domain_file}";
 }};
 """.format(zone_number=reverse_domain, domain_file=reverse_file)
 

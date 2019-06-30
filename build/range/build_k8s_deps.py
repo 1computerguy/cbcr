@@ -51,7 +51,7 @@ def build_dns(dns_svcs):
     # Generate kuku command and call using os.system()
     volume_name = dns_svcs["domain_name"].replace('.', '-')
     command = ''
-    mount_path = "/data/bind/etc"
+    mount_path = "/data"
 
     if dns_svcs["svc_sub_type"] == "authoritative":
         nfs_path = os.environ["NFS_ROOT"] + "/dns/auth"
