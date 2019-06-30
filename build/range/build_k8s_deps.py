@@ -27,7 +27,7 @@ def build_web(web_svcs):
 
     if web_svcs["container_name"] == "nginx":
         mount_path = "/usr/share/nginx/html"
-        nfs_path = os.environ["CONFIG_HOME"] + "/web/" + web_svcs["domain_name"]
+        nfs_path = os.environ["NFS_ROOT"] + "/web/" + web_svcs["domain_name"]
         
         command += ',volumeName={volume},'.format(volume=volume_name)
         command += 'mountPath={mount},'.format(mount=mount_path)
@@ -36,7 +36,7 @@ def build_web(web_svcs):
 
     elif web_svcs["container_name"] == "media":
         mount_path = "/media/serviio"
-        nfs_path = os.environ["CONFIG_HOME"] + "/media/" + web_svcs["domain_name"]
+        nfs_path = os.environ["NFS_ROOT"] + "/media/" + web_svcs["domain_name"]
 
         command += ',volumeName={volume},'.format(volume=volume_name)
         command += 'mountPath={mount},'.format(mount=mount_path)
@@ -51,14 +51,14 @@ def build_dns(dns_svcs):
     # Generate kuku command and call using os.system()
     volume_name = dns_svcs["domain_name"].replace('.', '-')
     command = ''
-    mount_path = "/etc/bind"
+    mount_path = "/data/bind/etc"
 
     if dns_svcs["svc_sub_type"] == "authoritative":
-        nfs_path = os.environ["CONFIG_HOME"] + "/dns/auth"
+        nfs_path = os.environ["NFS_ROOT"] + "/dns/auth"
     elif dns_svcs["svc_sub_type"] == "root":
-        nfs_path = os.environ["CONFIG_HOME"] + "/dns/root"
+        nfs_path = os.environ["NFS_ROOT"] + "/dns/root"
     elif dns_svcs["svc_sub_type"] == "recursive":
-        nfs_path = os.environ["CONFIG_HOME"] + "/dns/recursive"
+        nfs_path = os.environ["NFS_ROOT"] + "/dns/recursive"
 
     command = 'kuku render -s name={name},'.format(name=dns_svcs["k8s_name"])
     command += 'image=master:5000/{cont},replicas=1,'.format(cont=dns_svcs["container_name"])
@@ -97,7 +97,7 @@ def build_smtp(smtp_svcs):
     if smtp_svcs["svc_sub_type"] == "webmail":
         volume_name = smtp_svcs["domain_name"].replace('.', '-')
         mount_path = "/data"
-        nfs_path = os.environ["CONFIG_HOME"] + "/smtp/webmail"
+        nfs_path = os.environ["NFS_ROOT"] + "/smtp/webmail"
 
         command += ',volumeName={volume},'.format(volume=volume_name)
         command += 'mountPath={mount},'.format(mount=mount_path)
@@ -129,7 +129,7 @@ def build_vpn(vpn_svcs):
     command = ''
     mount_path = "/etc/openvpn"
     vpn_user = vpn_svcs["domain_name"].split('.')[0]
-    key_path = os.environ["CONFIG_HOME"] + "/vpn"
+    key_path = os.environ["NFS_ROOT"] + "/vpn"
     nfs_path = key_path + "/" + vpn_svcs["domain_name"]
 
     command = 'kuku render -s name={name},'.format(name=vpn_svcs["k8s_name"])
@@ -160,7 +160,7 @@ def build_ftp(ftp_svcs):
     mount_path = "/home/ftpuser"
     user = "ftpuser"
     passwd = "ftp123"
-    nfs_path = os.environ["CONFIG_HOME"] + "/ftp/" + ftp_svcs["domain_name"]
+    nfs_path = os.environ["NFS_ROOT"] + "/ftp/" + ftp_svcs["domain_name"]
 
     command = 'kuku render -s name={name},'.format(name=ftp_svcs["k8s_name"])
     command += 'image=master:5000/{cont},replicas=1,'.format(cont=ftp_svcs["container_name"])
@@ -187,7 +187,7 @@ def build_attack(attack_svcs):
     # Generate kuku command and call using os.system()
     volume_name = attack_svcs["domain_name"].replace('.', '-')
     command = ''
-    nfs_path = os.environ["CONFIG_HOME"] + "/attack/" + attack_svcs["domain_name"]
+    nfs_path = os.environ["NFS_ROOT"] + "/attack/" + attack_svcs["domain_name"]
     
     if attack_svcs["svc_sub_type"] == "metasploit":
         mount_path = "/home/msf/.msf4"
@@ -215,7 +215,7 @@ def build_network(network_svcs):
     # Generate kuku command and call using os.system()
     volume_name = network_svcs["k8s_name"]
     command = ''
-    nfs_path = os.environ["CONFIG_HOME"] + "/network/" + network_svcs["k8s_name"]
+    nfs_path = os.environ["NFS_ROOT"] + "/network/" + network_svcs["k8s_name"]
     mount_path = '/etc/frr'
 
     command = 'kuku render -s name={name},'.format(name=network_svcs["k8s_name"])
@@ -283,7 +283,7 @@ for row in network_reader:
 
         # Append service and external links to router definition
         ovs_bridge.append(row[5])
-        ovs_bridge.append(row[7])
+        ovs_bridge.append(row[8])
         
         net_data["k8s_name"] = row[0]
         net_data["container_name"] = "frr"

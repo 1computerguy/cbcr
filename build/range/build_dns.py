@@ -85,7 +85,7 @@ def reverse_dns(dns_ips, auth_named, timestamp):
 
 def named_dns(dns_files_dir):
     named = """// BIND Configuration
-include "/etc/bind/rndc.key";
+include "/data/bind/etc/rndc.key";
 controls {
     inet 127.0.0.1 port 953 allow { 127.0.0.1; };
 };
@@ -94,32 +94,32 @@ logging {
 };
 zone "." {
     type hint;
-    file "/etc/bind/db.root";
+    file "/data/bind/etc/db.root";
 };
 zone "localhost" {
     type master;
-    file "/etc/bind/db.local";
+    file "/data/bind/etc/db.local";
     allow-update { none; };
 };
 zone "0.0.127.in-addr.arpa" {
     type master;
-    file "/etc/bind/db.127";
+    file "/data/bind/etc/db.127";
     allow-update { none; };
 };
 zone "255.in-addr.arpa" {
     type master;
-    file "/etc/bind/db.255";
+    file "/data/bind/etc/db.255";
     allow-update { none; };
 };
 zone "0.in-addr.arpa" {
     type master;
-    file "/etc/bind/db.0";
+    file "/data/bind/etc/db.0";
     allow-update { none; };
 };
 options {
-    directory "/etc/bind";
-    dump-file "/etc/bind/data/cache_dump.db";
-    statistics-file "/etc/bind/data/named_stats.txt";
+    directory "/data/bind/etc";
+    dump-file "/data/bind/etc/data/cache_dump.db";
+    statistics-file "/data/bind/etc/data/named_stats.txt";
     recursion no;
     allow-recursion { none; };
     allow-query { any; };
@@ -135,7 +135,7 @@ options {
         forward_domain = '.'.join(forward_file.split('.')[1:])
         named += """zone "{domain_name}" {{
     type master;
-    file "/etc/bind/{domain_file}";
+    file "/data/bind/etc/{domain_file}";
     allow-update {{ none; }};
 }};
 """.format(domain_name=forward_domain, domain_file=forward_file)
@@ -147,7 +147,7 @@ options {
         reverse_domain = '.'.join(reverse_file.split('.')[1:])
         named += """zone "{zone_number}.in-addr.arpa" {{
     type master;
-    file "/etc/bind/reverse_zones/{domain_file}";
+    file "/data/bind/etc/reverse_zones/{domain_file}";
 }};
 """.format(zone_number=reverse_domain, domain_file=reverse_file)
 
@@ -157,17 +157,17 @@ options {
 
 # Grab save directory from command line
 build_file = sys.argv[1]
-write_directory = os.environ["CONFIG_HOME"] + "/dns"
-
+copy_directory = os.environ["CONFIG_HOME"] + "/dns"
+write_directory = copy_directory + "/auth"
 reverse_directory = write_directory + "/reverse-zones"
 dns_build_dir = os.environ["REPO_HOME"] + "/range_svcs/services/dns"
 
 # Make required directories for DNS servers if they don't already exist
-if not os.path.exists(write_directory):
-    os.makedirs(write_directory)
+#if not os.path.exists(write_directory):
+#    os.makedirs(write_directory)
 
-if not os.path.exists(reverse_directory):
-    os.makedirs(reverse_directory)
+#if not os.path.exists(reverse_directory):
+#    os.makedirs(reverse_directory)
 
 # import range_services.csv file - maybe accept this as an argument - consider...
 services_reader = csv.reader(open(build_file))
@@ -240,7 +240,9 @@ with open(named_file, 'w') as named_write:
 
 for full_filename in glob.glob(dns_build_dir + "/auth/*"):
     filename = os.path.basename(full_filename)
-    copyfile(full_filename, write_directory + "/auth/" + filename)
+    copyfile(full_filename, write_directory + "/" + filename)
 
-copytree(dns_build_dir + "/recursive", write_directory)
-copytree(dns_build_dir + "/root", write_directory)
+dirs = ["root", "recursive"]
+
+for path in dirs:
+    copytree(dns_build_dir + "/" + path , copy_directory + "/" + path)

@@ -55,9 +55,9 @@ echo ""
 # Create default range directories
 # TODO: Make this user configurable
 sudo mkdir -p /range/{mgmt/{rancher,registry,pki/{root-ca,intermed-ca}},configs}
-sudo mkdir -p /range/configs/attack/{kali,metasploit}
-sudo mkdir -p /range/configs/monitor/{bro,elastic,kibana,logstash}
-sudo mkdir -p /range/configs/dns/{auth,root,recursive}
+sudo mkdir -p /range/configs/attack/{rtr1-attacker,rtr2-attacker,rtr3-attacker,rtr4-attacker,rtr5-attacker,rtr6-attacker}
+sudo mkdir -p /range/configs/monitor/{bro/data,elastic,kibana,logstash}
+sudo mkdir -p /range/configs/dns/auth/reverse-zones
 sudo mkdir -p /range/configs/{web,ftp,media-svr,network,webmail}
 sudo mkdir -p /range/configs/vuln/{metasploit-vuln,mutillidae,wordpress}
 sudo chown -R $user:$user /range

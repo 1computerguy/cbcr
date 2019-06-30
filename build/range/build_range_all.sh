@@ -83,6 +83,7 @@ echo "|  Building the Kubernetes yaml configuration files     |"
 echo "|  This process can take up to 3-5 minutes to complete  |"
 echo "---------------------------------------------------------"
 echo ""
+python3 build_k8s_net.py
 python3 build_k8s_deps.py
 
 # Build Router Configs
@@ -101,7 +102,7 @@ echo "|  range_services.csv entries. These will serve as the    |"
 echo "|  in-range DNS entries.                                  |"
 echo "-----------------------------------------------------------"
 echo ""
-python3 build_dns.py "range_services.csv"
+python3 build_dns.py range_services.csv
 
 # Build OVS Bridges for overlay network
 echo "------------------------------------------------------------"
@@ -135,10 +136,10 @@ then
     sudo ./build_mirror.sh external bro0
 else
     sshpass -e scp -o StrictHostKeyChecking=no build_mirror.sh $user@worker01:~/build_mirror.sh
-    #echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no worker01 cat \| sudo --prompt="" -S -- ./build_mirror.sh bgp m0 bro0
+    #echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no worker01 cat \| sudo --prompt="" -S -- ./build_mirror.sh bgp bro0
 
     sshpass -e scp -o StrictHostKeyChecking=no build_mirror.sh $user@worker02:~/build_mirror.sh
-    #echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no worker02 cat \| sudo --prompt="" -S -- ./build_mirror.sh bgp m0 bro0
+    #echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no worker02 cat \| sudo --prompt="" -S -- ./build_mirror.sh bgp bro0
 fi
 
 

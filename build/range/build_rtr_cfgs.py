@@ -9,17 +9,12 @@ TODO: Work on the custom_svc.csv integration so users can modify a simple csv fi
 import ipaddress
 import os
 from shutil import copyfile
+import sys
 
-# Grab files from command line, or use default if not provided
-if sys.argv[1]:
-    rtr_cfg_file = sys.argv[1]
-else:
-    rgr_cfg_file = "range_network.csv"
-
-if sys.argv[2]:
-    svc_cfg_file = sys.argv[2]
-else:
-    svc_cfg_file = "range_services.csv"
+# Set files to use for configuration
+# TODO: Change this to allow CLI entry
+rtr_cfg_file = "range_network.csv"
+svc_cfg_file = "range_services.csv"
 
 bgp_reader = csv.reader(open(rtr_cfg_file))
 
@@ -96,7 +91,7 @@ for asn in bgp_links:
     int_count += 1
     ext_net = bgp_links[asn]['external_net1']
     static.write("!\n!\n")
-    static.write("ip route " + bgp_links[asn]['external_net2'] + ' ' + str(ipaddress.ip_network(ext_net)[2])
+    static.write("ip route " + bgp_links[asn]['external_net2'] + ' ' + str(ipaddress.ip_network(ext_net)[2]))
     static.write("\n!\nline vty\n!")
     
     zebra.write("!\n")
@@ -110,4 +105,4 @@ for asn in bgp_links:
     zebra.close()
     bgpd.close()
     static.close()
-    copyfile(os.environ["REPO_HOME"] + "/range_svcs/network/daemons", cfg_path + "/daemons")
+    copyfile(os.environ["REPO_HOME"] + "/range_svcs/services/network/daemons", cfg_path + "/daemons")
