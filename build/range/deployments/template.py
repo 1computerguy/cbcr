@@ -67,7 +67,7 @@ def template(context):
         for key, val in dict(zip(context["vpn_init"].split(), context["vpn_cmds"].split(';'))).items():
             pod_init_containers.append(client.V1Container(name=context["name"] + "-" + key,
                     image=context["image"],
-                    command=[val.split()],
+                    command=val.split(),
                     volume_mounts=pod_spec_volume_mounts
                 )
             )
