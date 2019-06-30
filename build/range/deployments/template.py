@@ -81,12 +81,16 @@ def template(context):
             env_var = client.V1EnvVar(name=key, value=val)
             env_list.append(env_var)
 
+    args = []
+    if "attack_args" in context:
+        args.append(context["attack_args"].split())
+
     # Define the template specification
     template_spec = client.V1PodSpec(
         containers=[client.V1Container(name=context["name"],
             image=context["image"],
             env=env_list,
-            args=vpn_run,
+            args=args,
             security_context=client.V1SecurityContext(privileged=True),
             volume_mounts=pod_spec_volume_mounts)
         ],
