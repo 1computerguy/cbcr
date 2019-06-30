@@ -1,5 +1,5 @@
 options {
-	directory "/var/cache/bind";
+	directory "/etc/bind";
 
 	// If there is a firewall between you and nameservers you want
 	// to talk to, you may need to fix the firewall to allow multiple
@@ -30,5 +30,8 @@ options {
 
 	auth-nxdomain no;    # conform to RFC1035
 	listen-on-v6 { any; };
+    
+    dump-file "/etc/bind/data/cache_dump.db";
+    statistics-file "/etc/bind/data/named_stats.txt";
 };
 
