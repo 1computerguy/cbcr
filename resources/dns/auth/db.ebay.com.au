@@ -1,0 +1,13 @@
+$TTL  86400
+@       IN      SOA     ns1.ebay.com.au. dns-admin.ebay.com.au. (
+                        2019063002         ; Serial
+                        604800         ; Refresh
+                        86400         ; Retry
+                        2419200         ; Expire
+                        604800 )       ; Negative Cache TTL
+ebay.com.au.      IN      A       58.135.195.175
+www.ebay.com.au.     IN      CNAME       ebay.com.au.
+ebay.com.au.     IN    NS    ac1.nstld.com.
+ebay.com.au.     IN    NS    ac2.nstld.com.
+ebay.com.au.     IN    NS    a.nic.dns-tld.site.
+ebay.com.au.     IN    NS    b.nic.dns-tld.site.

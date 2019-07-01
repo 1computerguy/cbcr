@@ -1,0 +1,42 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: www-fakaza
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: www-fakaza
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr6-svc
+      labels:
+        app: www-fakaza
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 154.162.225.76
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 154.0.0.1
+        - name: INT
+          value: net1
+        image: master:5000/nginx
+        name: www-fakaza
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: fakaza-com
+      initContainers: []
+      volumes:
+      - name: fakaza-com
+        nfs:
+          path: /configs/web/fakaza.com
+          server: storage
+
+

@@ -1,0 +1,15 @@
+$TTL  86400
+@       IN      SOA         ns1.42. dns-admin.42. (
+                            2019063002         ; Serial
+                            604800         ; Refresh
+                            86400         ; Retry
+                            2419200         ; Expire
+                            604800 )       ; Negative Cache TTL
+83.7.199.      IN      PTR       l.root-servers.net
+89.202.34.      IN      PTR       vpn.com
+216.185.201.      IN      PTR       ipvanish.com
+3.120.102.      IN      PTR       hackattack.com
+                 IN      NS      ac1.nstld.com
+                 IN      NS      ac2.nstld.com
+                 IN      NS      a.nic.dns-tld.site
+                 IN      NS      b.nic.dns-tld.site

@@ -1,0 +1,72 @@
+!
+! Zebra configuration saved from vty
+!   2019/01/08 04:30:43
+!
+frr version 5.0.1
+frr defaults traditional
+!
+hostname rtr-as
+!
+!
+!
+interface eth0
+ description Asia to Europe Link
+ ip address 193.0.0.2/30
+ no shut
+!
+interface eth1
+ description Asia to Oceania Link
+ ip address 202.93.8.1/30
+ no shut
+!
+interface eth2
+ description Asia Service Link
+ no shut
+ ip address 14.0.0.1/8
+ ip address 27.0.0.1/8
+ ip address 39.0.0.1/8
+ ip address 42.0.0.1/8
+ ip address 49.0.0.1/8
+ ip address 59.0.0.1/8
+ ip address 60.0.0.1/8
+ ip address 61.0.0.1/8
+ ip address 101.0.0.1/8
+ ip address 106.0.0.1/8
+ ip address 110.0.0.1/8
+ ip address 111.0.0.1/8
+ ip address 112.0.0.1/8
+ ip address 113.0.0.1/8
+ ip address 115.0.0.1/8
+ ip address 116.0.0.1/8
+ ip address 117.0.0.1/8
+ ip address 118.0.0.1/8
+ ip address 125.0.0.1/8
+ ip address 126.0.0.1/8
+ ip address 133.0.0.1/8
+ ip address 153.0.0.1/8
+ ip address 119.0.0.1/8
+ ip address 120.0.0.1/8
+ ip address 121.0.0.1/8
+ ip address 122.0.0.1/8
+ ip address 123.0.0.1/8
+ ip address 124.0.0.1/8
+ ip address 163.0.0.1/8
+ ip address 171.0.0.1/8
+ ip address 175.0.0.1/8
+ ip address 180.0.0.1/8
+ ip address 182.0.0.1/8
+ ip address 183.0.0.1/8
+ ip address 202.0.0.1/8
+ ip address 211.0.0.1/8
+ ip address 218.0.0.1/8
+ ip address 219.0.0.1/8
+ ip address 221.0.0.1/8
+ ip address 222.0.0.1/8
+ ip address 223.0.0.1/8
+!
+no ipv6 forwarding
+!
+!
+!
+line vty
+!

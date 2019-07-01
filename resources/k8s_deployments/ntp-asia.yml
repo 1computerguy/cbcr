@@ -1,0 +1,36 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: ntp-asia
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ntp-asia
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr3-svc
+      labels:
+        app: ntp-asia
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 49.19.96.19
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 49.0.0.1
+        - name: INT
+          value: net1
+        image: master:5000/ntpd
+        name: ntp-asia
+        securityContext:
+          privileged: true
+        volumeMounts: []
+      initContainers: []
+      volumes: []
+
+

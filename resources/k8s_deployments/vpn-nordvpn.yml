@@ -1,0 +1,81 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: vpn-nordvpn
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vpn-nordvpn
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr3-svc
+      labels:
+        app: vpn-nordvpn
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 106.18.229.229
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 106.0.0.1
+        - name: INT
+          value: net1
+        - name: OPEN_VPN_CMD
+          value: ovpn_run
+        image: master:5000/openvpn
+        name: vpn-nordvpn
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /etc/openvpn
+          name: nordvpn-com
+      initContainers:
+      - command:
+        - ovpn_genconfig
+        - -u
+        - udp://nordvpn.com
+        image: master:5000/openvpn
+        name: vpn-nordvpn-nordvpn-genconfig
+        volumeMounts:
+        - mountPath: /etc/openvpn
+          name: nordvpn-com
+      - command:
+        - ovpn_initpki
+        - nopass
+        image: master:5000/openvpn
+        name: vpn-nordvpn-nordvpn-initpki
+        volumeMounts:
+        - mountPath: /etc/openvpn
+          name: nordvpn-com
+      - command:
+        - easyrsa
+        - build-client-full
+        - nordvpn
+        - nopass
+        image: master:5000/openvpn
+        name: vpn-nordvpn-nordvpn-build-client
+        volumeMounts:
+        - mountPath: /etc/openvpn
+          name: nordvpn-com
+      - command:
+        - ovpn_getclient
+        - nordvpn
+        - '>'
+        - /configs/vpn/nordvpn.ovpn
+        image: master:5000/openvpn
+        name: vpn-nordvpn-nordvpn-get-client
+        volumeMounts:
+        - mountPath: /etc/openvpn
+          name: nordvpn-com
+      volumes:
+      - name: nordvpn-com
+        nfs:
+          path: /configs/vpn/nordvpn.com
+          server: storage
+
+

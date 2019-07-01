@@ -1,0 +1,42 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: www-elsalvador
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: www-elsalvador
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr5-svc
+      labels:
+        app: www-elsalvador
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 179.249.122.52
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 179.0.0.1
+        - name: INT
+          value: net1
+        image: master:5000/nginx
+        name: www-elsalvador
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: elsalvador-com
+      initContainers: []
+      volumes:
+      - name: elsalvador-com
+        nfs:
+          path: /configs/web/elsalvador.com
+          server: storage
+
+

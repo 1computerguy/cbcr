@@ -1,0 +1,42 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: www-facebook
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: www-facebook
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr2-svc
+      labels:
+        app: www-facebook
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 31.13.65.36
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 31.0.0.1
+        - name: INT
+          value: net1
+        image: master:5000/nginx
+        name: www-facebook
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: facebook-com
+      initContainers: []
+      volumes:
+      - name: facebook-com
+        nfs:
+          path: /configs/web/facebook.com
+          server: storage
+
+

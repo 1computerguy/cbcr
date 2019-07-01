@@ -1,0 +1,36 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: smtp-facebook
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: smtp-facebook
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr2-svc
+      labels:
+        app: smtp-facebook
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 176.252.127.251
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 176.0.0.1
+        - name: INT
+          value: net1
+        image: master:5000/smtp
+        name: smtp-facebook
+        securityContext:
+          privileged: true
+        volumeMounts: []
+      initContainers: []
+      volumes: []
+
+

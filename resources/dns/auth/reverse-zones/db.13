@@ -1,0 +1,13 @@
+$TTL  86400
+@       IN      SOA         ns1.13. dns-admin.13. (
+                            2019063002         ; Serial
+                            604800         ; Refresh
+                            86400         ; Retry
+                            2419200         ; Expire
+                            604800 )       ; Negative Cache TTL
+91.7.199.      IN      PTR       d.root-servers.net
+4.24.196.      IN      PTR       privatevpn.com
+                 IN      NS      ac1.nstld.com
+                 IN      NS      ac2.nstld.com
+                 IN      NS      a.nic.dns-tld.site
+                 IN      NS      b.nic.dns-tld.site

@@ -1,0 +1,42 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: www-ebay
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: www-ebay
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr4-svc
+      labels:
+        app: www-ebay
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 58.135.195.175
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 58.0.0.1
+        - name: INT
+          value: net1
+        image: master:5000/nginx
+        name: www-ebay
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: ebay-com-au
+      initContainers: []
+      volumes:
+      - name: ebay-com-au
+        nfs:
+          path: /configs/web/ebay.com.au
+          server: storage
+
+

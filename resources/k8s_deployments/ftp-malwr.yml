@@ -1,0 +1,50 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: ftp-malwr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ftp-malwr
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr3-svc
+      labels:
+        app: ftp-malwr
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 61.62.202.101
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 61.0.0.1
+        - name: INT
+          value: net1
+        - name: PUBLICHOST
+          value: ftp.malwr.cn
+        - name: FTP_USER_NAME
+          value: ftpuser
+        - name: FTP_USER_PASS
+          value: ftp123
+        - name: FTP_USER_HOME
+          value: /home/ftpuser
+        image: master:5000/ftpd
+        name: ftp-malwr
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /home/ftpuser
+          name: ftp-malwr-cn
+      initContainers: []
+      volumes:
+      - name: ftp-malwr-cn
+        nfs:
+          path: /configs/ftp/ftp.malwr.cn
+          server: storage
+
+

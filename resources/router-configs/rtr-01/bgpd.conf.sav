@@ -1,0 +1,137 @@
+!
+! Zebra configuration saved from vty
+!   2019/03/20 05:47:43
+!
+frr version 6.1-dev_git1042702486119
+frr defaults traditional
+!
+hostname rtr-us
+!
+!
+router bgp 6939
+ neighbor 4.69.184.2 remote-as 52871
+ neighbor 114.31.199.1 remote-as 4826
+ neighbor 206.126.236.1 remote-as 3257
+ !
+ address-family ipv4 unicast
+  network 1.0.0.0/8
+  network 3.0.0.0/8
+  network 4.0.0.0/8
+  network 6.0.0.0/8
+  network 7.0.0.0/8
+  network 8.0.0.0/8
+  network 9.0.0.0/8
+  network 11.0.0.0/8
+  network 12.0.0.0/8
+  network 13.0.0.0/8
+  network 15.0.0.0/8
+  network 16.0.0.0/8
+  network 17.0.0.0/8
+  network 18.0.0.0/8
+  network 19.0.0.0/8
+  network 20.0.0.0/8
+  network 21.0.0.0/8
+  network 22.0.0.0/8
+  network 23.0.0.0/8
+  network 24.0.0.0/8
+  network 26.0.0.0/8
+  network 28.0.0.0/8
+  network 29.0.0.0/8
+  network 30.0.0.0/8
+  network 32.0.0.0/8
+  network 33.0.0.0/8
+  network 34.0.0.0/8
+  network 35.0.0.0/8
+  network 38.0.0.0/8
+  network 40.0.0.0/8
+  network 44.0.0.0/8
+  network 45.0.0.0/8
+  network 47.0.0.0/8
+  network 48.0.0.0/8
+  network 50.0.0.0/8
+  network 52.0.0.0/8
+  network 53.0.0.0/8
+  network 54.0.0.0/8
+  network 55.0.0.0/8
+  network 56.0.0.0/8
+  network 57.0.0.0/8
+  network 63.0.0.0/8
+  network 64.0.0.0/8
+  network 65.0.0.0/8
+  network 66.0.0.0/8
+  network 67.0.0.0/8
+  network 68.0.0.0/8
+  network 69.0.0.0/8
+  network 70.0.0.0/8
+  network 71.0.0.0/8
+  network 72.0.0.0/8
+  network 73.0.0.0/8
+  network 74.0.0.0/8
+  network 75.0.0.0/8
+  network 76.0.0.0/8
+  network 96.0.0.0/8
+  network 97.0.0.0/8
+  network 98.0.0.0/8
+  network 99.0.0.0/8
+  network 100.0.0.0/8
+  network 104.0.0.0/8
+  network 107.0.0.0/8
+  network 108.0.0.0/8
+  network 128.0.0.0/8
+  network 129.0.0.0/8
+  network 130.0.0.0/8
+  network 131.0.0.0/8
+  network 132.0.0.0/8
+  network 134.0.0.0/8
+  network 135.0.0.0/8
+  network 136.0.0.0/8
+  network 137.0.0.0/8
+  network 138.0.0.0/8
+  network 139.0.0.0/8
+  network 140.0.0.0/8
+  network 142.0.0.0/8
+  network 143.0.0.0/8
+  network 144.0.0.0/8
+  network 146.0.0.0/8
+  network 147.0.0.0/8
+  network 148.0.0.0/8
+  network 149.0.0.0/8
+  network 152.0.0.0/8
+  network 155.0.0.0/8
+  network 156.0.0.0/8
+  network 157.0.0.0/8
+  network 158.0.0.0/8
+  network 159.0.0.0/8
+  network 160.0.0.0/8
+  network 161.0.0.0/8
+  network 162.0.0.0/8
+  network 164.0.0.0/8
+  network 165.0.0.0/8
+  network 166.0.0.0/8
+  network 167.0.0.0/8
+  network 168.0.0.0/8
+  network 169.0.0.0/8
+  network 170.0.0.0/8
+  network 172.0.0.0/8
+  network 173.0.0.0/8
+  network 174.0.0.0/8
+  network 184.0.0.0/8
+  network 192.0.0.0/8
+  network 198.0.0.0/8
+  network 199.0.0.0/8
+  network 204.0.0.0/8
+  network 205.0.0.0/8
+  network 206.0.0.0/8
+  network 207.0.0.0/8
+  network 208.0.0.0/8
+  network 209.0.0.0/8
+  network 214.0.0.0/8
+  network 215.0.0.0/8
+  network 216.0.0.0/8
+ exit-address-family
+!
+ rfp full-table-download off
+!
+!
+line vty
+!

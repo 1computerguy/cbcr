@@ -1,0 +1,34 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: rtr-01
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rtr-01
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: bgp, bgp, bgp, rtr1-svc, external
+      labels:
+        app: rtr-01
+    spec:
+      containers:
+      - env: []
+        image: master:5000/frr
+        name: rtr-01
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /etc/frr
+          name: rtr-01
+      initContainers: []
+      volumes:
+      - name: rtr-01
+        nfs:
+          path: /configs/network/rtr-01
+          server: storage
+
+

@@ -1,0 +1,12 @@
+$TTL  86400
+@       IN      SOA     ns1.malwr.cn. dns-admin.malwr.cn. (
+                        2019063002         ; Serial
+                        604800         ; Refresh
+                        86400         ; Retry
+                        2419200         ; Expire
+                        604800 )       ; Negative Cache TTL
+ftp.malwr.cn.      IN      A       61.62.202.101
+malwr.cn.     IN    NS    ac1.nstld.com.
+malwr.cn.     IN    NS    ac2.nstld.com.
+malwr.cn.     IN    NS    a.nic.dns-tld.site.
+malwr.cn.     IN    NS    b.nic.dns-tld.site.

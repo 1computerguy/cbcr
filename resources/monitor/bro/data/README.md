@@ -1,0 +1,1 @@
+# Bro IDS Data Log Directory

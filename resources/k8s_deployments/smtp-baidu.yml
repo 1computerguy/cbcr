@@ -1,0 +1,36 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: smtp-baidu
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: smtp-baidu
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr1-svc
+      labels:
+        app: smtp-baidu
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 12.0.243.41
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 12.0.0.1
+        - name: INT
+          value: net1
+        image: master:5000/smtp
+        name: smtp-baidu
+        securityContext:
+          privileged: true
+        volumeMounts: []
+      initContainers: []
+      volumes: []
+
+

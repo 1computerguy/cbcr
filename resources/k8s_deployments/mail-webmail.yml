@@ -1,0 +1,42 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: mail-webmail
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mail-webmail
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr1-svc
+      labels:
+        app: mail-webmail
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 68.178.213.60
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 68.0.0.1
+        - name: INT
+          value: net1
+        image: master:5000/webmail
+        name: mail-webmail
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /data
+          name: mail-email-com
+      initContainers: []
+      volumes:
+      - name: mail-email-com
+        nfs:
+          path: /configs/smtp/webmail
+          server: storage
+
+

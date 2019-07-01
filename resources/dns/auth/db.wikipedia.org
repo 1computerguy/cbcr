@@ -1,0 +1,13 @@
+$TTL  86400
+@       IN      SOA     ns1.wikipedia.org. dns-admin.wikipedia.org. (
+                        2019063002         ; Serial
+                        604800         ; Refresh
+                        86400         ; Retry
+                        2419200         ; Expire
+                        604800 )       ; Negative Cache TTL
+wikipedia.org.      IN      A       208.80.154.224
+www.wikipedia.org.     IN      CNAME       wikipedia.org.
+wikipedia.org.     IN    NS    ac1.nstld.com.
+wikipedia.org.     IN    NS    ac2.nstld.com.
+wikipedia.org.     IN    NS    a.nic.dns-tld.site.
+wikipedia.org.     IN    NS    b.nic.dns-tld.site.

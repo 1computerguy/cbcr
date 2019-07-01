@@ -1,0 +1,36 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: vuln-wordpress
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vuln-wordpress
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr1-svc
+      labels:
+        app: vuln-wordpress
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 198.143.164.252
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 198.0.0.1
+        - name: INT
+          value: net1
+        image: master:5000/vuln-wordpress
+        name: vuln-wordpress
+        securityContext:
+          privileged: true
+        volumeMounts: []
+      initContainers: []
+      volumes: []
+
+

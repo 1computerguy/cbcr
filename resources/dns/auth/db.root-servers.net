@@ -1,0 +1,24 @@
+$TTL  86400
+@       IN      SOA     ns1.root-servers.net. dns-admin.root-servers.net. (
+                        2019063002         ; Serial
+                        604800         ; Refresh
+                        86400         ; Retry
+                        2419200         ; Expire
+                        604800 )       ; Negative Cache TTL
+a.root-servers.net.      IN      A       198.41.0.4
+b.root-servers.net.      IN      A       199.9.14.201
+c.root-servers.net.      IN      A       192.33.4.12
+d.root-servers.net.      IN      A       199.7.91.13
+d.root-servers.net.      IN      A       192.203.230.10
+f.root-servers.net.      IN      A       192.5.5.241
+g.root-servers.net.      IN      A       192.112.36.4
+h.root-servers.net.      IN      A       198.97.190.53
+i.root-servers.net.      IN      A       192.36.148.17
+j.root-servers.net.      IN      A       192.58.128.30
+k.root-servers.net.      IN      A       193.0.14.129
+l.root-servers.net.      IN      A       199.7.83.42
+m.root-servers.net.      IN      A       202.12.27.33
+root-servers.net.     IN    NS    ac1.nstld.com.
+root-servers.net.     IN    NS    ac2.nstld.com.
+root-servers.net.     IN    NS    a.nic.dns-tld.site.
+root-servers.net.     IN    NS    b.nic.dns-tld.site.

@@ -1,0 +1,81 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: vpn-privatevpn
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vpn-privatevpn
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr6-svc
+      labels:
+        app: vpn-privatevpn
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 196.24.4.13
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 196.0.0.1
+        - name: INT
+          value: net1
+        - name: OPEN_VPN_CMD
+          value: ovpn_run
+        image: master:5000/openvpn
+        name: vpn-privatevpn
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /etc/openvpn
+          name: privatevpn-com
+      initContainers:
+      - command:
+        - ovpn_genconfig
+        - -u
+        - udp://privatevpn.com
+        image: master:5000/openvpn
+        name: vpn-privatevpn-privatevpn-genconfig
+        volumeMounts:
+        - mountPath: /etc/openvpn
+          name: privatevpn-com
+      - command:
+        - ovpn_initpki
+        - nopass
+        image: master:5000/openvpn
+        name: vpn-privatevpn-privatevpn-initpki
+        volumeMounts:
+        - mountPath: /etc/openvpn
+          name: privatevpn-com
+      - command:
+        - easyrsa
+        - build-client-full
+        - privatevpn
+        - nopass
+        image: master:5000/openvpn
+        name: vpn-privatevpn-privatevpn-build-client
+        volumeMounts:
+        - mountPath: /etc/openvpn
+          name: privatevpn-com
+      - command:
+        - ovpn_getclient
+        - privatevpn
+        - '>'
+        - /configs/vpn/privatevpn.ovpn
+        image: master:5000/openvpn
+        name: vpn-privatevpn-privatevpn-get-client
+        volumeMounts:
+        - mountPath: /etc/openvpn
+          name: privatevpn-com
+      volumes:
+      - name: privatevpn-com
+        nfs:
+          path: /configs/vpn/privatevpn.com
+          server: storage
+
+

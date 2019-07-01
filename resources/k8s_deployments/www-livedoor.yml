@@ -1,0 +1,42 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: www-livedoor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: www-livedoor
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr3-svc
+      labels:
+        app: www-livedoor
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 202.104.153.16
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 202.0.0.1
+        - name: INT
+          value: net1
+        image: master:5000/nginx
+        name: www-livedoor
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: livedoor-com
+      initContainers: []
+      volumes:
+      - name: livedoor-com
+        nfs:
+          path: /configs/web/livedoor.com
+          server: storage
+
+

@@ -1,0 +1,50 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: ftp-music
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ftp-music
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr2-svc
+      labels:
+        app: ftp-music
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 212.2.123.43
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 212.0.0.1
+        - name: INT
+          value: net1
+        - name: PUBLICHOST
+          value: ftp.music.ru
+        - name: FTP_USER_NAME
+          value: ftpuser
+        - name: FTP_USER_PASS
+          value: ftp123
+        - name: FTP_USER_HOME
+          value: /home/ftpuser
+        image: master:5000/ftpd
+        name: ftp-music
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /home/ftpuser
+          name: ftp-music-ru
+      initContainers: []
+      volumes:
+      - name: ftp-music-ru
+        nfs:
+          path: /configs/ftp/ftp.music.ru
+          server: storage
+
+

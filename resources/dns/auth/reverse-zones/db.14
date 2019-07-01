@@ -1,0 +1,12 @@
+$TTL  86400
+@       IN      SOA         ns1.14. dns-admin.14. (
+                            2019063002         ; Serial
+                            604800         ; Refresh
+                            86400         ; Retry
+                            2419200         ; Expire
+                            604800 )       ; Negative Cache TTL
+18.143.128.      IN      PTR       vulnerable.org
+                 IN      NS      ac1.nstld.com
+                 IN      NS      ac2.nstld.com
+                 IN      NS      a.nic.dns-tld.site
+                 IN      NS      b.nic.dns-tld.site

@@ -1,0 +1,13 @@
+$TTL  86400
+@       IN      SOA     ns1.wordpress.org. dns-admin.wordpress.org. (
+                        2019063002         ; Serial
+                        604800         ; Refresh
+                        86400         ; Retry
+                        2419200         ; Expire
+                        604800 )       ; Negative Cache TTL
+wordpress.org.      IN      A       198.143.164.252
+www.wordpress.org.     IN      CNAME       wordpress.org.
+wordpress.org.     IN    NS    ac1.nstld.com.
+wordpress.org.     IN    NS    ac2.nstld.com.
+wordpress.org.     IN    NS    a.nic.dns-tld.site.
+wordpress.org.     IN    NS    b.nic.dns-tld.site.

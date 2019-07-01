@@ -1,0 +1,42 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: www-microsoft
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: www-microsoft
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr1-svc
+      labels:
+        app: www-microsoft
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 40.76.4.15
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 40.0.0.1
+        - name: INT
+          value: net1
+        image: master:5000/nginx
+        name: www-microsoft
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: microsoft-com
+      initContainers: []
+      volumes:
+      - name: microsoft-com
+        nfs:
+          path: /configs/web/microsoft.com
+          server: storage
+
+

@@ -1,0 +1,13 @@
+$TTL  86400
+@       IN      SOA     ns1.standardmedia.co.ke. dns-admin.standardmedia.co.ke. (
+                        2019063002         ; Serial
+                        604800         ; Refresh
+                        86400         ; Retry
+                        2419200         ; Expire
+                        604800 )       ; Negative Cache TTL
+standardmedia.co.ke.      IN      A       105.20.205.11
+www.standardmedia.co.ke.     IN      CNAME       standardmedia.co.ke.
+standardmedia.co.ke.     IN    NS    ac1.nstld.com.
+standardmedia.co.ke.     IN    NS    ac2.nstld.com.
+standardmedia.co.ke.     IN    NS    a.nic.dns-tld.site.
+standardmedia.co.ke.     IN    NS    b.nic.dns-tld.site.

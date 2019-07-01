@@ -1,0 +1,81 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: vpn-ipvanish
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vpn-ipvanish
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr3-svc
+      labels:
+        app: vpn-ipvanish
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 201.185.216.42
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 201.0.0.1
+        - name: INT
+          value: net1
+        - name: OPEN_VPN_CMD
+          value: ovpn_run
+        image: master:5000/openvpn
+        name: vpn-ipvanish
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /etc/openvpn
+          name: ipvanish-com
+      initContainers:
+      - command:
+        - ovpn_genconfig
+        - -u
+        - udp://ipvanish.com
+        image: master:5000/openvpn
+        name: vpn-ipvanish-ipvanish-genconfig
+        volumeMounts:
+        - mountPath: /etc/openvpn
+          name: ipvanish-com
+      - command:
+        - ovpn_initpki
+        - nopass
+        image: master:5000/openvpn
+        name: vpn-ipvanish-ipvanish-initpki
+        volumeMounts:
+        - mountPath: /etc/openvpn
+          name: ipvanish-com
+      - command:
+        - easyrsa
+        - build-client-full
+        - ipvanish
+        - nopass
+        image: master:5000/openvpn
+        name: vpn-ipvanish-ipvanish-build-client
+        volumeMounts:
+        - mountPath: /etc/openvpn
+          name: ipvanish-com
+      - command:
+        - ovpn_getclient
+        - ipvanish
+        - '>'
+        - /configs/vpn/ipvanish.ovpn
+        image: master:5000/openvpn
+        name: vpn-ipvanish-ipvanish-get-client
+        volumeMounts:
+        - mountPath: /etc/openvpn
+          name: ipvanish-com
+      volumes:
+      - name: ipvanish-com
+        nfs:
+          path: /configs/vpn/ipvanish.com
+          server: storage
+
+

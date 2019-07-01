@@ -1,0 +1,42 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: dns-google-b
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dns-google-b
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr1-svc
+      labels:
+        app: dns-google-b
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 8.8.4.4
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 8.0.0.1
+        - name: INT
+          value: net1
+        image: master:5000/bind
+        name: dns-google-b
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /etc/bind
+          name: google-public-dns-b-google-com
+      initContainers: []
+      volumes:
+      - name: google-public-dns-b-google-com
+        nfs:
+          path: /configs/dns/recursive
+          server: storage
+
+

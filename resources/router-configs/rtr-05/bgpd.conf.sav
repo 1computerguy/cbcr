@@ -1,0 +1,29 @@
+!
+! Zebra configuration saved from vty
+!   2019/01/08 03:46:36
+!
+frr version 5.0.1
+frr defaults traditional
+!
+hostname rtr-la
+!
+!
+router bgp 52871
+ neighbor 4.69.184.1 remote-as 6939
+ !
+ address-family ipv4 unicast
+  network 177.0.0.0/8
+  network 179.0.0.0/8
+  network 181.0.0.0/8
+  network 186.0.0.0/8
+  network 187.0.0.0/8
+  network 189.0.0.0/8
+  network 190.0.0.0/8
+  network 191.0.0.0/8
+  network 200.0.0.0/8
+  network 201.0.0.0/8
+ exit-address-family
+!
+!
+line vty
+!

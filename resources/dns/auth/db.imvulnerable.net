@@ -1,0 +1,13 @@
+$TTL  86400
+@       IN      SOA     ns1.imvulnerable.net. dns-admin.imvulnerable.net. (
+                        2019063002         ; Serial
+                        604800         ; Refresh
+                        86400         ; Retry
+                        2419200         ; Expire
+                        604800 )       ; Negative Cache TTL
+imvulnerable.net.      IN      A       103.112.1.3
+www.imvulnerable.net.     IN      CNAME       imvulnerable.net.
+imvulnerable.net.     IN    NS    ac1.nstld.com.
+imvulnerable.net.     IN    NS    ac2.nstld.com.
+imvulnerable.net.     IN    NS    a.nic.dns-tld.site.
+imvulnerable.net.     IN    NS    b.nic.dns-tld.site.

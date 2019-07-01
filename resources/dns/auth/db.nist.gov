@@ -1,0 +1,12 @@
+$TTL  86400
+@       IN      SOA     ns1.nist.gov. dns-admin.nist.gov. (
+                        2019063002         ; Serial
+                        604800         ; Refresh
+                        86400         ; Retry
+                        2419200         ; Expire
+                        604800 )       ; Negative Cache TTL
+time.nist.gov.      IN      A       129.6.15.28
+nist.gov.     IN    NS    ac1.nstld.com.
+nist.gov.     IN    NS    ac2.nstld.com.
+nist.gov.     IN    NS    a.nic.dns-tld.site.
+nist.gov.     IN    NS    b.nic.dns-tld.site.

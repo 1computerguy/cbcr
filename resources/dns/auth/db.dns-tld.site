@@ -1,0 +1,13 @@
+$TTL  86400
+@       IN      SOA     ns1.dns-tld.site. dns-admin.dns-tld.site. (
+                        2019063002         ; Serial
+                        604800         ; Refresh
+                        86400         ; Retry
+                        2419200         ; Expire
+                        604800 )       ; Negative Cache TTL
+a.nic.dns-tld.site.      IN      A       37.209.192.9
+b.nic.dns-tld.site.      IN      A       37.209.194.9
+dns-tld.site.     IN    NS    ac1.nstld.com.
+dns-tld.site.     IN    NS    ac2.nstld.com.
+dns-tld.site.     IN    NS    a.nic.dns-tld.site.
+dns-tld.site.     IN    NS    b.nic.dns-tld.site.

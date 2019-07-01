@@ -1,0 +1,42 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: www-standardmedia
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: www-standardmedia
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr6-svc
+      labels:
+        app: www-standardmedia
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 105.20.205.11
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 105.0.0.1
+        - name: INT
+          value: net1
+        image: master:5000/nginx
+        name: www-standardmedia
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: standardmedia-co-ke
+      initContainers: []
+      volumes:
+      - name: standardmedia-co-ke
+        nfs:
+          path: /configs/web/standardmedia.co.ke
+          server: storage
+
+

@@ -1,0 +1,12 @@
+$TTL  86400
+@       IN      SOA         ns1.252. dns-admin.252. (
+                            2019063002         ; Serial
+                            604800         ; Refresh
+                            86400         ; Retry
+                            2419200         ; Expire
+                            604800 )       ; Negative Cache TTL
+164.143.198.      IN      PTR       wordpress.org
+                 IN      NS      ac1.nstld.com
+                 IN      NS      ac2.nstld.com
+                 IN      NS      a.nic.dns-tld.site
+                 IN      NS      b.nic.dns-tld.site

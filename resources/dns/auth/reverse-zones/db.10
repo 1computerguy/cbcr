@@ -1,0 +1,12 @@
+$TTL  86400
+@       IN      SOA         ns1.10. dns-admin.10. (
+                            2019063002         ; Serial
+                            604800         ; Refresh
+                            86400         ; Retry
+                            2419200         ; Expire
+                            604800 )       ; Negative Cache TTL
+230.203.192.      IN      PTR       d.root-servers.net
+                 IN      NS      ac1.nstld.com
+                 IN      NS      ac2.nstld.com
+                 IN      NS      a.nic.dns-tld.site
+                 IN      NS      b.nic.dns-tld.site

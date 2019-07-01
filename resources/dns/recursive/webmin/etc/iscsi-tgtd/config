@@ -1,0 +1,5 @@
+init_name=tgtd
+tgtd=tgtd
+tgtadm=tgtadm
+config_file=/etc/tgt/targets.conf
+tgtadmin=tgt-admin

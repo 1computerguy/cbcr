@@ -1,0 +1,42 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: dns-ac1-nstld
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dns-ac1-nstld
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr1-svc
+      labels:
+        app: dns-ac1-nstld
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 192.42.173.30
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 192.0.0.1
+        - name: INT
+          value: net1
+        image: master:5000/bind
+        name: dns-ac1-nstld
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /etc/bind
+          name: ac1-nstld-com
+      initContainers: []
+      volumes:
+      - name: ac1-nstld-com
+        nfs:
+          path: /configs/dns/auth
+          server: storage
+
+

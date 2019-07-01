@@ -5,4 +5,4 @@ ip link set mtu 1450 dev net1
 ip r d default
 ip r a default via $GATEWAY
 
-/usr/bin/supervisord
+/run.sh

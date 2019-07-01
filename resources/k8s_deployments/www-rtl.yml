@@ -1,0 +1,42 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: www-rtl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: www-rtl
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr2-svc
+      labels:
+        app: www-rtl
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 81.92.237.71
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 81.0.0.1
+        - name: INT
+          value: net1
+        image: master:5000/nginx
+        name: www-rtl
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: rtl-lu
+      initContainers: []
+      volumes:
+      - name: rtl-lu
+        nfs:
+          path: /configs/web/rtl.lu
+          server: storage
+
+

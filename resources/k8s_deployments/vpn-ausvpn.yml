@@ -1,0 +1,81 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: vpn-ausvpn
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vpn-ausvpn
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr4-svc
+      labels:
+        app: vpn-ausvpn
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 150.1.79.230
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 150.0.0.1
+        - name: INT
+          value: net1
+        - name: OPEN_VPN_CMD
+          value: ovpn_run
+        image: master:5000/openvpn
+        name: vpn-ausvpn
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /etc/openvpn
+          name: ausvpn-com
+      initContainers:
+      - command:
+        - ovpn_genconfig
+        - -u
+        - udp://ausvpn.com
+        image: master:5000/openvpn
+        name: vpn-ausvpn-ausvpn-genconfig
+        volumeMounts:
+        - mountPath: /etc/openvpn
+          name: ausvpn-com
+      - command:
+        - ovpn_initpki
+        - nopass
+        image: master:5000/openvpn
+        name: vpn-ausvpn-ausvpn-initpki
+        volumeMounts:
+        - mountPath: /etc/openvpn
+          name: ausvpn-com
+      - command:
+        - easyrsa
+        - build-client-full
+        - ausvpn
+        - nopass
+        image: master:5000/openvpn
+        name: vpn-ausvpn-ausvpn-build-client
+        volumeMounts:
+        - mountPath: /etc/openvpn
+          name: ausvpn-com
+      - command:
+        - ovpn_getclient
+        - ausvpn
+        - '>'
+        - /configs/vpn/ausvpn.ovpn
+        image: master:5000/openvpn
+        name: vpn-ausvpn-ausvpn-get-client
+        volumeMounts:
+        - mountPath: /etc/openvpn
+          name: ausvpn-com
+      volumes:
+      - name: ausvpn-com
+        nfs:
+          path: /configs/vpn/ausvpn.com
+          server: storage
+
+

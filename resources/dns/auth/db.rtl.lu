@@ -1,0 +1,13 @@
+$TTL  86400
+@       IN      SOA     ns1.rtl.lu. dns-admin.rtl.lu. (
+                        2019063002         ; Serial
+                        604800         ; Refresh
+                        86400         ; Retry
+                        2419200         ; Expire
+                        604800 )       ; Negative Cache TTL
+rtl.lu.      IN      A       81.92.237.71
+www.rtl.lu.     IN      CNAME       rtl.lu.
+rtl.lu.     IN    NS    ac1.nstld.com.
+rtl.lu.     IN    NS    ac2.nstld.com.
+rtl.lu.     IN    NS    a.nic.dns-tld.site.
+rtl.lu.     IN    NS    b.nic.dns-tld.site.

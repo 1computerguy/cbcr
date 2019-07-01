@@ -1,0 +1,61 @@
+!
+! Zebra configuration saved from vty
+!   2019/01/08 04:30:43
+!
+frr version 5.0.1
+frr defaults traditional
+!
+hostname rtr-as
+!
+!
+router bgp 24441
+ neighbor 193.0.0.1 remote-as 3257
+ neighbor 202.93.81.2 remote-as 4826
+ !
+ address-family ipv4 unicast
+  network 14.0.0.0/8
+  network 27.0.0.0/8
+  network 39.0.0.0/8
+  network 42.0.0.0/8
+  network 49.0.0.0/8
+  network 59.0.0.0/8
+  network 60.0.0.0/8
+  network 61.0.0.0/8
+  network 101.0.0.0/8
+  network 106.0.0.0/8
+  network 110.0.0.0/8
+  network 111.0.0.0/8
+  network 112.0.0.0/8
+  network 113.0.0.0/8
+  network 115.0.0.0/8
+  network 116.0.0.0/8
+  network 117.0.0.0/8
+  network 118.0.0.0/8
+  network 119.0.0.0/8
+  network 120.0.0.0/8
+  network 121.0.0.0/8
+  network 122.0.0.0/8
+  network 123.0.0.0/8
+  network 124.0.0.0/8
+  network 125.0.0.0/8
+  network 126.0.0.0/8
+  network 133.0.0.0/8
+  network 153.0.0.0/8
+  network 163.0.0.0/8
+  network 171.0.0.0/8
+  network 175.0.0.0/8
+  network 180.0.0.0/8
+  network 182.0.0.0/8
+  network 183.0.0.0/8
+  network 202.0.0.0/8
+  network 211.0.0.0/8
+  network 218.0.0.0/8
+  network 219.0.0.0/8
+  network 221.0.0.0/8
+  network 222.0.0.0/8
+  network 223.0.0.0/8
+ exit-address-family
+!
+!
+line vty
+!

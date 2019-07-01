@@ -1,0 +1,36 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: vuln-mutillidae
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vuln-mutillidae
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr6-svc
+      labels:
+        app: vuln-mutillidae
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 41.0.12.15
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 41.0.0.1
+        - name: INT
+          value: net1
+        image: master:5000/vuln-mutillidae
+        name: vuln-mutillidae
+        securityContext:
+          privileged: true
+        volumeMounts: []
+      initContainers: []
+      volumes: []
+
+

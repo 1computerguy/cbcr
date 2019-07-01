@@ -1,0 +1,13 @@
+$TTL  86400
+@       IN      SOA     ns1.vulnerable.org. dns-admin.vulnerable.org. (
+                        2019063002         ; Serial
+                        604800         ; Refresh
+                        86400         ; Retry
+                        2419200         ; Expire
+                        604800 )       ; Negative Cache TTL
+vulnerable.org.      IN      A       128.143.18.14
+www.vulnerable.org.     IN      CNAME       vulnerable.org.
+vulnerable.org.     IN    NS    ac1.nstld.com.
+vulnerable.org.     IN    NS    ac2.nstld.com.
+vulnerable.org.     IN    NS    a.nic.dns-tld.site.
+vulnerable.org.     IN    NS    b.nic.dns-tld.site.

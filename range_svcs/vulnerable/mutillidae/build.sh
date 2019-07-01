@@ -2,4 +2,4 @@
 
 docker build -t master:5000/vuln-mutillidae:latest .
 docker push master:5000/vuln-mutillidae:latest
-docker rmi bltsec/mutillidae-docker:latest
+docker rmi citizenstig/nowasp:latest

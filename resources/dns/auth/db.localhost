@@ -1,0 +1,5 @@
+$TTL	86400
+localhost.		604800	IN	SOA	localhost. root.localhost. 2 604800 86400 2419200 604800
+localhost.		604800	IN	A	127.0.0.1
+localhost.		604800	IN	NS	localhost.
+localhost.		604800	IN	AAAA	::1

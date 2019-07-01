@@ -1,0 +1,13 @@
+$TTL  86400
+@       IN      SOA     ns1.quad9.net. dns-admin.quad9.net. (
+                        2019063002         ; Serial
+                        604800         ; Refresh
+                        86400         ; Retry
+                        2419200         ; Expire
+                        604800 )       ; Negative Cache TTL
+dns.quad9.net.      IN      A       9.9.9.9
+dns.quad9.net.      IN      A       149.112.112.112
+quad9.net.     IN    NS    ac1.nstld.com.
+quad9.net.     IN    NS    ac2.nstld.com.
+quad9.net.     IN    NS    a.nic.dns-tld.site.
+quad9.net.     IN    NS    b.nic.dns-tld.site.

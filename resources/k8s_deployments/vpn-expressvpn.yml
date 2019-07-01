@@ -1,0 +1,81 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: vpn-expressvpn
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vpn-expressvpn
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr2-svc
+      labels:
+        app: vpn-expressvpn
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 31.32.247.106
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 31.0.0.1
+        - name: INT
+          value: net1
+        - name: OPEN_VPN_CMD
+          value: ovpn_run
+        image: master:5000/openvpn
+        name: vpn-expressvpn
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /etc/openvpn
+          name: expressvpn-com
+      initContainers:
+      - command:
+        - ovpn_genconfig
+        - -u
+        - udp://expressvpn.com
+        image: master:5000/openvpn
+        name: vpn-expressvpn-expressvpn-genconfig
+        volumeMounts:
+        - mountPath: /etc/openvpn
+          name: expressvpn-com
+      - command:
+        - ovpn_initpki
+        - nopass
+        image: master:5000/openvpn
+        name: vpn-expressvpn-expressvpn-initpki
+        volumeMounts:
+        - mountPath: /etc/openvpn
+          name: expressvpn-com
+      - command:
+        - easyrsa
+        - build-client-full
+        - expressvpn
+        - nopass
+        image: master:5000/openvpn
+        name: vpn-expressvpn-expressvpn-build-client
+        volumeMounts:
+        - mountPath: /etc/openvpn
+          name: expressvpn-com
+      - command:
+        - ovpn_getclient
+        - expressvpn
+        - '>'
+        - /configs/vpn/expressvpn.ovpn
+        image: master:5000/openvpn
+        name: vpn-expressvpn-expressvpn-get-client
+        volumeMounts:
+        - mountPath: /etc/openvpn
+          name: expressvpn-com
+      volumes:
+      - name: expressvpn-com
+        nfs:
+          path: /configs/vpn/expressvpn.com
+          server: storage
+
+

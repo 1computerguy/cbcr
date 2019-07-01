@@ -1,0 +1,36 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: vuln-imvulnerable-net
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vuln-imvulnerable-net
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr4-svc
+      labels:
+        app: vuln-imvulnerable-net
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 103.112.1.3
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 103.0.0.1
+        - name: INT
+          value: net1
+        image: master:5000/metasploit-vuln-svc-emu
+        name: vuln-imvulnerable-net
+        securityContext:
+          privileged: true
+        volumeMounts: []
+      initContainers: []
+      volumes: []
+
+

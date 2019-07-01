@@ -1,0 +1,1 @@
+# Logstash custom json

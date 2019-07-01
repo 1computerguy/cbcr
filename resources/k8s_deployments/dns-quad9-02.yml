@@ -1,0 +1,42 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: dns-quad9-02
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dns-quad9-02
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr1-svc
+      labels:
+        app: dns-quad9-02
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 149.112.112.112
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 149.0.0.1
+        - name: INT
+          value: net1
+        image: master:5000/bind
+        name: dns-quad9-02
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /etc/bind
+          name: dns-quad9-net
+      initContainers: []
+      volumes:
+      - name: dns-quad9-net
+        nfs:
+          path: /configs/dns/recursive
+          server: storage
+
+

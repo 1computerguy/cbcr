@@ -1,0 +1,36 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: ntp-nist
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ntp-nist
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr1-svc
+      labels:
+        app: ntp-nist
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 129.6.15.28
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 129.0.0.1
+        - name: INT
+          value: net1
+        image: master:5000/ntpd
+        name: ntp-nist
+        securityContext:
+          privileged: true
+        volumeMounts: []
+      initContainers: []
+      volumes: []
+
+

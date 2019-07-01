@@ -1,0 +1,42 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: www-elgenero
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: www-elgenero
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr5-svc
+      labels:
+        app: www-elgenero
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 201.23.113.243
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 201.0.0.1
+        - name: INT
+          value: net1
+        image: master:5000/nginx
+        name: www-elgenero
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: elgenero-com
+      initContainers: []
+      volumes:
+      - name: elgenero-com
+        nfs:
+          path: /configs/web/elgenero.com
+          server: storage
+
+

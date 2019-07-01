@@ -1,0 +1,13 @@
+$TTL  86400
+@       IN      SOA     ns1.hackme.co.uk. dns-admin.hackme.co.uk. (
+                        2019063002         ; Serial
+                        604800         ; Refresh
+                        86400         ; Retry
+                        2419200         ; Expire
+                        604800 )       ; Negative Cache TTL
+hackme.co.uk.      IN      A       83.129.43.12
+www.hackme.co.uk.     IN      CNAME       hackme.co.uk.
+hackme.co.uk.     IN    NS    ac1.nstld.com.
+hackme.co.uk.     IN    NS    ac2.nstld.com.
+hackme.co.uk.     IN    NS    a.nic.dns-tld.site.
+hackme.co.uk.     IN    NS    b.nic.dns-tld.site.

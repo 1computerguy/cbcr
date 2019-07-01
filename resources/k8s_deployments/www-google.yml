@@ -1,0 +1,42 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: www-google
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: www-google
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr1-svc
+      labels:
+        app: www-google
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 172.217.0.78
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 172.0.0.1
+        - name: INT
+          value: net1
+        image: master:5000/nginx
+        name: www-google
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: google-com
+      initContainers: []
+      volumes:
+      - name: google-com
+        nfs:
+          path: /configs/web/google.com
+          server: storage
+
+

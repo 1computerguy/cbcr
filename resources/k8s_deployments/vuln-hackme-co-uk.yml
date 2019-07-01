@@ -1,0 +1,36 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: vuln-hackme-co-uk
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vuln-hackme-co-uk
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr2-svc
+      labels:
+        app: vuln-hackme-co-uk
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 83.129.43.12
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 83.0.0.1
+        - name: INT
+          value: net1
+        image: master:5000/metasploit-vuln-svc-emu
+        name: vuln-hackme-co-uk
+        securityContext:
+          privileged: true
+        volumeMounts: []
+      initContainers: []
+      volumes: []
+
+

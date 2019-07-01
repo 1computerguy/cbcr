@@ -1,0 +1,50 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: ftp-cisco
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ftp-cisco
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr1-svc
+      labels:
+        app: ftp-cisco
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 72.163.4.185
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 72.0.0.1
+        - name: INT
+          value: net1
+        - name: PUBLICHOST
+          value: ftp.cisco.com
+        - name: FTP_USER_NAME
+          value: ftpuser
+        - name: FTP_USER_PASS
+          value: ftp123
+        - name: FTP_USER_HOME
+          value: /home/ftpuser
+        image: master:5000/ftpd
+        name: ftp-cisco
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /home/ftpuser
+          name: ftp-cisco-com
+      initContainers: []
+      volumes:
+      - name: ftp-cisco-com
+        nfs:
+          path: /configs/ftp/ftp.cisco.com
+          server: storage
+
+

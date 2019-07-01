@@ -1,0 +1,42 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: www-baidu
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: www-baidu
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr3-svc
+      labels:
+        app: www-baidu
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 123.125.114.144
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 123.0.0.1
+        - name: INT
+          value: net1
+        image: master:5000/nginx
+        name: www-baidu
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: baidu-com
+      initContainers: []
+      volumes:
+      - name: baidu-com
+        nfs:
+          path: /configs/web/baidu.com
+          server: storage
+
+

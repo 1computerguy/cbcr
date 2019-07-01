@@ -1,0 +1,42 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: attack-rtr6
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: attack-rtr6
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr6-svc
+      labels:
+        app: attack-rtr6
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 105.114.32.193
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 105.0.0.1
+        - name: INT
+          value: net1
+        image: master:5000/metasploit
+        name: attack-rtr6
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /home/msf/.msf4
+          name: rtr6-attacker
+      initContainers: []
+      volumes:
+      - name: rtr6-attacker
+        nfs:
+          path: /configs/attack/rtr6-attacker
+          server: storage
+
+

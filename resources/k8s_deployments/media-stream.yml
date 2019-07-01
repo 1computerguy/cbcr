@@ -1,0 +1,42 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: media-stream
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: media-stream
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr1-svc
+      labels:
+        app: media-stream
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 184.29.214.127
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 184.0.0.1
+        - name: INT
+          value: net1
+        image: master:5000/media
+        name: media-stream
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /media/serviio
+          name: stream-com
+      initContainers: []
+      volumes:
+      - name: stream-com
+        nfs:
+          path: /configs/media/stream.com
+          server: storage
+
+

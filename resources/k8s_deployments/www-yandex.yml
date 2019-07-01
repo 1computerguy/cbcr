@@ -1,0 +1,42 @@
+# Source: /home/greyadmin/cbcr/build/range/deployments/template.py
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: www-yandex
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: www-yandex
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: rtr2-svc
+      labels:
+        app: www-yandex
+    spec:
+      containers:
+      - env:
+        - name: IP_ADDR
+          value: 77.88.55.55
+        - name: LEN
+          value: '8'
+        - name: GATEWAY
+          value: 77.0.0.1
+        - name: INT
+          value: net1
+        image: master:5000/nginx
+        name: www-yandex
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: yandex-ru
+      initContainers: []
+      volumes:
+      - name: yandex-ru
+        nfs:
+          path: /configs/web/yandex.ru
+          server: storage
+
+
