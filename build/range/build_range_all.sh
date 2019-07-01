@@ -78,13 +78,13 @@ cd $REPO_HOME/range_svcs
 cd $REPO_HOME/build/range
 # Call build_range_helper.py script to ingest range_services.csv file and build and
 # deploy the remaining configurations
-echo "---------------------------------------------------------"
-echo "|  Building the Kubernetes yaml configuration files     |"
-echo "|  This process can take up to 3-5 minutes to complete  |"
-echo "---------------------------------------------------------"
-echo ""
-python3 build_k8s_net.py
-python3 build_k8s_deps.py
+#echo "---------------------------------------------------------"
+#echo "|  Building the Kubernetes yaml configuration files     |"
+#echo "|  This process can take up to 3-5 minutes to complete  |"
+#echo "---------------------------------------------------------"
+#echo ""
+#python3 build_k8s_net.py
+#python3 build_k8s_deps.py
 
 # Build Router Configs
 echo "-----------------------------------------------------------"
@@ -93,7 +93,7 @@ echo "|  bgpd.conf and copying necessary daemons files to the   |"
 echo "|  appropriate locations.                                 |"
 echo "-----------------------------------------------------------"
 echo ""
-python3 build_rtr_cfgs.py
+#python3 build_rtr_cfgs.py
 
 # Build DNS
 echo "-----------------------------------------------------------"
@@ -102,15 +102,13 @@ echo "|  range_services.csv entries. These will serve as the    |"
 echo "|  in-range DNS entries.                                  |"
 echo "-----------------------------------------------------------"
 echo ""
-python3 build_dns.py range_services.csv
+#python3 build_dns.py range_services.csv
 
 # Build OVS Bridges for overlay network
 echo "------------------------------------------------------------"
 echo "|  Building OpenVswitch bridges for overlay network        |"
 echo "|                                                          |"
-echo "| This will run on worker nodes too, make sure to check    |"
-echo "| for completion using the following command on each node: |"
-echo "|   sudo ovs-vsctl show                                    |"
+echo "| This will need to be run on worker nodes too.            |"
 echo "------------------------------------------------------------"
 echo ""
 
@@ -131,16 +129,14 @@ echo "|  Use Kibana to view logged data at the master mgmt IP   |"
 echo "|  port 30001                                             |"
 echo "-----------------------------------------------------------"
 echo ""
-if [ $HOSTNAME == 'master' ]
-then
-    sudo ./build_mirror.sh external bro0
-else
-    sshpass -e scp -o StrictHostKeyChecking=no build_mirror.sh $user@worker01:~/build_mirror.sh
-    #echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no worker01 cat \| sudo --prompt="" -S -- ./build_mirror.sh bgp bro0
 
-    sshpass -e scp -o StrictHostKeyChecking=no build_mirror.sh $user@worker02:~/build_mirror.sh
-    #echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no worker02 cat \| sudo --prompt="" -S -- ./build_mirror.sh bgp bro0
-fi
+sudo ./build_mirror.sh external bro0
+
+sshpass -e scp -o StrictHostKeyChecking=no build_mirror.sh $user@worker01:~/build_mirror.sh
+#echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no worker01 cat \| sudo --prompt="" -S -- ./build_mirror.sh bgp bro0
+
+sshpass -e scp -o StrictHostKeyChecking=no build_mirror.sh $user@worker02:~/build_mirror.sh
+#echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no worker02 cat \| sudo --prompt="" -S -- ./build_mirror.sh bgp bro0
 
 
 # Build external access network namespace and configure for network
