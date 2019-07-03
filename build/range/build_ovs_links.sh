@@ -33,14 +33,14 @@ create_bridges() {
     ovs-vsctl set int $br mtu_request=1450
     case "$role" in
         master )
-            ovs-vsctl add-port $br vx01-${br} -- set interface vx01-${br} type=vxlan options:remote_ip=10.10.1.211 options:key=111${count} options:dst_port=4789
-            ovs-vsctl add-port $br vx02-${br} -- set interface vx02-${br} type=vxlan options:remote_ip=10.10.1.212 options:key=222${count} options:dst_port=4789
+            ovs-vsctl add-port $br vx01-${br} -- set interface vx01-${br} type=vxlan options:remote_ip=$WORK01_NET options:key=111${count} options:dst_port=4789
+            ovs-vsctl add-port $br vx02-${br} -- set interface vx02-${br} type=vxlan options:remote_ip=$WORK02_NET options:key=222${count} options:dst_port=4789
             ;;
         worker01 )
-            ovs-vsctl add-port $br vx-${br} -- set interface vx-${br} type=vxlan options:remote_ip=10.10.1.210 options:key=111${count} options:dst_port=4789
+            ovs-vsctl add-port $br vx-${br} -- set interface vx-${br} type=vxlan options:remote_ip=$MSTR_NET options:key=111${count} options:dst_port=4789
             ;;
         worker02 )
-            ovs-vsctl add-port $br vx-${br} -- set interface vx-${br} type=vxlan options:remote_ip=10.10.1.210 options:key=222${count} options:dst_port=4789
+            ovs-vsctl add-port $br vx-${br} -- set interface vx-${br} type=vxlan options:remote_ip=$MSTR_NET options:key=222${count} options:dst_port=4789
             ;;
     esac
 }

@@ -43,15 +43,38 @@ else
 fi
 
 # Build website scraper and start scraping sites
+#echo "---------------------------------------------------------"
+#echo "|  Building the website scraper. This will be used to   |"
+#echo "|  pull download web content and populate sites for     |"
+#echo "|  deployment to the nginx servers"
+#echo "---------------------------------------------------------"
+#echo ""
+#cd scraper
+#./build.sh
+#cd ..
+
 echo "---------------------------------------------------------"
-echo "|  Building the website scraper. This will be used to   |"
-echo "|  pull download web content and populate sites for     |"
-echo "|  deployment to the nginx servers"
+echo "|  Building all containers required for environment     |"
+echo "|                                                       |"
 echo "---------------------------------------------------------"
 echo ""
-cd scraper
-./build.sh
-cd ..
+#########################################################################
+# UNCOMMENT lines below if you wish to build all containers from scratch
+# Otherwise, you can just pull them from my regularly updated Docker Hub
+# Repository
+########################################################################
+#cd $REPO_HOME/range_svcs
+#./build_all.sh
+
+images=(elasticsearch bro-ids kibana mysql postgres site-downloader kali metasploit-vuln-svc-emu metasploit vuln-wordpress tor-node openvpn ftpd media ntpd smtp nginx logstash frr webmail bind)
+
+for image in ${images[@]}
+do
+    docker pull bscarbrough/$image:latest
+    docker tag bscarbrough/$image:latest master:5000/$image:latest
+    docker push master:5000/$image:latest
+    docker rmi bscarbrough/$image:latest
+done
 
 echo "-----------------------------------------------------------"
 echo "|  Scraping / Downloading websites listed in the          |"
@@ -67,15 +90,17 @@ echo "-----------------------------------------------------------"
 echo ""
 python3 build_web.py
 
-echo "---------------------------------------------------------"
-echo "|  Building all containers required for environment     |"
-echo "|                                                       |"
-echo "---------------------------------------------------------"
-echo ""
-cd $REPO_HOME/range_svcs
-./build_all.sh
+echo "-----------------------------------------------------------------"
+echo "|                                                               |"
+echo "| Copying necessary range configuration files from resources    |"
+echo "| directory to the /range/configs directory                     |"
+echo "|                                                               |"
+echo "|----------------------------------------------------------------"
+cp -R $REPO_HOME/resources/dns $CONFIG_HOME
+cp -R $REPO_HOME/resources/monitor $CONFIG_HOME
+cp -R $REPO_HOME/resources/router-configs/* $CONFIG_HOME/network
 
-cd $REPO_HOME/build/range
+#cd $REPO_HOME/build/range
 # Call build_range_helper.py script to ingest range_services.csv file and build and
 # deploy the remaining configurations
 #echo "---------------------------------------------------------"
@@ -87,21 +112,21 @@ cd $REPO_HOME/build/range
 #python3 build_k8s_deps.py
 
 # Build Router Configs
-echo "-----------------------------------------------------------"
-echo "|  Building the router configuration files zebra.conf and |"
-echo "|  bgpd.conf and copying necessary daemons files to the   |"
-echo "|  appropriate locations.                                 |"
-echo "-----------------------------------------------------------"
-echo ""
+#echo "-----------------------------------------------------------"
+#echo "|  Building the router configuration files zebra.conf and |"
+#echo "|  bgpd.conf and copying necessary daemons files to the   |"
+#echo "|  appropriate locations.                                 |"
+#echo "-----------------------------------------------------------"
+#echo ""
 #python3 build_rtr_cfgs.py
 
 # Build DNS
-echo "-----------------------------------------------------------"
-echo "|  Generating authoritative DNS entries based on          |"
-echo "|  range_services.csv entries. These will serve as the    |"
-echo "|  in-range DNS entries.                                  |"
-echo "-----------------------------------------------------------"
-echo ""
+#echo "-----------------------------------------------------------"
+#echo "|  Generating authoritative DNS entries based on          |"
+#echo "|  range_services.csv entries. These will serve as the    |"
+#echo "|  in-range DNS entries.                                  |"
+#echo "-----------------------------------------------------------"
+#echo ""
 #python3 build_dns.py range_services.csv
 
 # Build OVS Bridges for overlay network
@@ -183,6 +208,7 @@ echo "|                                                          |"
 echo "|  Once you come back, run the command below and all the   |"
 echo "|  K8s systems will run and you can play in your new test  |"
 echo "|  environment!                                            |"
+echo "|                                                          |"
 echo '|    kubectl create -f $K8s_CONFIGS                        |'
 echo "|                                                          |"
 echo "|  To interact with the environment, connect a VM to the   |"
@@ -193,7 +219,7 @@ echo "|  range_services.csv file.                                |"
 echo "|                                                          |"
 echo "|   External Network: 167.2.127.0/24                       |"
 echo "|                                                          |"
-echo "|  OVPN config files are in the $CONFIG_PATH/vpn. Use the  |"
+echo "|  OVPN config files are in the \$CONFIG_PATH/vpn. Use the  |"
 echo "|  OpenVPN client to connect and VPN services within the   |"
 echo "|  range for kicks and giggles - and to see VPN traffic    |"
 echo "|  because it's realistic and fun to see if you can learn  |"

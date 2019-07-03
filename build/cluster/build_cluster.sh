@@ -174,6 +174,8 @@ ${master[2]}      storage
 ${master[3]}      network
 ${worker01[0]}      worker01
 ${worker02[0]}      worker02
+${worker01[3]}      network01
+${worker02[3]}      network02
 EOF
 
 echo "--------------------------------------------------------"
@@ -298,6 +300,18 @@ cat > /etc/hosts <<EOF
 $hosts
 EOF
 
+cat > ~/.env <<EOF
+WORK01_NET=`host network01 | grep "has address" | awk '{print $4}'`
+WORK02_NET=`host network02 | grep "has address" | awk '{print $4}'`
+MSTR_NET=`host network | grep "has address" | awk '{print $4}'`
+EOF
+
+cat >> ~/.bashrc <<ENV
+set -a
+    [ -f ~/.env ] && . ~/.env
+set +a
+ENV
+
 # Disable swap (incompatible with K8s 1.7+) and add NFS share mount for internal Docker registry
 swapoff -a
 sed -i '$s|/swap|\#/swap|' /etc/fstab
@@ -407,6 +421,18 @@ apt install sshpass docker.io kubeadm kubelet kubectl openvswitch-switch curl nf
 cat > /etc/hosts <<EOF
 $hosts
 EOF
+
+cat > ~/.env <<EOF
+WORK01_NET=`host network01 | grep "has address" | awk '{print $4}'`
+WORK02_NET=`host network02 | grep "has address" | awk '{print $4}'`
+MSTR_NET=`host network | grep "has address" | awk '{print $4}'`
+EOF
+
+cat >> ~/.bashrc <<ENV
+set -a
+    [ -f ~/.env ] && . ~/.env
+set +a
+ENV
 
 # Disable swap (incompatible with K8s 1.7+) and add NFS share mount for internal Docker registry
 swapoff -a
