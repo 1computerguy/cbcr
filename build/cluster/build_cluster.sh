@@ -103,6 +103,7 @@ echo "| Installing packages...                               |"
 echo "--------------------------------------------------------"
 echo ""
 # Install necessary packages
+DEBIAN_FRONTEND=noninteractive
 apt update && apt upgrade -y
 apt install -y docker.io python-docker pv python-pip kubeadm kubelet kubectl \
                     geoipupdate docker-compose openvswitch-switch nfs-common \
@@ -271,10 +272,11 @@ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add
 apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
 
 # Install Updates
+DEBIAN_FRONTEND=noninteractive
 apt update && apt upgrade -y
 
 # Install packages
-apt install sshpass docker.io kubeadm kubelet kubectl openvswitch-switch curl nfs-common -y
+apt install -y sshpass docker.io kubeadm kubelet kubectl openvswitch-switch curl nfs-common
 
 echo "----------------------------------------------------------"
 echo "|  Writing and applying network configuration            |"
@@ -393,10 +395,11 @@ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add
 apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
 
 # Install Updates
+DEBIAN_FRONTEND=noninteractive
 apt update && apt upgrade -y
 
 # Install packages
-apt install sshpass docker.io kubeadm kubelet kubectl openvswitch-switch curl nfs-common -y
+apt install -y sshpass docker.io kubeadm kubelet kubectl openvswitch-switch curl nfs-common
 
 echo "----------------------------------------------------------"
 echo "|  Writing and applying network configuration            |"
