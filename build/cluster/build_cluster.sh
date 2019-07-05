@@ -72,6 +72,8 @@ then
   exit 1
 fi
 
+
+
 echo "-----------------------------------------------------------"
 echo "|  Importing CSV data into local variables                |"
 echo "-----------------------------------------------------------"
@@ -260,6 +262,20 @@ hosts=`cat /etc/hosts`
 sudo -u $user cat > worker01.sh <<WK1
 #!/bin/bash
 
+echo "--------------------------------------------------------"
+echo "| Installing packages...                               |"
+echo "--------------------------------------------------------"
+echo ""
+# Add kubernetes repo
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add
+apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+
+# Install Updates
+apt update && apt upgrade -y
+
+# Install packages
+apt install sshpass docker.io kubeadm kubelet kubectl openvswitch-switch curl nfs-common -y
+
 echo "----------------------------------------------------------"
 echo "|  Writing and applying network configuration            |"
 echo "----------------------------------------------------------"
@@ -291,20 +307,6 @@ NET
 
 netplan apply
 
-echo "--------------------------------------------------------"
-echo "| Installing packages...                               |"
-echo "--------------------------------------------------------"
-echo ""
-# Add kubernetes repo
-curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add
-apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
-
-# Install Updates
-apt update && apt upgrade -y
-
-# Install packages
-apt install sshpass docker.io kubeadm kubelet kubectl openvswitch-switch curl nfs-common -y
-
 cat > /etc/hosts <<EOF
 $hosts
 EOF
@@ -333,12 +335,13 @@ echo "net.ipv6.conf.all.forwarding=1" | tee -a /etc/sysctl.conf
 # Reload
 sysctl -p /etc/sysctl.conf
 
+# Change Docker manager to systemd, not cgroup
 echo "--------------------------------------------------------"
 echo "| Configuring systemd cgroupdriver for Docker          |"
 echo "--------------------------------------------------------"
 echo ""
 # Change Docker manager to systemd, not cgroup
-cat > /etc/docker/daemon.json <<EOF
+tee /etc/docker/daemon.json <<DOC
 {
   "exec-opts": ["native.cgroupdriver=systemd"],
   "log-driver": "json-file",
@@ -347,17 +350,17 @@ cat > /etc/docker/daemon.json <<EOF
   },
   "storage-driver": "overlay2"
 }
-EOF
+DOC
 
 mkdir -p /etc/systemd/system/docker.service.d
 systemctl daemon-reload
-
-# Start and Enable Docker
-systemctl start docker
 systemctl enable docker
+systemctl restart docker
+
+mkdir -p /etc/docker/certs.d
 
 # Sleep to ensure docker process is started fully and that cgroup driver is loaded properly
-echo -e "Please wait while we do some things (or at least wait for them to be done for us...)"
+echo -e "Please wait while we do some things..."
 sleep 15
 
 usermod -aG docker greyadmin
@@ -380,6 +383,20 @@ echo "*--------------------------------"
 
 sudo -u $user cat > worker02.sh <<WK2
 #!/bin/bash
+
+echo "--------------------------------------------------------"
+echo "| Installing packages...                               |"
+echo "--------------------------------------------------------"
+echo ""
+# Add kubernetes repo
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add
+apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+
+# Install Updates
+apt update && apt upgrade -y
+
+# Install packages
+apt install sshpass docker.io kubeadm kubelet kubectl openvswitch-switch curl nfs-common -y
 
 echo "----------------------------------------------------------"
 echo "|  Writing and applying network configuration            |"
@@ -411,20 +428,6 @@ network:
 NET
 
 netplan apply
-
-echo "--------------------------------------------------------"
-echo "| Installing packages...                               |"
-echo "--------------------------------------------------------"
-echo ""
-# Add kubernetes repo
-curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add
-apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
-
-# Install Updates
-apt update && apt upgrade -y
-
-# Install packages
-apt install sshpass docker.io kubeadm kubelet kubectl openvswitch-switch curl nfs-common -y
 
 cat > /etc/hosts <<EOF
 $hosts
@@ -459,7 +462,7 @@ echo "| Configuring systemd cgroupdriver for Docker          |"
 echo "--------------------------------------------------------"
 echo ""
 # Change Docker manager to systemd, not cgroup
-cat > /etc/docker/daemon.json <<EOF
+tee /etc/docker/daemon.json <<DOC
 {
   "exec-opts": ["native.cgroupdriver=systemd"],
   "log-driver": "json-file",
@@ -468,17 +471,17 @@ cat > /etc/docker/daemon.json <<EOF
   },
   "storage-driver": "overlay2"
 }
-EOF
+DOC
 
 mkdir -p /etc/systemd/system/docker.service.d
 systemctl daemon-reload
-
-# Start and Enable Docker
-systemctl start docker
 systemctl enable docker
+systemctl restart docker
+
+mkdir -p /etc/docker/certs.d
 
 # Sleep to ensure docker process is started fully and that cgroup driver is loaded properly
-echo -e "Please wait while we do some things (or at least wait for them to be done for us...)"
+echo -e "Please wait while we do some things..."
 sleep 15
 
 usermod -aG docker greyadmin
