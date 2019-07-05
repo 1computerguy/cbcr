@@ -25,6 +25,10 @@ usage() {
     echo ""
 }
 
+SSHPASS=""
+user=""
+password=""
+
 # Set arguments as IP variables
 if [ $# -gt 1 ]
 then
@@ -59,6 +63,12 @@ then
 else
     usage
     exit 1
+fi
+
+if [ "$filename" == "" ] || [ "$SSHPASS" == "" ] || [ "$user" == "" ]
+then
+  usage
+  exit 1
 fi
 
 echo "-----------------------------------------------------------"
@@ -488,10 +498,10 @@ WK2
 chmod +x worker01.sh
 chmod +x worker02.sh
 
-sshpass -e scp -o StrictHostKeyChecking=no worker01.sh $user@worker01:~/worker01.sh
+sshpass -p "$SSHPASS" scp -o StrictHostKeyChecking=no worker01.sh $user@worker01:~/worker01.sh
 #echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no $user@worker01 cat \| sudo --prompt="" -S -- ./worker01.sh
 
-sshpass -e scp -o StrictHostKeyChecking=no worker02.sh $user@worker02:~/worker02.sh
+sshpass -p "$SSHPASS" scp -o StrictHostKeyChecking=no worker02.sh $user@worker02:~/worker02.sh
 #echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no $user@worker02 cat \| sudo --prompt="" -S -- ./worker02.sh
 
 testcount=0
