@@ -103,9 +103,8 @@ echo "| Installing packages...                               |"
 echo "--------------------------------------------------------"
 echo ""
 # Install necessary packages
-DEBIAN_FRONTEND=noninteractive
-apt update && apt upgrade -y
-apt install -y docker.io python-docker pv python-pip kubeadm kubelet kubectl \
+DEBIAN_FRONTEND=noninteractive apt update && apt upgrade -y
+DEBIAN_FRONTEND=noninteractive apt install -y docker.io python-docker pv python-pip kubeadm kubelet kubectl \
                     geoipupdate docker-compose openvswitch-switch nfs-common \
                     python3-pip sshpass expect
 
@@ -262,6 +261,7 @@ hosts=`cat /etc/hosts`
 
 sudo -u $user cat > worker01.sh <<WK1
 #!/bin/bash
+set -e
 
 echo "--------------------------------------------------------"
 echo "| Installing packages...                               |"
@@ -272,11 +272,10 @@ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add
 apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
 
 # Install Updates
-DEBIAN_FRONTEND=noninteractive
-apt update && apt upgrade -y
+DEBIAN_FRONTEND=noninteractive apt update && apt upgrade -y
 
 # Install packages
-apt install -y sshpass docker.io kubeadm kubelet kubectl openvswitch-switch curl nfs-common
+DEBIAN_FRONTEND=noninteractive apt install -y sshpass docker.io kubeadm kubelet kubectl openvswitch-switch curl nfs-common
 
 echo "----------------------------------------------------------"
 echo "|  Writing and applying network configuration            |"
@@ -385,6 +384,7 @@ echo "*--------------------------------"
 
 sudo -u $user cat > worker02.sh <<WK2
 #!/bin/bash
+set -e
 
 echo "--------------------------------------------------------"
 echo "| Installing packages...                               |"
@@ -395,11 +395,10 @@ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add
 apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
 
 # Install Updates
-DEBIAN_FRONTEND=noninteractive
-apt update && apt upgrade -y
+DEBIAN_FRONTEND=noninteractive apt update && apt upgrade -y
 
 # Install packages
-apt install -y sshpass docker.io kubeadm kubelet kubectl openvswitch-switch curl nfs-common
+DEBIAN_FRONTEND=noninteractive apt install -y sshpass docker.io kubeadm kubelet kubectl openvswitch-switch curl nfs-common
 
 echo "----------------------------------------------------------"
 echo "|  Writing and applying network configuration            |"
@@ -503,10 +502,10 @@ chmod +x worker01.sh
 chmod +x worker02.sh
 
 sshpass -e scp -o StrictHostKeyChecking=no worker01.sh $user@worker01:~/worker01.sh
-#echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no $user@worker01 cat \| sudo --prompt="" -S -- ./worker01.sh
+echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no $user@worker01 cat \| sudo --prompt="" -S -- ./worker01.sh
 
 sshpass -e scp -o StrictHostKeyChecking=no worker02.sh $user@worker02:~/worker02.sh
-#echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no $user@worker02 cat \| sudo --prompt="" -S -- ./worker02.sh
+echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no $user@worker02 cat \| sudo --prompt="" -S -- ./worker02.sh
 
 testcount=0
 while [ "$(kubectl get nodes | awk -v cnt="2" '{if (NR>cnt) {print $2}}')" != "Ready" ]
