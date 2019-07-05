@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 usage() {
     echo ""
@@ -39,7 +40,7 @@ then
             -p | --password )
                 shift
                 SSHPASS="$1"
-                export $SSHPASS
+                export SSHPASS=$SSHPASS
                 ;;
             -f | --filename )
                 shift
@@ -87,6 +88,14 @@ do
 done < "$filename"
 IFS="$OLDIFS"
 
+echo "--------------------------------------------------------"
+echo "| Pulling the latest K8s repo data for installation    |"
+echo "--------------------------------------------------------"
+echo ""
+# Add K8s key and repo
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
+apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+
 echo "----------------------------------------------------------"
 echo "|  Writing and applying network configuration            |"
 echo "----------------------------------------------------------"
@@ -128,14 +137,6 @@ echo ""
 echo "net.ipv4.ip_forward=1" | tee -a /etc/sysctl.conf
 echo "net.ipv6.conf.all.forwarding=1" | tee -a /etc/sysctl.conf
 sysctl -p
-
-echo "--------------------------------------------------------"
-echo "| Pulling the latest K8s repo data for installation    |"
-echo "--------------------------------------------------------"
-echo ""
-# Add K8s key and repo
-curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
-apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
 
 echo "--------------------------------------------------------"
 echo "| Installing packages...                               |"
