@@ -502,22 +502,26 @@ chmod +x worker01.sh
 chmod +x worker02.sh
 
 sshpass -e scp -o StrictHostKeyChecking=no worker01.sh $user@worker01:~/worker01.sh
-echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no $user@worker01 cat \| sudo --prompt="" -S -- ./worker01.sh
+#echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no $user@worker01 cat \| sudo --prompt="" -S -- ./worker01.sh
 
 sshpass -e scp -o StrictHostKeyChecking=no worker02.sh $user@worker02:~/worker02.sh
-echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no $user@worker02 cat \| sudo --prompt="" -S -- ./worker02.sh
+#echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no $user@worker02 cat \| sudo --prompt="" -S -- ./worker02.sh
+
+echo "Waiting for Worker01 to report a ready status..."
+echo -e "  - This process will wait 15 minutes if worker01 does not report"
+echo -e "    successfully, you can look to the install docs for troubleshooting"
+echo -e "    steps."
 
 testcount=0
-while [ "$(kubectl get nodes | awk -v cnt="2" '{if (NR>cnt) {print $2}}')" != "Ready" ]
+while [ "$(kubectl get nodes | grep worker01 | awk '{print $2}')" != "Ready" ]
 do
-    echo "...Waiting for all Worker nodes to report a ready status..."
-    sleep 10
+    sleep 30
     let testcount=$testcount+1
-    if [ $testcount -eq 60 ]
+    if [ $testcount -eq 30 ]
     then
 	    echo "|--------------------------------------------------------------------------------"
 	    echo "|"
-	    echo "| It has been 600 seconds since the last worker was added to the cluster..."
+	    echo "| It has been 15 min. since the worker01 setup started..."
 	    echo "|"
 	    echo "| There may be a problem with your cluster. Please log into the worker nodes"
 	    echo "| manually to check the status of the kubelet and/or docker processes and the"
@@ -540,20 +544,64 @@ do
 	    echo "|---------------------------------------------------------------------------------"
 
 	    exit 1
-     fi
+     else
+      echo "...Still waiting, please be patient"
+    fi
+done
+
+echo ""
+echo "Worker01 reported ready!"
+echo ""
+echo ""
+echo "Waiting for Worker02 to report a ready status..."
+echo -e "  - This process will wait 15 minutes if worker02 does not report"
+echo -e "    successfully, you can look to the install docs for troubleshooting"
+echo -e "    steps."
+
+testcount=0
+while [ "$(kubectl get nodes | grep worker02 | awk '{print $2}')" != "Ready" ]
+do
+    sleep 30
+    let testcount=$testcount+1
+    if [ $testcount -eq 30 ]
+    then
+	    echo "|--------------------------------------------------------------------------------"
+	    echo "|"
+	    echo "| It has been 15 min. since worker02 setup started..."
+	    echo "|"
+	    echo "| There may be a problem with your cluster. Please log into the worker nodes"
+	    echo "| manually to check the status of the kubelet and/or docker processes and the"
+	    echo "| output of the /var/log/syslog file to troubleshoot this potential issue."
+	    echo "| NOTE: here may not be any problems other than network delays in pulling the"
+	    echo "| docker containers required to run the cluster."
+	    echo "|"
+	    echo "| You can feel free to wait a little longer, or begin troubleshooting now, it's up"
+	    echo "| to you..."
+	    echo "|"
+	    echo "| To check the status of the nodes use the commands below"
+	    echo "|	- kubectl get nodes"
+	    echo "|	- kubectl describe nodes <node name>"
+      echo "|"
+      echo "| If you have any questions, comments, or concerns, about this range, please"
+      echo "| feel free to raise an Issue on my github:"
+      echo "|"
+      echo "|     https://github.com/1computerguy/cbcr"
+      echo "|"
+	    echo "|---------------------------------------------------------------------------------"
+
+	    exit 1
+     else
+      echo "...Still waiting, please be patient"
+    fi
 done
 
 echo "|-------------------------------------------------------------------------"
 echo "|"
 echo "| Your Kubernetes cluster is now configured and ready to use."
 echo "|"
-echo "| Make sure the 'range' command is somewhere in your executable path"
-echo "| and run that command with the -h or --help option to see what you can"
-echo "| do inside this range environment. Of course, you are welcome to do"
-echo "| whatever you wish with this cluster, and even use this config, simply as"
-echo "| a means of automating the build of a K8s cluster - that's totally your"
-echo "| perogative. However, to use this as the Cyber-Range environment it was"
-echo "| intended for, check out the 'range' command and play around"
+echo "| You are ready to move to the next stage of your Cyber Range setup."
+echo "|"
+echo "| Please proceed to the management directory cd ../management to continue."
 echo "| If you have any questions, comments, or concerns, please feel free"
 echo "| to raise an Issue on my github:"
 echo "|"
