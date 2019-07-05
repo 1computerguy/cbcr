@@ -96,6 +96,28 @@ echo ""
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
 apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
 
+echo "--------------------------------------------------------"
+echo "| Installing packages...                               |"
+echo "--------------------------------------------------------"
+echo ""
+# Install necessary packages
+apt update && apt upgrade -y
+apt install -y docker.io python-docker pv python-pip kubeadm kubelet kubectl \
+                    geoipupdate docker-compose openvswitch-switch nfs-common \
+                    python3-pip sshpass expect
+
+# Disable rpcbind (service added from nfs-common install) so we can share nfs from our nfs container
+systemctl stop rpcbind
+systemctl disable rpcbind
+
+echo "--------------------------------------------------------"
+echo "| Installing some Python pip packages for use later    |"
+echo "--------------------------------------------------------"
+echo ""
+sudo -u $user pip install dnspython
+sudo -u $user pip install geoip2
+sudo -u $user pip3 install kuku
+
 echo "----------------------------------------------------------"
 echo "|  Writing and applying network configuration            |"
 echo "----------------------------------------------------------"
@@ -114,7 +136,6 @@ network:
       gateway4: ${master[1]}
       nameservers:
         addresses:
-        - 1.1.1.1
         - 8.8.8.8
       dhcp4: false
     eth1:
@@ -137,28 +158,6 @@ echo ""
 echo "net.ipv4.ip_forward=1" | tee -a /etc/sysctl.conf
 echo "net.ipv6.conf.all.forwarding=1" | tee -a /etc/sysctl.conf
 sysctl -p
-
-echo "--------------------------------------------------------"
-echo "| Installing packages...                               |"
-echo "--------------------------------------------------------"
-echo ""
-# Install necessary packages
-apt update && apt upgrade -y
-apt install -y docker.io python-docker pv python-pip kubeadm kubelet kubectl \
-                    geoipupdate docker-compose openvswitch-switch nfs-common \
-                    python3-pip sshpass expect
-
-# Disable rpcbind (service added from nfs-common install) so we can share nfs from our nfs container
-systemctl stop rpcbind
-systemctl disable rpcbind
-
-echo "--------------------------------------------------------"
-echo "| Installing some Python pip packages for use later    |"
-echo "--------------------------------------------------------"
-echo ""
-sudo -u $user pip install dnspython
-sudo -u $user pip install geoip2
-sudo -u $user pip3 install kuku
 
 echo "--------------------------------------------------------"
 echo "| Disable swap and enable NFS                          |"
@@ -278,7 +277,6 @@ network:
       gateway4: ${worker01[1]}
       nameservers:
         addresses:
-        - 1.1.1.1
         - 8.8.8.8
       dhcp4: false
     eth1:
@@ -400,7 +398,6 @@ network:
       gateway4: ${worker02[1]}
       nameservers:
         addresses:
-        - 1.1.1.1
         - 8.8.8.8
       dhcp4: false
     eth1:
