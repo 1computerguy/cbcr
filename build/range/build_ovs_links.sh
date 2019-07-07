@@ -3,6 +3,8 @@
 # This script must be run as root or with sudo!
 #######
 
+source ~/.env
+
 role=""
 
 usage() {
@@ -53,7 +55,6 @@ then
             -r | --role )
                 shift
                 role="$1"
-                shift
                 ;;
             -l | --list )
                 shift
@@ -73,6 +74,7 @@ then
                 usage
                 ;;
         esac
+        shift
     done
 else
     usage

@@ -53,6 +53,26 @@ fi
 #./build.sh
 #cd ..
 
+echo "-----------------------------------------------------------"
+echo "|  Scraping / Downloading websites listed in the          |"
+echo "|  range_services.csv file. This process will run in the  |"
+echo "|  backbround and can take between 30-45 min.             |"
+echo "|                                                         |"
+echo "|  Use the docker ps -a command to see if there are any   |"
+echo "|    remaining web scrapers after about 30 or so minutes  |"
+echo "|    I have found that any still running after this amount|"
+echo "|    of time can be safely stopped without causing major  |"
+echo "|    problems."
+echo "-----------------------------------------------------------"
+echo ""
+downloader="site-downloader"
+docker pull bscarbrough/$downloader:latest
+docker tag bscarbrough/$downloader:latest master:5000/$downloader:latest
+docker push master:5000/$downloader:latest
+docker rmi bscarbrough/$downloader:latest
+
+python3 build_web.py
+
 echo "---------------------------------------------------------"
 echo "|  Building all containers required for environment     |"
 echo "|                                                       |"
@@ -66,7 +86,7 @@ echo ""
 #cd $REPO_HOME/range_svcs
 #./build_all.sh
 
-images=(elasticsearch bro-ids kibana mysql postgres site-downloader kali metasploit-vuln-svc-emu metasploit vuln-wordpress tor-node openvpn ftpd media ntpd smtp nginx logstash frr webmail bind)
+images=(elasticsearch bro-ids kibana mysql postgres kali metasploit-vuln-svc-emu metasploit vuln-wordpress tor-node openvpn ftpd media ntpd smtp nginx logstash frr webmail bind)
 
 for image in ${images[@]}
 do
@@ -75,20 +95,6 @@ do
     docker push master:5000/$image:latest
     docker rmi bscarbrough/$image:latest
 done
-
-echo "-----------------------------------------------------------"
-echo "|  Scraping / Downloading websites listed in the          |"
-echo "|  range_services.csv file. This process will run in the  |"
-echo "|  backbround and can take between 30-45 min.             |"
-echo "|                                                         |"
-echo "|  Use the docker ps -a command to see if there are any   |"
-echo "|    remaining web scrapers after about 30 or so minutes  |"
-echo "|    I have found that any still running after this amount|"
-echo "|    of time can be safely stopped without causing major  |"
-echo "|    problems."
-echo "-----------------------------------------------------------"
-echo ""
-python3 build_web.py
 
 echo "-----------------------------------------------------------------"
 echo "|                                                               |"
@@ -136,14 +142,14 @@ echo "|                                                          |"
 echo "| This will need to be run on worker nodes too.            |"
 echo "------------------------------------------------------------"
 echo ""
-
+#bridges=(bgp rtr1-svc rtr2-svc rtr3-svc rtr4-svc rtr5-svc rtr6-svc external)
 sudo ./build_ovs_links.sh -l bgp rtr1-svc rtr2-svc rtr3-svc rtr4-svc rtr5-svc rtr6-svc external
 
 sshpass -e scp -o StrictHostKeyChecking=no build_ovs_links.sh $user@worker01:~/build_ovs_links.sh
-#echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no worker01 cat \| sudo --prompt="" -S -- ./build_ovs_links.sh -l bgp rtr1-svc rtr2-svc rtr3-svc rtr4-svc rtr5-svc rtr6-svc external
+echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no $user@worker01 cat \| sudo --prompt="" -S -- ./build_ovs_links.sh -l bgp rtr1-svc rtr2-svc rtr3-svc rtr4-svc rtr5-svc rtr6-svc external
 
 sshpass -e scp -o StrictHostKeyChecking=no build_ovs_links.sh $user@worker02:~/build_ovs_links.sh
-#echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no worker02 cat \| sudo --prompt="" -S -- ./build_ovs_links.sh -l bgp rtr1-svc rtr2-svc rtr3-svc rtr4-svc rtr5-svc rtr6-svc external
+echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no $user@worker02 cat \| sudo --prompt="" -S -- ./build_ovs_links.sh -l bgp rtr1-svc rtr2-svc rtr3-svc rtr4-svc rtr5-svc rtr6-svc external
 
 
 # Build external access network namespace and configure for network
@@ -158,10 +164,10 @@ echo ""
 sudo ./build_mirror.sh external bro0
 
 sshpass -e scp -o StrictHostKeyChecking=no build_mirror.sh $user@worker01:~/build_mirror.sh
-#echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no worker01 cat \| sudo --prompt="" -S -- ./build_mirror.sh bgp bro0
+echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no $user@worker01 cat \| sudo --prompt="" -S -- ./build_mirror.sh bgp bro0
 
 sshpass -e scp -o StrictHostKeyChecking=no build_mirror.sh $user@worker02:~/build_mirror.sh
-#echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no worker02 cat \| sudo --prompt="" -S -- ./build_mirror.sh bgp bro0
+echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no $user@worker02 cat \| sudo --prompt="" -S -- ./build_mirror.sh bgp bro0
 
 
 # Build external access network namespace and configure for network

@@ -13,11 +13,11 @@ fi
 br=$1
 output_port=$2
 
-ovs-vsctl add-port $br output_port \
-  -- set interface $br type=internal \
+ovs-vsctl add-port $br $output_port \
+  -- set interface $output_port type=internal \
   -- --id=@p get port $output_port \
   -- --id=@m create mirror name=m0 \
   select-all=true output-port=@p \
   -- set bridge $br mirrors=@m
 
-sudo ip link set up dev $output_port
+ip link set up dev $output_port
