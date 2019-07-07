@@ -326,7 +326,7 @@ ENV
 
 # Disable swap (incompatible with K8s 1.7+) and add NFS share mount for internal Docker registry
 swapoff -a
-sed -i '$s|/swap|\#/swap|' /etc/fstab
+sed -i '\$s|/swap|\#/swap|' /etc/fstab
 echo "storage:/certs       /etc/docker/certs.d      nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0" >> /etc/fstab
 
 # Enable IP forwarding for some later functionality
@@ -502,10 +502,10 @@ chmod +x worker01.sh
 chmod +x worker02.sh
 
 sshpass -p "$SSHPASS" scp -o StrictHostKeyChecking=no worker01.sh $user@worker01:~/worker01.sh
-#echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no $user@worker01 cat \| sudo --prompt="" -S -- ./worker01.sh
+#echo $SSHPASS | sshpass -p "$SSHPASS" ssh -o StrictHostKeyChecking=no $user@worker01 cat \| sudo --prompt="" -S -- ./worker01.sh
 
 sshpass -p "$SSHPASS" scp -o StrictHostKeyChecking=no worker02.sh $user@worker02:~/worker02.sh
-#echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no $user@worker02 cat \| sudo --prompt="" -S -- ./worker02.sh
+#echo $SSHPASS | sshpass -p "$SSHPASS" ssh -o StrictHostKeyChecking=no $user@worker02 cat \| sudo --prompt="" -S -- ./worker02.sh
 
 echo "Waiting for Worker01 to report a ready status..."
 echo -e "  - This process will wait 15 minutes if worker01 does not report"
@@ -595,6 +595,11 @@ do
     fi
 done
 
+echo ""
+echo "Worker02 reported ready!"
+echo ""
+echo ""
+echo ""
 echo "|-------------------------------------------------------------------------"
 echo "|"
 echo "| Your Kubernetes cluster is now configured and ready to use."
