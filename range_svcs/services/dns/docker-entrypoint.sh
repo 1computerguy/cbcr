@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 ip addr add $IP_ADDR/$LEN dev $INT
 ip link set mtu 1450 dev $INT

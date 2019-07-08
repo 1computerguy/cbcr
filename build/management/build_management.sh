@@ -66,6 +66,7 @@ sudo mkdir -p /range/configs/{web,ftp,network,webmail}
 sudo mkdir -p /range/configs/media/stream.com
 sudo mkdir -p /range/configs/vuln/{metasploit-vuln,mutillidae,wordpress}
 sudo mkdir -p /range/configs/vpn/{ausvpn.com,expressvpn.com,ipvanish.com,privatevpn.com,vpn.com,nordvpn.com}
+sudo mkdir -p /range/configs/dns/{ac1,ac2,a-nic,b-nic,google-a,google-b,quad9-01,quad9-02}
 
 sudo cp -r $REPO_HOME/resources/dns $RANGE_HOME/configs/
 sudo cp -r $REPO_HOME/resources/monitor $RANGE_HOME/configs/
