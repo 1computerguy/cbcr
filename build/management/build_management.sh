@@ -1,9 +1,13 @@
 #!/bin/bash
 
+set -e
+
 if [ "$(id -u)" == "0" ]; then
 	echo "Please run this as a normal user, not root"
 	exit 1
 fi
+
+source ~/.env
 
 usage() {
     echo ""
