@@ -1,0 +1,246 @@
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: eu-client01-iperf
+  namespace: default
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: eu-svc
+      labels:
+        app: eu-client01-iperf
+    spec:
+      containers:
+      - image: master:5000/iperf
+        name: eu-client01-iperf
+        securityContext:
+          privileged: true
+        command:
+        - /bin/sh
+        - -c
+        args:
+        - |-
+          ip addr add 217.2.2.2/8 dev net1;
+          ip link set net1 mtu 1450;
+          sleep 5;
+          ip r d default;
+          ip r a default via 217.0.0.1;
+          iperf3 -c 177.1.1.1 -t 300 --logfile /var/log/eu-to-la-full.log
+        volumeMounts:
+        - mountPath: /var/log
+          name: log-mount01
+      volumes:
+      - name: log-mount01
+        nfs:
+          path: /configs/tests
+          server: storage
+      nodeSelector:
+        kubernetes.io/hostname: master
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: af-client02-iperf
+  namespace: default
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: af-svc
+      labels:
+        app: af-client02-iperf
+    spec:
+      containers:
+      - image: master:5000/iperf
+        name: af-client02-iperf
+        securityContext:
+          privileged: true
+        command:
+        - /bin/sh
+        - -c
+        args:
+        - |-
+          ip addr add 197.2.2.2/8 dev net1;
+          ip link set net1 mtu 1450;
+          sleep 5;
+          ip r d default;
+          ip r a default via 197.0.0.1;
+          iperf3 -c 3.1.1.1 -t 300 --logfile /var/log/af-to-na-full.log
+        volumeMounts:
+        - mountPath: /var/log
+          name: log-mount02
+      volumes:
+      - name: log-mount02
+        nfs:
+          path: /configs/tests
+          server: storage
+      nodeSelector:
+        kubernetes.io/hostname: worker01
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: au-client03-iperf
+  namespace: default
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: au-svc
+      labels:
+        app: au-client03-iperf
+    spec:
+      containers:
+      - image: master:5000/iperf
+        name: au-client03-iperf
+        securityContext:
+          privileged: true
+        command:
+        - /bin/sh
+        - -c
+        args:
+        - |-
+          ip addr add 210.2.2.2/8 dev net1;
+          ip link set net1 mtu 1450;
+          sleep 5;
+          ip r d default;
+          ip r a default via 210.0.0.1;
+          iperf3 -c 2.1.1.1 -t 300 --logfile /var/log/au-to-eu-full.log
+        volumeMounts:
+        - mountPath: /var/log
+          name: log-mount03
+      volumes:
+      - name: log-mount03
+        nfs:
+          path: /configs/tests
+          server: storage
+      nodeSelector:
+        kubernetes.io/hostname: worker02
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: na-client04-iperf
+  namespace: default
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: na-svc
+      labels:
+        app: na-client04-iperf
+    spec:
+      containers:
+      - image: master:5000/iperf
+        name: na-client04-iperf
+        securityContext:
+          privileged: true
+        command:
+        - /bin/sh
+        - -c
+        args:
+        - |-
+          ip addr add 216.2.2.2/8 dev net1;
+          ip link set net1 mtu 1450;
+          sleep 5;
+          ip r d default;
+          ip r a default via 216.0.0.1;
+          iperf3 -c 14.1.1.1 -t 300 --logfile /var/log/na-to-as-full.log
+        volumeMounts:
+        - mountPath: /var/log
+          name: log-mount04
+      volumes:
+      - name: log-mount04
+        nfs:
+          path: /configs/tests
+          server: storage
+      nodeSelector:
+        kubernetes.io/hostname: master
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: la-client05-iperf
+  namespace: default
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: la-svc
+      labels:
+        app: la-client05-iperf
+    spec:
+      containers:
+      - image: master:5000/iperf
+        name: la-client05-iperf
+        securityContext:
+          privileged: true
+        command:
+        - /bin/sh
+        - -c
+        args:
+        - |-
+          ip addr add 201.2.2.2/8 dev net1;
+          ip link set net1 mtu 1450;
+          sleep 5;
+          ip r d default;
+          ip r a default via 201.0.0.1;
+          iperf3 -c 36.1.1.1 -t 300 --logfile /var/log/la-to-au-full.log
+        volumeMounts:
+        - mountPath: /var/log
+          name: log-mount05
+      volumes:
+      - name: log-mount05
+        nfs:
+          path: /configs/tests
+          server: storage
+      nodeSelector:
+        kubernetes.io/hostname: worker01
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: as-client06-iperf
+  namespace: default
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: as-svc
+      labels:
+        app: as-client06-iperf
+    spec:
+      containers:
+      - image: master:5000/iperf
+        name: as-client06-iperf
+        securityContext:
+          privileged: true
+        command:
+        - /bin/sh
+        - -c
+        args:
+        - |-
+          ip addr add 223.2.2.2/8 dev net1;
+          ip link set net1 mtu 1450;
+          sleep 5;
+          ip r d default;
+          ip r a default via 223.0.0.1;
+          iperf3 -c 41.1.1.1 -t 300 --logfile /var/log/as-to-af-full.log
+        volumeMounts:
+        - mountPath: /var/log
+          name: log-mount06
+      volumes:
+      - name: log-mount06
+        nfs:
+          path: /configs/tests
+          server: storage
+      nodeSelector:
+        kubernetes.io/hostname: worker02

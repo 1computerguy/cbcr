@@ -1,4 +1,4 @@
-FROM sameersbn/bind:latest
+FROM resystit/bind9:latest
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 

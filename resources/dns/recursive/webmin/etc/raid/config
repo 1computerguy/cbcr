@@ -1,3 +1,0 @@
-mdadm=/etc/mdadm/mdadm.conf
-mdstat=/proc/mdstat
-raidtab=/etc/raidtab

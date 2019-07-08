@@ -1,2 +1,0 @@
-vgetty_config=/etc/mgetty+sendfax/voice.conf
-vgetty_cmd=vgetty

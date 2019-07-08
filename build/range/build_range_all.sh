@@ -86,7 +86,7 @@ echo ""
 #cd $REPO_HOME/range_svcs
 #./build_all.sh
 
-images=(elasticsearch bro-ids kibana mysql postgres kali metasploit-vuln-svc-emu metasploit vuln-wordpress tor-node openvpn ftpd media ntpd smtp nginx logstash frr webmail bind)
+images=(elasticsearch bro-ids kibana mysql postgres kali metasploit-vuln-svc-emu metasploit vuln-wordpress tor-node openvpn ftpd media ntpd smtp nginx logstash frr webmail vuln-mutillidae bind)
 
 for image in ${images[@]}
 do

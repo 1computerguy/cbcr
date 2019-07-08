@@ -62,7 +62,8 @@ sudo mkdir -p /range/{mgmt/{rancher,registry,pki/{root-ca,intermed-ca}},configs}
 sudo mkdir -p /range/configs/attack/{rtr1-attacker,rtr2-attacker,rtr3-attacker,rtr4-attacker,rtr5-attacker,rtr6-attacker}
 sudo mkdir -p /range/configs/smtp/webmail
 sudo mkdir -p /range/configs/ftp/{ftp.adobe.com,ftp.cisco.com,ftp.malwr.cn,ftp.music.ru}
-sudo mkdir -p /range/configs/{web,ftp,media-svr,network,webmail}
+sudo mkdir -p /range/configs/{web,ftp,network,webmail}
+sudo mkdir -p /range/configs/media/stream.com
 sudo mkdir -p /range/configs/vuln/{metasploit-vuln,mutillidae,wordpress}
 
 sudo cp -r $REPO_HOME/resources/dns $RANGE_HOME/configs/

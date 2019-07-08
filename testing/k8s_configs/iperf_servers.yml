@@ -1,0 +1,198 @@
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: la-svr01-iperf
+  namespace: default
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: la-svc
+      labels:
+        app: la-svr01-iperf
+    spec:
+      containers:
+      - image: master:5000/iperf
+        name: la-svr01-iperf
+        securityContext:
+          privileged: true
+        command:
+        - /bin/sh
+        - -c
+        args:
+        - |-
+          ip addr add 177.1.1.1/8 dev net1;
+          ip link set net1 mtu 1450;
+          sleep 5;
+          ip r d default;
+          ip r a default via 177.0.0.1;
+          iperf3 -s
+      nodeSelector:
+        kubernetes.io/hostname: master
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: na-svr02-iperf
+  namespace: default
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: na-svc
+      labels:
+        app: na-svr02-iperf
+    spec:
+      containers:
+      - image: master:5000/iperf
+        name: na-svr02-iperf
+        securityContext:
+          privileged: true
+        command:
+        - /bin/sh
+        - -c
+        args:
+        - |-
+          ip addr add 3.1.1.1/8 dev net1;
+          ip link set net1 mtu 1450;
+          sleep 5;
+          ip r d default;
+          ip r a default via 3.0.0.1;
+          iperf3 -s
+      nodeSelector:
+        kubernetes.io/hostname: worker01
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: eu-svr03-iperf
+  namespace: default
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: eu-svc
+      labels:
+        app: eu-svr03-iperf
+    spec:
+      containers:
+      - image: master:5000/iperf
+        name: eu-svr03-iperf
+        securityContext:
+          privileged: true
+        command:
+        - /bin/sh
+        - -c
+        args:
+        - |-
+          ip addr add 2.1.1.1/8 dev net1;
+          ip link set net1 mtu 1450;
+          sleep 5;
+          ip r d default;
+          ip r a default via 2.0.0.1;
+          iperf3 -s
+      nodeSelector:
+        kubernetes.io/hostname: worker02
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: as-svr04-iperf
+  namespace: default
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: as-svc
+      labels:
+        app: as-svr04-iperf
+    spec:
+      containers:
+      - image: master:5000/iperf
+        name: as-svr04-iperf
+        securityContext:
+          privileged: true
+        command:
+        - /bin/sh
+        - -c
+        args:
+        - |-
+          ip addr add 14.1.1.1/8 dev net1;
+          ip link set net1 mtu 1450;
+          sleep 5;
+          ip r d default;
+          ip r a default via 14.0.0.1;
+          iperf3 -s
+      nodeSelector:
+        kubernetes.io/hostname: master
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: au-svr05-iperf
+  namespace: default
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: au-svc
+      labels:
+        app: au-svr05-iperf
+    spec:
+      containers:
+      - image: master:5000/iperf
+        name: au-svr05-iperf
+        securityContext:
+          privileged: true
+        command:
+        - /bin/sh
+        - -c
+        args:
+        - |-
+          ip addr add 36.1.1.1/8 dev net1;
+          ip link set net1 mtu 1450;
+          sleep 5;
+          ip r d default;
+          ip r a default via 36.0.0.1;
+          iperf3 -s
+      nodeSelector:
+        kubernetes.io/hostname: worker01
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: af-svr06-iperf
+  namespace: default
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: af-svc
+      labels:
+        app: af-svr06-iperf
+    spec:
+      containers:
+      - image: master:5000/iperf
+        name: af-svr06-iperf
+        securityContext:
+          privileged: true
+        command:
+        - /bin/sh
+        - -c
+        args:
+        - |-
+          ip addr add 41.1.1.1/8 dev net1;
+          ip link set net1 mtu 1450;
+          sleep 5;
+          ip r d default;
+          ip r a default via 41.0.0.1;
+          iperf3 -s
+      nodeSelector:
+        kubernetes.io/hostname: worker02
