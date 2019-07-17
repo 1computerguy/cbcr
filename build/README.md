@@ -1,5 +1,5 @@
 # Container-Based Cyber Range running in Kubernetes
-This is a repository for a Container based Cyber Range that runs in 3 Virtual Machines, or on a 4 node Raspberry Pi cluster.
+This is a repository for a Container based Cyber Range that runs in 3 Virtual Machines.
 
 
 ## Prep the Infrastructure environment:
