@@ -36,16 +36,16 @@ This is a repository for a Container based Cyber Range that runs in 3 Virtual Ma
 
 #### Install VM Tools
 After reboot:
-- Install git - sudo apt install git -y
+- Install git - `sudo apt install git -y`
 - Instructions below for Xenserver tools install
-- In the XenCenter management console select the desired VM’s console tab
-- Select VM > Install XenServer Tools...
-- Click inside the VM console
-- Run the `lsblk -f` command and look for the device with Xenserver Tools iso mounted (mine was sr0)
-- Mount sr0: `sudo mount /dev/sr0 /mnt`
-- Navigate to the /mnt/Linux directory: `cd /mnt/Linux`
-- Run the installer: `sudo ./install.sh`
-- Unmount disk: `cd ~/ && sudo umount /mnt`
+  - In the XenCenter management console select the desired VM’s console tab
+  - Select VM > Install XenServer Tools...
+  - Click inside the VM console
+  - Run the `lsblk -f` command and look for the device with Xenserver Tools iso mounted (mine was sr0)
+  - Mount sr0: `sudo mount /dev/sr0 /mnt`
+  - Navigate to the /mnt/Linux directory: `cd /mnt/Linux`
+  - Run the installer: `sudo ./install.sh`
+  - Unmount disk: `cd ~/ && sudo umount /mnt`
 - Power off after installing tools and take a snapshot: `sudo poweroff`
 
 #### Take a snapshot of all 3 VMs while they are powered off
@@ -67,11 +67,11 @@ From Master VM (after reboot):
   - Storage IP: Static address with no gateway for NFS connections
   - Internal overlay network IP: Static address with no gateway for the container-based network interconnections
 
-##### NOTE: Packages are updated and installed during cluster initialization. If a prompt appears asking "Restart services during package upgrades without asking?”, select “Yes”.
+##### NOTE: Packages are updated and installed during cluster initialization. If a prompt appears stating "Restart services during package upgrades without asking?”, select “Yes”.
 
 - Run the build_cluster.sh file on the MASTER node (if your password has special characters, make sure to enclose it in quotes):
   - `sudo ./build_cluster.sh -u <current username> -p “<worker ssh password>” -f <cluster config file>`
-  - If you see the error like the below, wait 3-5 minutes and try again. It seems that Ubuntu checks for updates on boot and locks the update file.
+  - If you see an error like the one below, wait 3-5 minutes and try again. It seems that Ubuntu checks for updates on boot and locks the update file.
     -	E: Could not get lock /var/lib/dpkg/lock-frontend - open (11: Resource temporarily unavailable)
     -	E: Unable to acquire the dpkg frontend lock (/var/lib/dpkg/lock-frontend), is another process using it?
     - OR, you can manually stop the process by using `ps aux | grep apt`, then use a `sudo pkill -9 <proc id>`
@@ -91,7 +91,7 @@ From Master VM (after reboot):
     - `kubectl get nodes`
   - Looking at pod status to see if all are in a "Running" state
     - `kubectl get pods --all-namespaces`
-  - You can also run:
+  - You can also run this to get detailed information on a pod that is not running
     - `kubectl describe pod <pod name> -n kube-system`
   - Detailed node status. Looking for any errors in node status or deployment
     - `kubectl describe nodes`
@@ -133,16 +133,25 @@ From Master VM (after reboot):
   - `kubectl create -f $K8S_CONFIGS`
   - This process will start the range with the services outlined in the `range_services.csv` file and the router network described in the `range_network.csv` file
 
-##### NOTE: Initial creation of this environment will take approximately 10-15 minutes depending on hardware, and the VPN servers can take up to 20+ minutes depending on how long it takes the init-containers to generate secure keys. 
+##### NOTE: Initial creation of this environment will take approximately 10-15+ minutes depending on hardware, and the VPN servers can take up to 20+ minutes depending on how long it takes the init-containers to generate secure keys. Use some of the same troubleshooting commands above if there are startup issues.
 
 #### To access the environment
 - Build a Virtual machine and connect it to the port group created for the “external” NIC on the Master node
   - Configure it with an IP in the 167.2.127.xxx/24, a gateway of 167.2.127.1, and DNS of 8.8.8.8 or 9.9.9.9 
-- To access the Kibana dashboard for Bro log information navigate to the management IP address port 30001.
+- To access the Kibana dashboard, use a system with management network access to navigate to the management IP address port 30001.
   - `http://<mgmt ip>:30001`
   - Select Management in the left-hand navigation pane
   - Select Index Patterns
-    - If it tells you “No data found” or “No data captured” or something along those lines, wait a little bit, or generate some data from your externally connected VM and refresh the page
+    - If it tells you “No data found” or “No data captured” or something along those lines, wait a little bit, or generate some data from your connected VM by navigating to a couple of websites or pinging some IPs in the network, then refresh the page
+    - Sites/IPs to use for testing:
+      - https://www.google.com
+      - https://www.yandex.ru
+      - https://www.microsoft.com
+      - 167.2.127.1
+      - 167.2.126.1
+      - 8.8.8.8
+      - 41.0.0.1
+    - For a listing of more sites/IPs, check out the `$REPO_HOME/build/range/range_services.csv` file
   - In the Index Pattern section type “logstash-*” and select Next Step
   - If you wish to use the pre-configured dashboard, follow the steps below:
     - Download the following file and save it to your local disk:
