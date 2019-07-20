@@ -10,6 +10,8 @@ import ipaddress
 import os
 from shutil import copyfile
 import sys
+from pathlib import Path
+import csv
 
 # Set files to use for configuration
 # TODO: Change this to allow CLI entry
@@ -38,29 +40,30 @@ for row in bgp_reader:
 
 rtr_name = ''
 local_net = ''
-cfg_root = os.environ['CONFIG_HOME'] + "/network"
+#cfg_root = os.environ['CONFIG_HOME'] + "/network"
+cfg_root = Path("configs/network")
 
 # Generate interface configration and write it to rtr-name/zebra.conf
 for asn in bgp_links:
     rtr_name = bgp_links[asn]['k8s_pod_name']
     local_net = bgp_links[asn]['local_asn_network']
-    cfg_path = cfg_root + "/" + rtr_name
+    cfg_path = cfg_root / rtr_name
 
     # Create config directory if it doesn't already exist
     if not os.path.exists(cfg_path):
-        os.mkdir(cfg_path)
+        os.makedirs(cfg_path)
 
     # Create config files
-    bgpd = open(cfg_path + '/bgpd.conf', 'w+')
-    zebra = open(cfg_path + '/zebra.conf', 'w+')
-    static = open(cfg_path + '/staticd.conf', 'w+')
+    bgpd = open(cfg_path / 'bgpd.conf', 'w+')
+    zebra = open(cfg_path / 'zebra.conf', 'w+')
+    static = open(cfg_path / 'staticd.conf', 'w+')
 
     # Interface count for beginning interfaces in config files
     int_count = 1
-    bgpd.write("!\nhostname " + bgp_links[asn]['k8s_pod_name'] + "\n!\n" + "router bgp " + asn + "\n")
+    bgpd.write("!\nhostname " + rtr_name + "\n!\n" + "router bgp " + asn + "\n")
     zebra.write("!\nhostname " + rtr_name + "\n!\n!\n!\ninterface net" + str(int_count) + "\n")
     static.write("!\nhostname " + rtr_name + "\n!\n!")
-    zebra.write("  ip address " + str(ipaddress.ip_network(local_net)[1]) + '/' + local_net.split('/')[1] + "\n!\n")
+    zebra.write(" ip address " + str(ipaddress.ip_network(local_net)[1]) + '/' + local_net.split('/')[1] + "\n!\n")
 
     # Iterate count for interface names starting in the loop
     int_count += 1
@@ -68,12 +71,15 @@ for asn in bgp_links:
         remote_network = bgp_links[remote_asn]['local_asn_network']
 
         # Write remote AS associations
-        bgpd.write("neighbor " + str(ipaddress.ip_network(remote_network)[2]) + " remote-as " + remote_asn + "\n")
+        if bgp_links[asn]['remote_asns'].index(remote_asn) == 0:
+            bgpd.write("neighbor " + str(ipaddress.ip_network(local_net)[2]) + " remote-as " + remote_asn + "\n")
+        else:
+            bgpd.write("neighbor " + str(ipaddress.ip_network(remote_network)[1]) + " remote-as " + remote_asn + "\n")
 
         # Write remote AS config data
         if bgp_links[asn]['remote_asns'].index(remote_asn) != 0:
             zebra.write("interface net" + str(int_count) + "\n")
-            zebra.write("  ip address " + str(ipaddress.ip_network(remote_network)[2]) + '/' + remote_network.split('/')[1] + "\n")
+            zebra.write(" ip address " + str(ipaddress.ip_network(remote_network)[2]) + '/' + remote_network.split('/')[1] + "\n")
             zebra.write("!\n")
             int_count += 1
 
@@ -83,10 +89,10 @@ for asn in bgp_links:
 
     for svc_ip in bgp_links[asn]['svc_ips']:
         # Write BGP network advertisement addresses
-        bgpd.write("  network " + str(ipaddress.ip_network(svc_ip + "/24",strict=False)) + "\n")
+        bgpd.write(" network " + str(ipaddress.ip_network(svc_ip + "/24",strict=False)) + "\n")
 
         # Write service networks
-        zebra.write("  ip address " + str(ipaddress.ip_network(svc_ip + "/24",strict=False)[1]) + "/24\n")
+        zebra.write(" ip address " + str(ipaddress.ip_network(svc_ip + "/24",strict=False)[1]) + "/24\n")
 
     int_count += 1
     ext_net = bgp_links[asn]['external_net1']
@@ -96,13 +102,14 @@ for asn in bgp_links:
     
     zebra.write("!\n")
     zebra.write("interface net"  + str(int_count) + "\n")
-    zebra.write("  ip address " + str(ipaddress.ip_network(ext_net,strict=False)[1]) + "/" + ext_net.split('/')[1] + "\n")
+    zebra.write(" ip address " + str(ipaddress.ip_network(ext_net,strict=False)[1]) + "/" + ext_net.split('/')[1] + "\n")
 
-    bgpd.write("  network " + ext_net + "\n")
+    bgpd.write(" network " + ext_net + "\n")
+    bgpd.write(" network " + bgp_links[asn]["local_asn_network"] + "\n")
     bgpd.write("!\n!\nline vty\n!\n")
 
     zebra.write("!\n")
     zebra.close()
     bgpd.close()
     static.close()
-    copyfile(os.environ["REPO_HOME"] + "/range_svcs/services/network/daemons", cfg_path + "/daemons")
+    #copyfile(os.environ["REPO_HOME"] + "/range_svcs/services/network/daemons", cfg_path + "/daemons")
