@@ -191,7 +191,7 @@ kubectl create -f 01-bridge-nets.yml
 
 # Build external access network namespace and configure for network
 echo "-----------------------------------------------------------"
-echo "|  Signing websites PKI certs. Had to wait this long      |"
+echo "|  Signing website PKI certs. Had to wait this long      |"
 echo "|  because if the web directories are created ouside of   |"
 echo "|  the scraper, it will fail silently...                  |"
 echo "|  That was NOT fun to troubleshoot...                    |"
