@@ -186,6 +186,9 @@ sudo ip netns exec ext-con-ns ip addr add 167.2.127.1/24 dev eth3
 sudo ip netns exec ext-con-ns ip link set eth3 up
 sudo ip netns exec ext-con-ns ip route add default via 167.2.126.1
 
+# Create Multus network attachments for container connections to OVS
+kubectl create -f 01-bridge-nets.yml
+
 # Build external access network namespace and configure for network
 echo "-----------------------------------------------------------"
 echo "|  Signing websites PKI certs. Had to wait this long      |"
