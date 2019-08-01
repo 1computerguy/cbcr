@@ -113,7 +113,7 @@ for folder in rtr-01 rtr-02 rtr-03 rtr-04 rtr-05 rtr-06
 do
     cp $REPO_HOME/resources/router-configs/daemons* $CONFIG_HOME/network/$folder
 done
-chown -R 100:101 $CONFIG_HOME/dns/auth
+sudo chown -R 100:101 $CONFIG_HOME/dns/auth
 
 #cd $REPO_HOME/build/range
 # Call build_range_helper.py script to ingest range_services.csv file and build and
