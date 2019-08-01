@@ -105,6 +105,7 @@ echo "|----------------------------------------------------------------"
 cp -R $REPO_HOME/resources/dns $CONFIG_HOME
 cp -R $REPO_HOME/resources/monitor $CONFIG_HOME
 cp -R $REPO_HOME/resources/router-configs/* $CONFIG_HOME/network
+sudo chown -R 100:101 $CONFIG_HOME/dns/auth
 
 #cd $REPO_HOME/build/range
 # Call build_range_helper.py script to ingest range_services.csv file and build and
