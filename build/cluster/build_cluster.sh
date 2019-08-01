@@ -225,7 +225,7 @@ sudo -u $user mkdir -p $home_dir/.kube
 cp -i /etc/kubernetes/admin.conf $home_dir/.kube/config
 chown $user:$user $home_dir/.kube/config
 
-sudo -u $user kubectl apply -f cni/flannel.yml
+sudo -u $user kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/a70459be0084506e4ec919aa1c114638878db11b/Documentation/kube-flannel.yml
 
 while [ "$(kubectl get nodes | awk '{if (NR!=1) {print $2}}')" != "Ready" ]
 do
@@ -234,7 +234,7 @@ do
 done
 
 echo "Installing Multus-CNI..."
-sudo -u $user kubectl apply -f cni/multus.yml
+sudo -u $user kubectl apply -f https://raw.githubusercontent.com/intel/multus-cni/master/images/multus-daemonset.yml
 
 while [ "$(kubectl get pods --all-namespaces | grep multus | awk '{print $4}')" != "Running" ]
 do
@@ -243,7 +243,7 @@ do
 done
 
 echo "Now installing OVS CNI"
-sudo -u $user kubectl apply -f cni/ovs.yml
+sudo -u $user kubectl apply -f https://raw.githubusercontent.com/kubevirt/ovs-cni/master/examples/kubernetes-ovs-cni.yml
 
 while [ "$(kubectl get pods --all-namespaces | grep ovs | awk '{print $4}')" != "Running" ]
 do

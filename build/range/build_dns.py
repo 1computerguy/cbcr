@@ -160,7 +160,7 @@ build_file = sys.argv[1]
 copy_directory = os.environ["CONFIG_HOME"] + "/dns"
 write_directory = copy_directory + "/auth"
 reverse_directory = write_directory + "/reverse-zones"
-dns_build_dir = os.environ["REPO_HOME"] + "/range_svcs/services/dns"
+dns_build_dir = os.environ["REPO_HOME"] + "/resources/dns"
 
 # Make required directories for DNS servers if they don't already exist
 #if not os.path.exists(write_directory):
@@ -242,7 +242,7 @@ for full_filename in glob.glob(dns_build_dir + "/auth/*"):
     filename = os.path.basename(full_filename)
     copyfile(full_filename, write_directory + "/" + filename)
 
-dirs = ["root", "recursive"]
+#dirs = ["root", "recursive"]
 
-for path in dirs:
-    copytree(dns_build_dir + "/" + path , copy_directory + "/" + path)
+#for path in dirs:
+#    copytree(dns_build_dir + "/" + path , copy_directory + "/" + path)

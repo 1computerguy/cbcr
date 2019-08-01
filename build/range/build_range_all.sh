@@ -102,9 +102,18 @@ echo "| Copying necessary range configuration files from resources    |"
 echo "| directory to the /range/configs directory                     |"
 echo "|                                                               |"
 echo "|----------------------------------------------------------------"
-cp -R $REPO_HOME/resources/dns $CONFIG_HOME
+for folder in auth recursive
+do
+    cp $REPO_HOME/resources/dns/{bind.keys,db.0,db.127,db.255,db.empty,db.local,db.root,rndc.key,zones.rfc1918} $CONFIG_HOME/dns/$folder
+done
+cp $REPO_HOME/resources/dns/recursive/named* $CONFIG_HOME/dns/recursive
 cp -R $REPO_HOME/resources/monitor $CONFIG_HOME
 cp -R $REPO_HOME/resources/router-configs/* $CONFIG_HOME/network
+for folder in rtr-01 rtr-02 rtr-03 rtr-04 rtr-05 rtr-06
+do
+    cp $REPO_HOME/resources/router-configs/daemons* $CONFIG_HOME/network/$folder
+done
+chown -R 100:101 $CONFIG_HOME/dns/auth
 
 #cd $REPO_HOME/build/range
 # Call build_range_helper.py script to ingest range_services.csv file and build and
@@ -127,13 +136,13 @@ cp -R $REPO_HOME/resources/router-configs/* $CONFIG_HOME/network
 #python3 build_rtr_cfgs.py
 
 # Build DNS
-#echo "-----------------------------------------------------------"
-#echo "|  Generating authoritative DNS entries based on          |"
-#echo "|  range_services.csv entries. These will serve as the    |"
-#echo "|  in-range DNS entries.                                  |"
-#echo "-----------------------------------------------------------"
-#echo ""
-#python3 build_dns.py range_services.csv
+echo "-----------------------------------------------------------"
+echo "|  Generating authoritative DNS entries based on          |"
+echo "|  range_services.csv entries. These will serve as the    |"
+echo "|  in-range DNS entries.                                  |"
+echo "-----------------------------------------------------------"
+echo ""
+python3 build_dns.py range_services.csv
 
 # Build OVS Bridges for overlay network
 echo "------------------------------------------------------------"
