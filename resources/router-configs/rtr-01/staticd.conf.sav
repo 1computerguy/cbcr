@@ -8,5 +8,6 @@ frr defaults traditional
 hostname k8s-rtr-us-795db6d8d-nvk4h
 !
 !
+ip route 167.2.127.0/24 167.2.126.2
 line vty
 !
