@@ -259,15 +259,10 @@ sudo systemctl start netstart
 chmod +x setup-service.sh
 
 sshpass -e scp -o StrictHostKeyChecking=no ~/start-net.sh netstart.service setup-service.sh $user@worker01:~/
-
 echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no $user@worker01 cat \| sudo --prompt="" -S -- cp ~/start-net.sh /usr/local/bin/start-net.sh
 
-
-
-sshpass -e scp -o StrictHostKeyChecking=no build_mirror.sh $user@worker02:~/build_mirror.sh
-echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no $user@worker02 cat \| sudo --prompt="" -S -- ./build_mirror.sh bgp bro0
-
-
+sshpass -e scp -o StrictHostKeyChecking=no ~/start-net.sh netstart.service setup-service.sh $user@worker01:~/
+echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no $user@worker01 cat \| sudo --prompt="" -S -- cp ~/start-net.sh /usr/local/bin/start-net.sh
 
 # Create Multus network attachments for container connections to OVS
 kubectl create -f 01-bridge-nets.yml
@@ -310,8 +305,9 @@ echo "|  and you can use any of the resources listed in the      |"
 echo "|  range_services.csv file.                                |"
 echo "|                                                          |"
 echo "|   External Network: 167.2.127.0/24                       |"
+echo "|   Default Gateway: 167.2.127.1                           |"
 echo "|                                                          |"
-echo "|  OVPN config files are in the \$CONFIG_PATH/vpn. Use the  |"
+echo "|  OVPN config files are in the \$CONFIG_PATH/vpn. Use the |"
 echo "|  OpenVPN client to connect and VPN services within the   |"
 echo "|  range for kicks and giggles - and to see VPN traffic    |"
 echo "|  because it's realistic and fun to see if you can learn  |"
