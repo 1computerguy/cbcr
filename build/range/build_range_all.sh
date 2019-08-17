@@ -187,6 +187,88 @@ sudo ip netns exec ext-con-ns ip addr add 167.2.127.1/24 dev eth3
 sudo ip netns exec ext-con-ns ip link set eth3 up
 sudo ip netns exec ext-con-ns ip route add default via 167.2.126.1
 
+sudo cat > /usr/local/bin/start-net.sh <<NET
+#!/bin/bash
+
+ip netns add ext-con-ns
+ip link set ext-con netns ext-con-ns
+ip netns exec ext-con-ns ip addr add 167.2.126.2/24 dev ext-con
+ip netns exec ext-con-ns ip link set ext-con up
+ip link set eth3 netns ext-con-ns
+ip netns exec ext-con-ns ip addr add 167.2.127.1/24 dev eth3
+ip netns exec ext-con-ns ip link set eth3 up
+ip netns exec ext-con-ns ip route add default via 167.2.126.1
+
+for int in `ifconfig -a | awk '{ print $1}' | grep ":" | sed 's/://'`
+do
+    ifconfig $int up
+done
+
+exit 0
+
+NET
+
+sudo chmod +x /usr/local/bin/start-net.sh
+
+cat > netstart.service <<NET
+[Unit]
+Description=Bring up network interfaces and create Network Namespace
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/start-net.sh
+
+[Install]
+WantedBy=multi-user.target
+
+NET
+
+cat > start-net.sh <<NET
+#!/bin/bash
+
+for int in `ifconfig -a | awk '{ print $1 }' | grep ":" | sed 's/://'`
+do
+    ifconfig $int up
+done
+
+exit 0
+
+NET
+
+cat > setup-service.sh <<NET
+#!/bin/bash
+
+cp ~/start-net.sh /usr/local/bin/start-net.sh
+cp ~/network.service /etc/systemd/system/network.service
+
+systemctl daemon-reload
+systemctl enable netstart
+systemctl start netstart
+
+exit 0
+NET
+
+sudo cp netstart.service /etc/systemd/system/netstart.service
+
+sudo systemctl daemon-reload
+sudo systemctl enable netstart
+sudo systemctl start netstart
+
+chmod +x setup-service.sh
+
+sshpass -e scp -o StrictHostKeyChecking=no ~/start-net.sh netstart.service setup-service.sh $user@worker01:~/
+
+echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no $user@worker01 cat \| sudo --prompt="" -S -- cp ~/start-net.sh /usr/local/bin/start-net.sh
+
+
+
+sshpass -e scp -o StrictHostKeyChecking=no build_mirror.sh $user@worker02:~/build_mirror.sh
+echo $SSHPASS | sshpass -e ssh -o StrictHostKeyChecking=no $user@worker02 cat \| sudo --prompt="" -S -- ./build_mirror.sh bgp bro0
+
+
+
 # Create Multus network attachments for container connections to OVS
 kubectl create -f 01-bridge-nets.yml
 
